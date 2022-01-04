@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 void main(List<String> args) {
   runApp(const MyApp());
@@ -9,11 +12,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const PlatformApp(
       debugShowCheckedModeBanner: false,
       title: 'title',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'title'),
+      // material: (_, __) => MaterialAppData(
+      //   theme: ThemeData(primarySwatch: Colors.blue),
+      // ),
+      // cupertino: (_, __) => CupertinoAppData(),
+      home: MyHomePage(title: 'title'),
     );
   }
 }
@@ -30,10 +36,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    String appBarTitleImg;
+    if (Platform.isIOS) {
+      appBarTitleImg = 'appbar_title_blue.png';
+    } else {
+      appBarTitleImg = 'appbar_title_white.png';
+    }
+
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
         title: Image.asset(
-          'assets/images/appbar_title.png',
+          'assets/images/$appBarTitleImg',
           width: 64,
           height: 64,
         ),
