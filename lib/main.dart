@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-import 'ui/views/home/home_page.dart';
+import 'ui/views/main/main_page.dart';
 
 void main(List<String> args) {
   runApp(const MyApp());
@@ -16,8 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const PlatformApp(
       debugShowCheckedModeBanner: false,
-      title: 'title',
-      home: HomePage(),
+      title: 'Mono Story',
+      home: MainPage(),
     );
   }
 }
