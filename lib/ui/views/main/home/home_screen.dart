@@ -11,71 +11,95 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return PlatformWidget(
+      cupertino: (_, __) => const HomeScreenCupertino(),
+      material: (_, __) => const HomeScreenMaterial(),
+    );
+  }
+}
+
+class HomeScreenCupertino extends StatefulWidget {
+  const HomeScreenCupertino({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenCupertinoState createState() => _HomeScreenCupertinoState();
+}
+
+class _HomeScreenCupertinoState extends State<HomeScreenCupertino> {
   int _currentIndex = 0;
+  final items = <Widget>[
+    const Center(child: Text('tab1 page')),
+    const Center(child: Text('tab2 page')),
+    const Center(child: Text('tab3 page')),
+    const Center(child: Text('tab4 page')),
+    const Center(child: Text('tab5 page')),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final items = <Widget>[
-      const Center(child: Text('tab1 page')),
-      const Center(child: Text('tab2 page')),
-      const Center(child: Text('tab3 page')),
-      const Center(child: Text('tab4 page')),
-      const Center(child: Text('tab5 page')),
-    ];
-    return PlatformWidget(
-      cupertino: (_, __) => CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Image.asset(
-            'assets/images/appbar_title_blue.png',
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Image.asset(
+          'assets/images/appbar_title_blue.png',
+          width: 64,
+          height: 64,
+        ),
+      ),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            CupertinoTabView(
+              builder: (context) => items[_currentIndex],
+            ),
+            Container(
+              alignment: Alignment.bottomRight,
+              child: CupertinoButton(
+                child: const Text('BUTTON'),
+                onPressed: () => setState(() {
+                  _currentIndex = (_currentIndex >= 4) ? 0 : _currentIndex + 1;
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HomeScreenMaterial extends StatefulWidget {
+  const HomeScreenMaterial({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenMaterialState createState() => _HomeScreenMaterialState();
+}
+
+class _HomeScreenMaterialState extends State<HomeScreenMaterial> {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 5,
+      child: Scaffold(
+        // APP BAR
+        appBar: AppBar(
+          title: Image.asset(
+            'assets/images/appbar_title_white.png',
             width: 64,
             height: 64,
           ),
         ),
-        child: SafeArea(
-          child: Stack(
+        // body: const Center(child: Text('Home Page')),
+        body: const SafeArea(
+          child: TabBarView(
             children: [
-              CupertinoTabView(
-                builder: (context) => items[_currentIndex],
-              ),
-              Container(
-                alignment: Alignment.bottomRight,
-                child: CupertinoButton(
-                  child: const Text('BUTTON'),
-                  onPressed: () => setState(() {
-                    _currentIndex =
-                        (_currentIndex >= 4) ? 0 : _currentIndex + 1;
-                  }),
-                ),
-              ),
+              Center(child: Text('tab1 page')),
+              Center(child: Text('tab2 page')),
+              Center(child: Text('tab3 page')),
+              Center(child: Text('tab4 page')),
+              Center(child: Text('tab5 page')),
             ],
-          ),
-        ),
-      ),
-      //
-      // MATERIAL
-      //
-      material: (_, __) => DefaultTabController(
-        length: 5,
-        child: Scaffold(
-          // APP BAR
-          appBar: AppBar(
-            title: Image.asset(
-              'assets/images/appbar_title_white.png',
-              width: 64,
-              height: 64,
-            ),
-          ),
-          // body: const Center(child: Text('Home Page')),
-          body: const SafeArea(
-            child: TabBarView(
-              children: [
-                Center(child: Text('tab1 page')),
-                Center(child: Text('tab2 page')),
-                Center(child: Text('tab3 page')),
-                Center(child: Text('tab4 page')),
-                Center(child: Text('tab5 page')),
-              ],
-            ),
           ),
         ),
       ),
