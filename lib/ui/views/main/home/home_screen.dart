@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:mono_story/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -41,11 +42,7 @@ class _HomeScreenCupertinoState extends State<HomeScreenCupertino> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Image.asset(
-          'assets/images/appbar_title_blue.png',
-          width: 64,
-          height: 64,
-        ),
+        middle: Image.asset(homeScreenTitleImgC, width: 64, height: 64),
       ),
       child: SafeArea(
         child: Stack(
@@ -84,13 +81,16 @@ class _HomeScreenMaterialState extends State<HomeScreenMaterial> {
       child: Scaffold(
         // APP BAR
         appBar: AppBar(
-          title: Image.asset(
-            'assets/images/appbar_title_white.png',
-            width: 64,
-            height: 64,
-          ),
+          title: Image.asset(homeScreenTitleImgM, width: 32, height: 32),
+          centerTitle: true,
+          bottom: const TabBar(tabs: <Tab>[
+            Tab(child: Text('tab1')),
+            Tab(child: Text('tab2')),
+            Tab(child: Text('tab3')),
+            Tab(child: Text('tab4')),
+            Tab(child: Text('tab5')),
+          ]),
         ),
-        // body: const Center(child: Text('Home Page')),
         body: const SafeArea(
           child: TabBarView(
             children: [
