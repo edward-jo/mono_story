@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+
+import 'home/home_page.dart';
 
 class MainPage extends StatefulWidget {
   static final routeName = '/main';
@@ -13,7 +16,7 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const Center(child: Text('Home')),
+    const HomePage(),
     const Center(child: Text('Search')),
     const Center(child: Text('Starred')),
   ];
@@ -21,14 +24,6 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-      // APP BAR
-      appBar: PlatformAppBar(
-        title: PlatformWidget(
-          cupertino: cupertinoImageAsset,
-          material: materialImageAsset,
-        ),
-      ),
-
       // BODY
       body: _widgetOptions[_selectedIndex],
 
@@ -54,15 +49,5 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
-  }
-
-  Widget? cupertinoImageAsset(BuildContext context, PlatformTarget target) {
-    String assetName = 'assets/images/appbar_title_blue.png';
-    return Image.asset(assetName, width: 64, height: 64);
-  }
-
-  Widget? materialImageAsset(BuildContext context, PlatformTarget target) {
-    String assetName = 'assets/images/appbar_title_white.png';
-    return Image.asset(assetName, width: 64, height: 64);
   }
 }
