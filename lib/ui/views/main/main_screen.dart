@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 import 'home/home_screen.dart';
+import '../../common/platform_widget.dart';
 
 class MainScreen extends StatefulWidget {
   static final routeName = '/main';
@@ -28,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
       //
       // CUPERTINO
       //
-      cupertino: (_, __) => CupertinoTabScaffold(
+      cupertino: CupertinoTabScaffold(
         tabBar: CupertinoTabBar(
           items: mainBottomNavBarItems(),
         ),
@@ -40,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
       //
       // MATERIAL
       //
-      material: (_, __) => Scaffold(
+      material: Scaffold(
         // BODY
         body: _widgetOptions[_selectedIndex],
         // BOTTOM NAVIGATION BAR
@@ -56,18 +56,27 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<BottomNavigationBarItem> mainBottomNavBarItems() {
-    return <BottomNavigationBarItem>[
+    return const <BottomNavigationBarItem>[
       BottomNavigationBarItem(
-        icon: Icon(PlatformIcons(context).home),
+        icon: PlatformWidget(
+          cupertino: Icon(CupertinoIcons.home),
+          material: Icon(Icons.home),
+        ),
         label: 'Home',
       ),
       BottomNavigationBarItem(
-        icon: Icon(PlatformIcons(context).search),
+        icon: PlatformWidget(
+          cupertino: Icon(CupertinoIcons.search),
+          material: Icon(Icons.search),
+        ),
         label: 'Search',
       ),
       BottomNavigationBarItem(
-        icon: Icon(PlatformIcons(context).star),
-        label: 'Starred',
+        icon: PlatformWidget(
+          cupertino: Icon(CupertinoIcons.star),
+          material: Icon(Icons.star),
+        ),
+        label: 'Star',
       ),
     ];
   }

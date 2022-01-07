@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:mono_story/constants.dart';
+
+import '/ui/common/platform_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,9 +15,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return PlatformWidget(
-      cupertino: (_, __) => const HomeScreenCupertino(),
-      material: (_, __) => const HomeScreenMaterial(),
+    return const PlatformWidget(
+      cupertino: HomeScreenCupertino(),
+      material: HomeScreenMaterial(),
     );
   }
 }
@@ -43,6 +44,10 @@ class _HomeScreenCupertinoState extends State<HomeScreenCupertino> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Image.asset(homeScreenTitleImgC, width: 64, height: 64),
+        trailing: CupertinoButton(
+          child: const Icon(CupertinoIcons.add),
+          onPressed: () {},
+        ),
       ),
       child: SafeArea(
         child: Stack(
@@ -79,30 +84,30 @@ class _HomeScreenMaterialState extends State<HomeScreenMaterial> {
     return DefaultTabController(
       length: 5,
       child: Scaffold(
-        // APP BAR
-        appBar: AppBar(
-          title: Image.asset(homeScreenTitleImgM, width: 32, height: 32),
-          centerTitle: true,
-          bottom: const TabBar(tabs: <Tab>[
-            Tab(child: Text('tab1')),
-            Tab(child: Text('tab2')),
-            Tab(child: Text('tab3')),
-            Tab(child: Text('tab4')),
-            Tab(child: Text('tab5')),
-          ]),
-        ),
-        body: const SafeArea(
-          child: TabBarView(
-            children: [
-              Center(child: Text('tab1 page')),
-              Center(child: Text('tab2 page')),
-              Center(child: Text('tab3 page')),
-              Center(child: Text('tab4 page')),
-              Center(child: Text('tab5 page')),
+          // APP BAR
+          appBar: AppBar(
+            title: Image.asset(homeScreenTitleImgM, width: 32, height: 32),
+            centerTitle: true,
+            actions: <Widget>[
+              IconButton(onPressed: () {}, icon: const Icon(Icons.add_outlined))
             ],
           ),
-        ),
-      ),
+          body: const SafeArea(
+            child: TabBarView(
+              children: [
+                Center(child: Text('tab1 page')),
+                Center(child: Text('tab2 page')),
+                Center(child: Text('tab3 page')),
+                Center(child: Text('tab4 page')),
+                Center(child: Text('tab5 page')),
+              ],
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            tooltip: 'New message',
+            child: const Icon(Icons.add),
+            onPressed: () {},
+          )),
     );
   }
 }
