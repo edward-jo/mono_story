@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/fake_data.dart';
 import 'package:mono_story/ui/views/main/home/message_listview.dart';
-import 'package:mono_story/ui/views/main/home/thread_button.dart';
+import 'package:mono_story/ui/views/main/home/thread_select_button.dart';
 import 'package:mono_story/ui/views/main/home/thread_picker.dart';
 
 class HomeScreenCupertino extends StatefulWidget {

@@ -1,5 +1,8 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/ui/views/main/home/message_listview.dart';
+import 'package:mono_story/ui/views/main/home/thread_select_button.dart';
 
 import '/constants.dart';
 
@@ -11,35 +14,28 @@ class HomeScreenMaterial extends StatefulWidget {
 }
 
 class _HomeScreenMaterialState extends State<HomeScreenMaterial> {
+  String _currentThread = 'All';
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 5,
       child: Scaffold(
-          // APP BAR
-          appBar: AppBar(
-            title: Image.asset(homeScreenTitleImgM, width: 32, height: 32),
-            centerTitle: true,
-            actions: <Widget>[
-              IconButton(onPressed: () {}, icon: const Icon(Icons.add_outlined))
-            ],
-          ),
-          body: const SafeArea(
-            child: TabBarView(
-              children: [
-                Center(child: Text('tab1 page')),
-                Center(child: Text('tab2 page')),
-                Center(child: Text('tab3 page')),
-                Center(child: Text('tab4 page')),
-                Center(child: Text('tab5 page')),
-              ],
-            ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            tooltip: 'New message',
-            child: const Icon(Icons.add),
-            onPressed: () {},
-          )),
+        // APP BAR
+        appBar: AppBar(
+          title: ThreadSelectButton(
+              name: _currentThread,
+              onPressed: () {
+                developer.log('Pressed');
+              }),
+          actions: <Widget>[
+            IconButton(onPressed: () {}, icon: const Icon(Icons.add_outlined))
+          ],
+        ),
+        body: const SafeArea(
+          child: MessageListView(),
+        ),
+      ),
     );
   }
 }

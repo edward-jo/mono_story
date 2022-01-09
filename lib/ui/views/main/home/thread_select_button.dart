@@ -52,6 +52,19 @@ class ThreadSelectButton extends PlatformWidgetBase {
 
   @override
   Widget buildMaterialWidget(BuildContext context) {
-    return Container();
+    return Container(
+      child: Row(
+        children: [
+          Text(name),
+          MaterialButton(
+            child: const Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.white,
+            ),
+            onPressed: onPressed,
+          ),
+        ],
+      ),
+    );
   }
 }
