@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/fake_data.dart';
+import 'package:mono_story/ui/views/main/home/message_listview.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
 import 'package:mono_story/ui/views/main/home/thread_picker.dart';
 
@@ -44,21 +45,8 @@ class _HomeScreenCupertinoState extends State<HomeScreenCupertino> {
         ),
       ),
       // -- BODY --
-      child: SafeArea(
-        child: Stack(
-          children: [
-            CupertinoTabView(builder: (context) => items[_currentIndex]),
-            Container(
-              alignment: Alignment.bottomRight,
-              child: CupertinoButton(
-                child: const Text('BUTTON'),
-                onPressed: () => setState(() {
-                  _currentIndex = (_currentIndex >= 4) ? 0 : _currentIndex + 1;
-                }),
-              ),
-            ),
-          ],
-        ),
+      child: const SafeArea(
+        child: MessageListView(),
       ),
     );
   }
