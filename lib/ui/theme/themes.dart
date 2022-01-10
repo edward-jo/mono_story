@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 final ThemeData appTheme = ThemeData(
   /// Typically, only the [brightness], [primaryColor], or [primarySwatch] are
@@ -7,6 +8,7 @@ final ThemeData appTheme = ThemeData(
   primaryColor: Colors.white,
   primarySwatch: Colors.blueGrey,
   canvasColor: Colors.white,
+  fontFamily: GoogleFonts.openSans().fontFamily,
 
   /// -- SCAFFOLD --
   /// scaffoldBackgroundColor: When null, default value is canvasColor.
