@@ -10,6 +10,11 @@ final ThemeData appTheme = ThemeData(
   canvasColor: Colors.white,
   fontFamily: GoogleFonts.openSans().fontFamily,
 
+  /// -- BOTTOM NAVIGATION BAR --
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData().copyWith(
+    selectedItemColor: Colors.black,
+  ),
+
   /// -- SCAFFOLD --
   /// scaffoldBackgroundColor: When null, default value is canvasColor.
 
