@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mono_story/ui/common/platform_widget_base.dart';
 
 class ThreadSelectButton extends PlatformWidgetBase {
@@ -55,7 +56,15 @@ class ThreadSelectButton extends PlatformWidgetBase {
     return Container(
       child: Row(
         children: [
-          Text(name),
+          Text(
+            name,
+            style: GoogleFonts.robotoMono(
+              textStyle: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           MaterialButton(
             child: const Icon(
               Icons.keyboard_arrow_down,
