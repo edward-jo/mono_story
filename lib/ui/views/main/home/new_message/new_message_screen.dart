@@ -14,6 +14,9 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        leading: IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.close_outlined)),
       ),
       body: SafeArea(
         child: Center(
