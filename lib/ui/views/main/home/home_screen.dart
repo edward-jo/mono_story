@@ -20,21 +20,37 @@ class _HomeScreenState extends State<HomeScreen> {
     return DefaultTabController(
       length: 5,
       child: Scaffold(
-        // APP BAR
+        // -- APP BAR --
         appBar: AppBar(
-          title: ThreadSelectButton(
+          automaticallyImplyLeading: false,
+          title: Builder(builder: (context) {
+            return ThreadSelectButton(
               name: _currentThread,
-              onPressed: () {
-                developer.log('Pressed');
-              }),
+              onPressed: () => showThreadSelectList(context),
+            );
+          }),
           actions: <Widget>[
             IconButton(onPressed: () {}, icon: const Icon(Icons.add_outlined))
           ],
         ),
+
+        // -- BODY --
         body: const SafeArea(
           child: MessageListView(),
         ),
       ),
+    );
+  }
+
+  void showThreadSelectList(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: const Center(child: Text('Thread list')),
+        );
+      },
     );
   }
 }
