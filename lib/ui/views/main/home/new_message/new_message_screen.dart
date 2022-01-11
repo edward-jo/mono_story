@@ -11,12 +11,16 @@ class NewMessageScreen extends StatefulWidget {
 class _NewMessageScreenState extends State<NewMessageScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.amber,
-      child: Center(
-        child: Text(
-          'New Message Screen',
-          style: Theme.of(context).textTheme.bodyText1,
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'New Message Screen',
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
         ),
       ),
     );
