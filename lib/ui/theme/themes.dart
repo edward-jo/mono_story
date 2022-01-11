@@ -5,7 +5,7 @@ final ThemeData appTheme = ThemeData(
   /// Typically, only the [brightness], [primaryColor], or [primarySwatch] are
   /// specified. That pair of values are used to construct the [colorScheme].
   brightness: Brightness.light,
-  primaryColor: Colors.white,
+  primaryColor: Colors.blueGrey,
   primarySwatch: Colors.blueGrey,
   canvasColor: Colors.white,
   fontFamily: GoogleFonts.openSans().fontFamily,
