@@ -54,23 +54,26 @@ class ThreadSelectButton extends PlatformWidgetBase {
   @override
   Widget buildMaterialWidget(BuildContext context) {
     return Container(
+      alignment: Alignment.bottomLeft,
       child: Row(
         children: [
-          Text(
-            name,
-            style: GoogleFonts.robotoMono(
-              textStyle: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+          Flexible(
+            child: Container(
+              color: const Color(0xFFFAEBDD),
+              padding: const EdgeInsets.all(5.0),
+              child: Text(
+                name,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+                style: GoogleFonts.robotoMono(
+                  textStyle: Theme.of(context).textTheme.headline6,
+                ),
               ),
             ),
           ),
-          MaterialButton(
-            child: const Icon(
-              Icons.keyboard_arrow_down,
-              color: Colors.white,
-            ),
+          IconButton(
             onPressed: onPressed,
+            icon: const Icon(Icons.keyboard_arrow_down),
           ),
         ],
       ),
