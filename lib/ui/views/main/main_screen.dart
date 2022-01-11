@@ -24,33 +24,16 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformWidget(
-      //
-      // CUPERTINO
-      //
-      cupertino: CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          items: mainBottomNavBarItems(),
-        ),
-        tabBuilder: (context, index) => CupertinoTabView(
-          builder: (context) => _widgetOptions[index],
-        ),
-      ),
-
-      //
-      // MATERIAL
-      //
-      material: Scaffold(
-        // BODY
-        body: _widgetOptions[_selectedIndex],
-        // BOTTOM NAVIGATION BAR
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          items: mainBottomNavBarItems(),
-          onTap: (index) => setState(() {
-            _selectedIndex = index;
-          }),
-        ),
+    return Scaffold(
+      // BODY
+      body: _widgetOptions[_selectedIndex],
+      // BOTTOM NAVIGATION BAR
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        items: mainBottomNavBarItems(),
+        onTap: (index) => setState(() {
+          _selectedIndex = index;
+        }),
       ),
     );
   }
