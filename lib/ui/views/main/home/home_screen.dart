@@ -1,6 +1,8 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/ui/common/modal_page_route.dart';
+import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 
 import 'thread_select_button.dart';
 import 'message_listview.dart';
@@ -30,7 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }),
           actions: <Widget>[
-            IconButton(onPressed: () {}, icon: const Icon(Icons.add_outlined))
+            Builder(builder: (context) {
+              return IconButton(
+                onPressed: () => showNewMessage(context),
+                icon: const Icon(Icons.add_outlined),
+              );
+            })
           ],
         ),
 
@@ -51,6 +58,12 @@ class _HomeScreenState extends State<HomeScreen> {
           child: const Center(child: Text('Thread list')),
         );
       },
+    );
+  }
+
+  void showNewMessage(BuildContext context) {
+    Navigator.of(context).push(
+      ModalPageRoute(child: const NewMessageScreen()),
     );
   }
 }
