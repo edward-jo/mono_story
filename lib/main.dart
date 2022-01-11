@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'ui/common/platform_widget.dart';
 import 'ui/theme/themes.dart';
 import 'ui/views/main/main_screen.dart';
 
@@ -22,18 +21,11 @@ class MonoPlatformApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformWidget(
-      cupertino: const CupertinoApp(
-        title: 'Mono Story',
-        debugShowCheckedModeBanner: false,
-        home: MainScreen(),
-      ),
-      material: MaterialApp(
-        theme: appTheme,
-        title: 'Mono Story',
-        debugShowCheckedModeBanner: false,
-        home: const MainScreen(),
-      ),
+    return MaterialApp(
+      theme: appTheme,
+      title: 'Mono Story',
+      debugShowCheckedModeBanner: false,
+      home: const MainScreen(),
     );
   }
 }

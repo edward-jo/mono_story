@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -8,7 +10,9 @@ final ThemeData appTheme = ThemeData(
   primaryColor: Colors.blueGrey,
   primarySwatch: Colors.blueGrey,
   canvasColor: Colors.white,
-  fontFamily: GoogleFonts.openSans().fontFamily,
+
+  /// -- FONT --
+  /// Use default font(San Francisco). Android(Roboto) iOS(San Francisco)
 
   /// -- BOTTOM NAVIGATION BAR --
   bottomNavigationBarTheme: const BottomNavigationBarThemeData().copyWith(
