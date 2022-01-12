@@ -19,6 +19,11 @@ final ThemeData appTheme = ThemeData(
     selectedItemColor: Colors.black,
   ),
 
+  /// -- BOTTOM SHEET --
+  bottomSheetTheme: const BottomSheetThemeData().copyWith(
+    backgroundColor: Colors.transparent,
+  ),
+
   /// -- SCAFFOLD --
   /// scaffoldBackgroundColor: When null, default value is canvasColor.
 
