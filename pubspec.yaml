@@ -71,6 +71,7 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
+    - .env
     - assets/images/appbar_title_white.png
     - assets/images/appbar_title_blue.png
 
