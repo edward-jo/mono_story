@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import 'home/home_screen.dart';
 import '../../common/platform_widget.dart';
+import 'search/search_screen.dart';
 
 class MainScreen extends StatefulWidget {
   static final routeName = '/main';
@@ -18,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     const HomeScreen(),
-    const Center(child: Text('Search')),
+    const SearchScreen(),
     const Center(child: Text('Starred')),
   ];
 
