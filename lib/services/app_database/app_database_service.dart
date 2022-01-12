@@ -1,4 +1,4 @@
-import 'package:sqflite_icloud_backup_example/models/message.dart';
+import '/models/message.dart';
 
 abstract class AppDatabaseService {
   Future init();
