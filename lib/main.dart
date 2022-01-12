@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'ui/theme/themes.dart';
 import 'ui/views/main/main_screen.dart';
+import 'services/service_locator.dart';
 
-void main(List<String> args) {
+void main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
+  setupServiceLocator();
   runApp(const MyApp());
 }
 
