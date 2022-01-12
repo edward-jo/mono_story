@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mono_story/ui/common/modal_page_route.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 
+import 'thread_list_bottom_sheet.dart';
 import 'thread_select_button.dart';
 import 'message_listview.dart';
 
@@ -53,50 +54,12 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       builder: (ctx) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-            ),
-          ),
-          child: Column(
-            children: <Widget>[
-              const SizedBox(height: 20),
-              Text(
-                'Select Thread',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1!
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-              Expanded(
-                child: SizedBox(
-                  child: ListView.builder(
-                      itemCount: 15,
-                      itemBuilder: (_, i) {
-                        return ListTile(
-                          leading: const Icon(Icons.access_alarm),
-                          title: Text(
-                            "Item 012345 67891234567890 $i",
-                            style: TextStyle(
-                                fontSize: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.fontSize),
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                          ),
-                          trailing: const SizedBox(width: 20),
-                          onTap: () => Navigator.of(context).pop(),
-                        );
-                      }),
-                ),
-              )
-            ],
-          ),
-        );
+        return ThreadListBottomSheet(onTap: (threadName) {
+          setState(() {
+            _currentThread = threadName;
+          });
+          Navigator.of(context).pop();
+        });
       },
     );
   }
