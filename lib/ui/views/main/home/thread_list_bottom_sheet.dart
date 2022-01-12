@@ -11,7 +11,10 @@ class ThreadListBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -21,33 +24,41 @@ class ThreadListBottomSheet extends StatelessWidget {
       ),
       child: Column(
         children: <Widget>[
+          // -- BOTTOM SHEET HEAD --
           const SizedBox(height: 20),
           Text(
             'Select Thread',
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1!
-                .copyWith(fontWeight: FontWeight.bold),
+            style: textTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 20),
+
+          // -- THREAD NAME LIST --
           Expanded(
             child: SizedBox(
               child: ListView.builder(
                   itemCount: fakeThreads.length,
                   itemBuilder: (_, i) {
-                    return ListTile(
-                      leading: const Icon(Icons.access_alarm),
-                      title: Text(
-                        fakeThreads[i],
-                        style: TextStyle(
-                            fontSize: Theme.of(context)
-                                .textTheme
-                                .headline6
-                                ?.fontSize),
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
+                    // -- THREAD LIST NAME ITEM --
+                    return Container(
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.topic),
+                            title: Text(
+                              fakeThreads[i],
+                              style: TextStyle(
+                                fontSize: textTheme.bodyText2?.fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                            ),
+                            trailing: const SizedBox(width: 20),
+                            onTap: () => onTap(fakeThreads[i]),
+                          ),
+                          const Divider(height: 1),
+                        ],
                       ),
-                      trailing: const SizedBox(width: 20),
-                      onTap: () => onTap(fakeThreads[i]),
                     );
                   }),
             ),

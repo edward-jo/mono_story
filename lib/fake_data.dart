@@ -3,7 +3,7 @@ List<String> fakeThreads = [
   "Start up",
   "Ideas",
   "Jamboree",
-  "My life-01234567890",
+  "My life-01234567890ABCDEFGHI01234567890",
 ];
 
 List<Map<String, dynamic>> fakeMessages = [
