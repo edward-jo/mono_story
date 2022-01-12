@@ -53,9 +53,49 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       builder: (ctx) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.6,
-          child: const Center(child: Text('Thread list')),
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+          ),
+          child: Column(
+            children: <Widget>[
+              const SizedBox(height: 20),
+              Text(
+                'Select Thread',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: SizedBox(
+                  child: ListView.builder(
+                      itemCount: 15,
+                      itemBuilder: (_, i) {
+                        return ListTile(
+                          leading: const Icon(Icons.access_alarm),
+                          title: Text(
+                            "Item 012345 67891234567890 $i",
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .headline6
+                                    ?.fontSize),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                          ),
+                          trailing: const SizedBox(width: 20),
+                          onTap: () => Navigator.of(context).pop(),
+                        );
+                      }),
+                ),
+              )
+            ],
+          ),
         );
       },
     );
