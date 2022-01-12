@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ThreadSelectButton extends StatelessWidget {
+class ThreadNameButton extends StatelessWidget {
   final String name;
   final void Function() onPressed;
 
-  const ThreadSelectButton({
+  const ThreadNameButton({
     Key? key,
     required this.name,
     required this.onPressed,

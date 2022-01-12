@@ -5,7 +5,7 @@ import 'package:mono_story/ui/common/modal_page_route.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 
 import 'thread_list_bottom_sheet.dart';
-import 'thread_select_button.dart';
+import 'thread_name_button.dart';
 import 'message_listview.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: Builder(builder: (context) {
-            return ThreadSelectButton(
+            return ThreadNameButton(
               name: _currentThread,
               onPressed: () => showThreadSelectList(context),
             );
