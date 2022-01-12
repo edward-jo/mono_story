@@ -26,12 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
         // -- APP BAR --
         appBar: AppBar(
           automaticallyImplyLeading: false,
+          // -- TITLE --
           title: Builder(builder: (context) {
             return ThreadNameButton(
               name: _currentThread,
               onPressed: () => showThreadSelectList(context),
             );
           }),
+          // -- ACTIONS --
           actions: <Widget>[
             Builder(builder: (context) {
               return IconButton(
