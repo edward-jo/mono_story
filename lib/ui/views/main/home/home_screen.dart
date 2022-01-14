@@ -71,8 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ModalPageRoute(
         child: const NewMessageScreen(),
         settings: RouteSettings(
-            // TODO - Implement class for arguments
-            arguments: _currentThread),
+            arguments: NewMessageScreenArguments(threadName: _currentThread),
       ),
     );
   }

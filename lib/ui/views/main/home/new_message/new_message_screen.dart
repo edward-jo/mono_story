@@ -19,8 +19,10 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   @override
   void didChangeDependencies() {
     if (!_loadedInitData) {
-      String arguments = ModalRoute.of(context)!.settings.arguments as String;
-      _currentThreadName = arguments.isEmpty ? 'All' : arguments;
+      NewMessageScreenArguments arguments = ModalRoute.of(context)!
+          .settings
+          .arguments as NewMessageScreenArguments;
+      _currentThreadName = arguments.threadName;
       _loadedInitData = true;
     }
     super.didChangeDependencies();
@@ -97,4 +99,9 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       },
     );
   }
+}
+
+class NewMessageScreenArguments {
+  final String threadName;
+  const NewMessageScreenArguments({required this.threadName});
 }
