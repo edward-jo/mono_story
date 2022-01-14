@@ -30,14 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Builder(builder: (context) {
             return ThreadNameButton(
               name: _currentThread,
-              onPressed: () => showThreadSelectList(context),
+              onPressed: () => _showThreadSelectList(context),
             );
           }),
           // -- ACTIONS --
           actions: <Widget>[
             Builder(builder: (context) {
               return IconButton(
-                onPressed: () => showNewMessage(context),
+                onPressed: () => _showNewMessage(context),
                 icon: const Icon(Icons.add_outlined),
               );
             })
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void showThreadSelectList(BuildContext context) {
+  void _showThreadSelectList(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (ctx) {
@@ -66,9 +66,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void showNewMessage(BuildContext context) {
+  void _showNewMessage(BuildContext context) {
     Navigator.of(context).push(
-      ModalPageRoute(child: const NewMessageScreen()),
+      ModalPageRoute(
+        child: const NewMessageScreen(),
+        settings: RouteSettings(
+            // TODO - Implement class for arguments
+            arguments: _currentThread),
+      ),
     );
   }
 }

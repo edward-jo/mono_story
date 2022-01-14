@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mono_story/fake_data.dart';
 
+import '../thread_list_bottom_sheet.dart';
 import '/constants.dart';
 
 class NewMessageScreen extends StatefulWidget {
@@ -13,6 +13,18 @@ class NewMessageScreen extends StatefulWidget {
 
 class _NewMessageScreenState extends State<NewMessageScreen> {
   final _newMessageController = TextEditingController();
+  String _currentThreadName = '';
+  bool _loadedInitData = false;
+
+  @override
+  void didChangeDependencies() {
+    if (!_loadedInitData) {
+      String arguments = ModalRoute.of(context)!.settings.arguments as String;
+      _currentThreadName = arguments.isEmpty ? 'All' : arguments;
+      _loadedInitData = true;
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +54,18 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  fakeThreads.last,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6!
-                      .copyWith(backgroundColor: threadNameBgColor),
-                ),
+                // -- THREAD NAME --
+                Builder(builder: (context) {
+                  return ActionChip(
+                    backgroundColor: threadNameBgColor,
+                    label: Text(_currentThreadName),
+                    onPressed: () => _showThreadSelectList(context),
+                  );
+                }),
+
+                const Divider(),
+
+                // -- MESSAGE TEXT FIELD --
                 TextField(
                   autofocus: true,
                   maxLines: 7,
@@ -64,6 +81,20 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showThreadSelectList(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return ThreadListBottomSheet(onTap: (threadName) {
+          setState(() {
+            _currentThreadName = threadName;
+          });
+          Navigator.of(context).pop();
+        });
+      },
     );
   }
 }
