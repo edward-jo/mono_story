@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '/constants.dart';
+
 class ThreadNameButton extends StatelessWidget {
   final String name;
   final void Function() onPressed;
@@ -21,7 +23,7 @@ class ThreadNameButton extends StatelessWidget {
         children: [
           Flexible(
             child: Container(
-              color: const Color(0xFFFAEBDD),
+              color: threadNameBgColor,
               padding: const EdgeInsets.all(5.0),
               child: Text(
                 name,

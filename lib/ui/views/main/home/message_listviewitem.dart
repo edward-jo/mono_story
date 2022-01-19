@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/models/message.dart';
 
 class MessageListViewItem extends StatelessWidget {
   const MessageListViewItem({Key? key, required this.message})
       : super(key: key);
 
-  final Map<String, dynamic> message;
+  final Message message;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class MessageListViewItem extends StatelessWidget {
             bottom: 5.0,
             right: 10.0,
           ),
-          child: Text(message['message']),
+          child: Text(message.message),
         ),
         const Divider(thickness: 1.0),
       ],

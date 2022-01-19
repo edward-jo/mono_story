@@ -14,16 +14,6 @@ final ThemeData appTheme = ThemeData(
   /// -- FONT --
   /// Use default font(San Francisco). Android(Roboto) iOS(San Francisco)
 
-  /// -- BOTTOM NAVIGATION BAR --
-  bottomNavigationBarTheme: const BottomNavigationBarThemeData().copyWith(
-    selectedItemColor: Colors.black,
-  ),
-
-  /// -- BOTTOM SHEET --
-  bottomSheetTheme: const BottomSheetThemeData().copyWith(
-    backgroundColor: Colors.transparent,
-  ),
-
   /// -- SCAFFOLD --
   /// scaffoldBackgroundColor: When null, default value is canvasColor.
 
@@ -35,5 +25,15 @@ final ThemeData appTheme = ThemeData(
     backgroundColor: Colors.white,
     foregroundColor: Colors.black,
     elevation: 0,
+  ),
+
+  /// -- BOTTOM NAVIGATION BAR --
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData().copyWith(
+    selectedItemColor: Colors.black,
+  ),
+
+  /// -- BOTTOM SHEET --
+  bottomSheetTheme: const BottomSheetThemeData().copyWith(
+    backgroundColor: Colors.transparent,
   ),
 );

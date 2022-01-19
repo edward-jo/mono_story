@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'ui/common/platform_widget.dart';
 import 'ui/theme/themes.dart';
 import 'ui/views/main/main_screen.dart';
 import 'services/service_locator.dart';
@@ -23,27 +24,42 @@ class MyApp extends StatelessWidget {
       future: serviceLocator.allReady(),
       builder: (ctx, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
+          // -- INDICATOR --
           return Container(
             color: Colors.white,
             child: const Center(
-              // TODO: Implement platform aware widget
-              child: CupertinoActivityIndicator(),
+              child: PlatformWidget(
+                cupertino: CupertinoActivityIndicator(),
+                material: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
             ),
           );
         }
 
+        // -- ALERT DIALOG --
         if (snapshot.hasError) {
           showDialog(
               context: ctx,
               builder: (_) {
-                // TODO: Implement platform aware widget
-                return CupertinoAlertDialog(
-                  content: Text(snapshot.error.toString()),
+                return PlatformWidget(
+                  cupertino: CupertinoAlertDialog(
+                    content: Text(snapshot.error.toString()),
+                  ),
+                  material: AlertDialog(
+                    content: Text(snapshot.error.toString()),
+                  ),
                 );
               });
           return Container();
         }
 
+        // -- START MY APP --
         return ChangeNotifierProvider.value(
           value: serviceLocator<MessageViewModel>(),
           child: const StartMyApp(),
