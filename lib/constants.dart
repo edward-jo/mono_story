@@ -21,4 +21,7 @@ class ErrorMessages {
 }
 
 const double scaffoldBodyWidthRate = 0.9;
+const Color threadNameTextColor = Color(0xFFD9730D);
 const Color threadNameBgColor = Color(0xFFFAEBDD);
+const Color dateTimeBgColor = Color(0xFFDDEBF1);
+const Color dateTimeTextcolor = Color(0xFF0B6E99);
