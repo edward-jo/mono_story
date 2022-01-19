@@ -1,8 +1,13 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/models/message.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-import '../thread_list_bottom_sheet.dart';
 import '/constants.dart';
+import '../thread_list_bottom_sheet.dart';
 
 class NewMessageScreen extends StatefulWidget {
   const NewMessageScreen({Key? key}) : super(key: key);
@@ -15,6 +20,13 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   final _newMessageController = TextEditingController();
   String _currentThreadName = '';
   bool _loadedInitData = false;
+  late final MessageViewModel _model;
+
+  @override
+  void initState() {
+    super.initState();
+    _model = context.read<MessageViewModel>();
+  }
 
   @override
   void didChangeDependencies() {
@@ -41,7 +53,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
         title: const Text('New Message'),
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
+            onPressed: () => _save(context),
             icon: const Icon(Icons.save_alt_outlined),
           ),
         ],
@@ -84,6 +96,19 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
         ),
       ),
     );
+  }
+
+  Future _save(BuildContext context) async {
+    developer.log('Save messasge( ${_newMessageController.text.trim()} )');
+    await _model.save(
+      Message(
+        id: null,
+        message: _newMessageController.text.trim(),
+        createdTime: DateTime.now(),
+      ),
+    );
+    Navigator.of(context).pop();
+    return;
   }
 
   void _showThreadSelectList(BuildContext context) {
