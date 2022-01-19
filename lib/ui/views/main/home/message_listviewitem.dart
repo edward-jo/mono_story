@@ -26,14 +26,16 @@ class MessageListViewItem extends StatelessWidget {
           Text(message.message, style: Theme.of(context).textTheme.bodyText2),
 
           // -- DATE TIME --
-          InputChip(
-            backgroundColor: dateTimeBgColor,
-            label: Text(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5),
+            decoration: const BoxDecoration(
+              color: dateTimeBgColor,
+              borderRadius: BorderRadius.all(Radius.circular(25)),
+            ),
+            child: Text(
               message.createdTime.toString(),
               style: Theme.of(context).textTheme.caption,
             ),
-            elevation: 0,
-            onPressed: () {},
           ),
 
           // -- DIVIDER --
