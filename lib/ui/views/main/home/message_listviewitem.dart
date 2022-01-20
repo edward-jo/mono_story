@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
+import 'package:intl/intl.dart';
 
 class MessageListViewItem extends StatelessWidget {
   const MessageListViewItem({Key? key, required this.message})
@@ -25,6 +26,9 @@ class MessageListViewItem extends StatelessWidget {
           // -- MESSAGE --
           Text(message.message, style: Theme.of(context).textTheme.bodyText2),
 
+          // -- PADDING --
+          const SizedBox(height: 10.0),
+
           // -- DATE TIME --
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5),
@@ -33,7 +37,7 @@ class MessageListViewItem extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(25)),
             ),
             child: Text(
-              message.createdTime.toString(),
+              DateFormat('dd/MM/yyy hh:mm').format(message.createdTime),
               style: Theme.of(context).textTheme.caption,
             ),
           ),
