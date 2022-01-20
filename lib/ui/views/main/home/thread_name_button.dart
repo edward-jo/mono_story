@@ -23,8 +23,14 @@ class ThreadNameButton extends StatelessWidget {
         children: [
           Flexible(
             child: Container(
-              color: threadNameBgColor,
-              padding: const EdgeInsets.all(5.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 5.0,
+              ),
+              decoration: const BoxDecoration(
+                color: threadNameBgColor,
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              ),
               child: Text(
                 name,
                 overflow: TextOverflow.fade,
