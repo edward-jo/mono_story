@@ -7,7 +7,7 @@ const String appDatabaseFileName = 'app.db';
 const String appDatabaseBackupFileName = 'app.db.backup';
 const int appDatabaseVersion = 1;
 
-const String threadsTableName = 'threads';
+const String threadNamesTableName = 'thread_names';
 const String messagesTableName = 'messages';
 
 class ThreadsTableCols {
@@ -18,7 +18,7 @@ class ThreadsTableCols {
 class MessagesTableCols {
   static const String id = '_id';
   static const String message = 'message';
-  static const String thread_id = 'thread_id';
+  static const String fkThreadNameId = 'fk_thread_name_id';
   static const String createdTime = 'created_time';
 }
 

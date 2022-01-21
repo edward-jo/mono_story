@@ -8,12 +8,15 @@ class Message {
   final int? id;
   @JsonKey(name: MessagesTableCols.message)
   final String message;
+  @JsonKey(name: MessagesTableCols.fkThreadNameId)
+  final int threadNameId;
   @JsonKey(name: MessagesTableCols.createdTime)
   final DateTime createdTime;
 
   Message({
     this.id,
     required this.message,
+    required this.threadNameId,
     required this.createdTime,
   });
 

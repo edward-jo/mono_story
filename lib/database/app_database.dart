@@ -31,7 +31,7 @@ class AppDatabase {
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-CREATE TABLE $threadsTableName (
+CREATE TABLE $threadNamesTableName (
   ${ThreadsTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
   ${ThreadsTableCols.name} TEXT NOT NULL
 )
@@ -40,9 +40,9 @@ CREATE TABLE $threadsTableName (
 CREATE TABLE $messagesTableName (
   ${MessagesTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
   ${MessagesTableCols.message} TEXT NOT NULL,
-  ${MessagesTableCols.thread_id} INTEGER NOT NULL,
+  ${MessagesTableCols.fkThreadNameId} INTEGER NOT NULL,
   ${MessagesTableCols.createdTime} TEXT NOT NULL,
-  FOREIGN KEY(${MessagesTableCols.thread_id}) REFERENCES $threadsTableName(id)
+  FOREIGN KEY(${MessagesTableCols.fkThreadNameId}) REFERENCES $threadNamesTableName(id)
 )
 ''');
   }
