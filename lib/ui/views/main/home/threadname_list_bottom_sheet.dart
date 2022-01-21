@@ -2,9 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/fake_data.dart';
 
-class ThreadListBottomSheet extends StatelessWidget {
+class ThreadNameListBottomSheet extends StatelessWidget {
   final void Function(String) onTap;
-  const ThreadListBottomSheet({
+  const ThreadNameListBottomSheet({
     Key? key,
     required this.onTap,
   }) : super(key: key);

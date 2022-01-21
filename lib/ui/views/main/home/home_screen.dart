@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mono_story/ui/common/modal_page_route.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 
-import 'thread_list_bottom_sheet.dart';
+import 'threadname_list_bottom_sheet.dart';
 import 'thread_name_button.dart';
 import 'message_listview.dart';
 
@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Builder(builder: (context) {
             return ThreadNameButton(
               name: _currentThread,
-              onPressed: () => _showThreadSelectList(context),
+              onPressed: () => _showThreadNameList(context),
             );
           }),
           // -- ACTIONS --
@@ -52,18 +52,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showThreadSelectList(BuildContext context) {
-    showModalBottomSheet(
+  void _showThreadNameList(BuildContext context) async {
+    final selectedThreadName = await showModalBottomSheet<String>(
       context: context,
       builder: (ctx) {
-        return ThreadListBottomSheet(onTap: (threadName) {
-          setState(() {
-            _currentThread = threadName;
-          });
-          Navigator.of(context).pop();
+        return ThreadNameListBottomSheet(onTap: (threadName) {
+          Navigator.of(context).pop(threadName);
         });
       },
     );
+    developer.log('Selected thread name is $selectedThreadName');
+    setState(() => _currentThread = selectedThreadName!);
   }
 
   void _showNewMessage(BuildContext context) {

@@ -7,7 +7,7 @@ import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '/constants.dart';
-import '../thread_list_bottom_sheet.dart';
+import '../threadname_list_bottom_sheet.dart';
 
 class NewMessageScreen extends StatefulWidget {
   const NewMessageScreen({Key? key}) : super(key: key);
@@ -73,7 +73,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                   return ActionChip(
                     backgroundColor: threadNameBgColor,
                     label: Text(_currentThreadName),
-                    onPressed: () => _showThreadSelectList(context),
+                    onPressed: () => _showThreadNameList(context),
                   );
                 }),
 
@@ -107,24 +107,26 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
 
     developer.log('Save messasge( $message )');
     await _model.save(
-      Message(id: null, message: message, createdTime: DateTime.now()),
+      Message(
+          id: null,
+          message: message,
+          threadNameId: 1,
+          createdTime: DateTime.now()),
     );
     Navigator.of(context).pop();
     return;
   }
 
-  void _showThreadSelectList(BuildContext context) {
-    showModalBottomSheet(
+  void _showThreadNameList(BuildContext context) async {
+    final selectedThreadName = await showModalBottomSheet(
       context: context,
       builder: (ctx) {
-        return ThreadListBottomSheet(onTap: (threadName) {
-          setState(() {
-            _currentThreadName = threadName;
-          });
-          Navigator.of(context).pop();
+        return ThreadNameListBottomSheet(onTap: (threadName) {
+          Navigator.of(context).pop(threadName);
         });
       },
     );
+    setState(() => _currentThreadName = selectedThreadName);
   }
 }
 
