@@ -7,11 +7,18 @@ const String appDatabaseFileName = 'app.db';
 const String appDatabaseBackupFileName = 'app.db.backup';
 const int appDatabaseVersion = 1;
 
+const String threadsTableName = 'threads';
 const String messagesTableName = 'messages';
 
-class MessagesDbCols {
+class ThreadsTableCols {
+  static const String id = '_id';
+  static const String name = 'name';
+}
+
+class MessagesTableCols {
   static const String id = '_id';
   static const String message = 'message';
+  static const String thread_id = 'thread_id';
   static const String createdTime = 'created_time';
 }
 

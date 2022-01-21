@@ -4,11 +4,11 @@ part 'message.g.dart';
 
 @JsonSerializable()
 class Message {
-  @JsonKey(name: MessagesDbCols.id)
+  @JsonKey(name: MessagesTableCols.id)
   final int? id;
-  @JsonKey(name: MessagesDbCols.message)
+  @JsonKey(name: MessagesTableCols.message)
   final String message;
-  @JsonKey(name: MessagesDbCols.createdTime)
+  @JsonKey(name: MessagesTableCols.createdTime)
   final DateTime createdTime;
 
   Message({

@@ -27,7 +27,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
     Map<String, dynamic> messageJson = message.toJson();
     final id = await db.insert(messagesTableName, messageJson);
-    messageJson[MessagesDbCols.id] = id;
+    messageJson[MessagesTableCols.id] = id;
 
     return Message.fromJson(messageJson);
   }
@@ -38,7 +38,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
 
     return await db.delete(
       messagesTableName,
-      where: '${MessagesDbCols.id} = ?',
+      where: '${MessagesTableCols.id} = ?',
       whereArgs: [id],
     );
   }
@@ -49,11 +49,11 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final messages = await db.query(
       messagesTableName,
       columns: [
-        MessagesDbCols.id,
-        MessagesDbCols.message,
-        MessagesDbCols.createdTime,
+        MessagesTableCols.id,
+        MessagesTableCols.message,
+        MessagesTableCols.createdTime,
       ],
-      where: '${MessagesDbCols.id} = ?',
+      where: '${MessagesTableCols.id} = ?',
       whereArgs: [id],
     );
 
@@ -67,7 +67,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
     final messages = await db.query(
       messagesTableName,
-      orderBy: '${MessagesDbCols.createdTime} ASC',
+      orderBy: '${MessagesTableCols.createdTime} ASC',
     );
 
     return messages.map((e) {
@@ -82,7 +82,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     return await db.update(
       messagesTableName,
       message.toJson(),
-      where: '${MessagesDbCols.id} = ?',
+      where: '${MessagesTableCols.id} = ?',
       whereArgs: [message.id],
     );
   }

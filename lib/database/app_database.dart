@@ -31,10 +31,18 @@ class AppDatabase {
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
+CREATE TABLE $threadsTableName (
+  ${ThreadsTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${ThreadsTableCols.name} TEXT NOT NULL
+)
+''');
+    await db.execute('''
 CREATE TABLE $messagesTableName (
-  ${MessagesDbCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
-  ${MessagesDbCols.message} TEXT NOT NULL,
-  ${MessagesDbCols.createdTime} TEXT NOT NULL
+  ${MessagesTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${MessagesTableCols.message} TEXT NOT NULL,
+  ${MessagesTableCols.thread_id} INTEGER NOT NULL,
+  ${MessagesTableCols.createdTime} TEXT NOT NULL,
+  FOREIGN KEY(${MessagesTableCols.thread_id}) REFERENCES $threadsTableName(id)
 )
 ''');
   }
