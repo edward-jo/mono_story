@@ -99,13 +99,15 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 
   Future _save(BuildContext context) async {
-    developer.log('Save messasge( ${_newMessageController.text.trim()} )');
+    final String message = _newMessageController.text.trim();
+
+    if (message.isEmpty) {
+      return;
+    }
+
+    developer.log('Save messasge( $message )');
     await _model.save(
-      Message(
-        id: null,
-        message: _newMessageController.text.trim(),
-        createdTime: DateTime.now(),
-      ),
+      Message(id: null, message: message, createdTime: DateTime.now()),
     );
     Navigator.of(context).pop();
     return;
