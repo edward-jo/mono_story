@@ -13,58 +13,48 @@ class ThreadNameListBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
+    return Column(
+      children: <Widget>[
+        // -- BOTTOM SHEET HEAD --
+        const SizedBox(height: 20),
+        Text(
+          'Select Thread',
+          style: textTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
         ),
-      ),
-      child: Column(
-        children: <Widget>[
-          // -- BOTTOM SHEET HEAD --
-          const SizedBox(height: 20),
-          Text(
-            'Select Thread',
-            style: textTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
+        const SizedBox(height: 20),
 
-          // -- THREAD NAME LIST --
-          Expanded(
-            child: SizedBox(
-              child: ListView.builder(
-                  itemCount: fakeThreads.length,
-                  itemBuilder: (_, i) {
-                    // -- THREAD LIST NAME ITEM --
-                    return Container(
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: const Icon(Icons.topic),
-                            title: Text(
-                              fakeThreads[i],
-                              style: TextStyle(
-                                fontSize: textTheme.bodyText2?.fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
+        // -- THREAD NAME LIST --
+        Expanded(
+          child: SizedBox(
+            child: ListView.builder(
+                itemCount: fakeThreads.length,
+                itemBuilder: (_, i) {
+                  // -- THREAD LIST NAME ITEM --
+                  return Container(
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.topic),
+                          title: Text(
+                            fakeThreads[i],
+                            style: TextStyle(
+                              fontSize: textTheme.bodyText2?.fontSize,
+                              fontWeight: FontWeight.bold,
                             ),
-                            trailing: const SizedBox(width: 20),
-                            onTap: () => onTap(fakeThreads[i]),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
                           ),
-                          const Divider(height: 1),
-                        ],
-                      ),
-                    );
-                  }),
-            ),
-          )
-        ],
-      ),
+                          trailing: const SizedBox(width: 20),
+                          onTap: () => onTap(fakeThreads[i]),
+                        ),
+                        const Divider(height: 1),
+                      ],
+                    ),
+                  );
+                }),
+          ),
+        )
+      ],
     );
   }
 }

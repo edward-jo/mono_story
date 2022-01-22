@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/models/message.dart';
+import 'package:mono_story/ui/views/main/home/new_message/new_thread_name_bottom_sheet.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -118,15 +119,35 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 
   void _showThreadNameList(BuildContext context) async {
-    final selectedThreadName = await showModalBottomSheet(
+    final String? selectedThreadName = await showModalBottomSheet(
       context: context,
+      backgroundColor: Theme.of(context).canvasColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
       builder: (ctx) {
         return ThreadNameListBottomSheet(onTap: (threadName) {
           Navigator.of(context).pop(threadName);
         });
       },
     );
+    if (selectedThreadName == null) {
+      _showNewThreadName(context);
+      return;
+    }
     setState(() => _currentThreadName = selectedThreadName);
+  }
+
+  void _showNewThreadName(BuildContext context) async {
+    final String? newThreadName = await showModalBottomSheet(
+        context: context,
+        backgroundColor: Theme.of(context).canvasColor,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        ),
+        builder: (ctx) {
+          return NewThreadNameBottomSheet(onTap: (_) {});
+        });
   }
 }
 

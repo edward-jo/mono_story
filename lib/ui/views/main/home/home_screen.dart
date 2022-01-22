@@ -53,16 +53,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showThreadNameList(BuildContext context) async {
-    final selectedThreadName = await showModalBottomSheet<String>(
+    final String? selectedThreadName = await showModalBottomSheet<String>(
       context: context,
+      backgroundColor: Theme.of(context).canvasColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
       builder: (ctx) {
         return ThreadNameListBottomSheet(onTap: (threadName) {
           Navigator.of(context).pop(threadName);
         });
       },
     );
+
+    if (selectedThreadName == null) {
+      return;
+    }
+
     developer.log('Selected thread name is $selectedThreadName');
-    setState(() => _currentThread = selectedThreadName!);
+    setState(() => _currentThread = selectedThreadName);
   }
 
   void _showNewMessage(BuildContext context) {
