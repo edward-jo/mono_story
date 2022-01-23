@@ -2,13 +2,12 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_name_bottom_sheet.dart';
+import 'package:mono_story/ui/views/main/home/common/thread_name_list_bottom_sheet.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
-
-import '/constants.dart';
-import '../common/thread_name_list_bottom_sheet.dart';
 
 class NewMessageScreen extends StatefulWidget {
   const NewMessageScreen({Key? key}) : super(key: key);

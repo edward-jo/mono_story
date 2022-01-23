@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../constants.dart';
+import 'package:mono_story/constants.dart';
+
 part 'message.g.dart';
 
 @JsonSerializable()

@@ -2,8 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '/constants.dart';
+import 'package:mono_story/constants.dart';
 
 class ThreadNameButton extends StatelessWidget {
   final String name;

@@ -1,9 +1,8 @@
+import 'package:mono_story/constants.dart';
+import 'package:mono_story/database/app_database.dart';
+import 'package:mono_story/models/message.dart';
 import 'package:mono_story/models/thread.dart';
-
-import '/database/app_database.dart';
-import '/models/message.dart';
-import 'app_database_service.dart';
-import '../../constants.dart';
+import 'package:mono_story/services/app_database/app_database_service.dart';
 
 final AppDatabase _appDb = AppDatabase();
 

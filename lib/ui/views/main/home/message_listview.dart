@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/ui/common/platform_alert_dialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
+import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
-
-import '/ui/views/main/home/message_listviewitem.dart';
-import '/view_models/message_viewmodel.dart';
 
 class MessageListView extends StatefulWidget {
   const MessageListView({Key? key}) : super(key: key);

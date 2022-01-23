@@ -1,4 +1,4 @@
-import '/models/message.dart';
+import 'package:mono_story/models/message.dart';
 import 'package:mono_story/models/thread.dart';
 
 abstract class AppDatabaseService {

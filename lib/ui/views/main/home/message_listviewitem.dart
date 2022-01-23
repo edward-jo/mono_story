@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
-import 'package:intl/intl.dart';
 
 class MessageListViewItem extends StatelessWidget {
   const MessageListViewItem({Key? key, required this.message})

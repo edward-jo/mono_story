@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 final ThemeData appTheme = ThemeData(
   /// Typically, only the [brightness], [primaryColor], or [primarySwatch] are

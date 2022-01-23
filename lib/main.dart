@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mono_story/services/service_locator.dart';
+import 'package:mono_story/ui/common/platform_widget.dart';
+import 'package:mono_story/ui/theme/themes.dart';
+import 'package:mono_story/ui/views/main/main_screen.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'ui/common/platform_widget.dart';
-import 'ui/theme/themes.dart';
-import 'ui/views/main/main_screen.dart';
-import 'services/service_locator.dart';
-import 'view_models/message_viewmodel.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();

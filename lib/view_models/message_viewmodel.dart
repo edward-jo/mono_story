@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
-import '../constants.dart';
-import '../models/message.dart';
-import '../services/icloud_storage/icloud_storage_service.dart';
-import '../services/app_database/app_database_service.dart';
-import '../services/service_locator.dart';
+import 'package:mono_story/constants.dart';
+import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/thread.dart';
+import 'package:mono_story/services/app_database/app_database_service.dart';
+import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
+import 'package:mono_story/services/service_locator.dart';
 
 class MessageViewModel extends ChangeNotifier {
   final AppDatabaseService _dbService = serviceLocator<AppDatabaseService>();
   final IcloudStorageService _iStorageService =
       serviceLocator<IcloudStorageService>();
   List<Message> _messages = [];
+  List<Thread> _threads = [];
 
   List<Message> get messages => _messages;
 

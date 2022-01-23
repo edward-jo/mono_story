@@ -1,13 +1,13 @@
 import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/ui/common/modal_page_route.dart';
+import 'package:mono_story/ui/views/main/home/common/new_thread_name_bottom_sheet.dart';
+import 'package:mono_story/ui/views/main/home/common/thread_name_list_bottom_sheet.dart';
+import 'package:mono_story/ui/views/main/home/message_listview.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
-
-import 'common/new_thread_name_bottom_sheet.dart';
-import 'common/thread_name_list_bottom_sheet.dart';
-import 'thread_name_button.dart';
-import 'message_listview.dart';
+import 'package:mono_story/ui/views/main/home/thread_name_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

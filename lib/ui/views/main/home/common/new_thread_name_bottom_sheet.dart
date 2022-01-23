@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter/material.dart';
-import 'package:mono_story/fake_data.dart';
+import 'package:flutter/widgets.dart';
 
 class NewThreadNameBottomSheet extends StatefulWidget {
   const NewThreadNameBottomSheet({Key? key}) : super(key: key);

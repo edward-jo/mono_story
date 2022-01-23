@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'dart:core';
+
+import 'package:flutter/material.dart';
 
 class ModalPageRoute extends PageRouteBuilder {
   final Widget child;
