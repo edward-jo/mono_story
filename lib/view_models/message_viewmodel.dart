@@ -17,6 +17,7 @@ class MessageViewModel extends ChangeNotifier {
   List<Thread> _threads = [];
 
   List<Message> get messages => _messages;
+  List<Thread> get threads => _threads;
 
   Future<bool> save(Message message) async {
     Message msg = await _dbService.createMessage(message);
@@ -26,11 +27,17 @@ class MessageViewModel extends ChangeNotifier {
   }
 
   Future<bool> readAll() async {
-    List<Message> all = await _dbService.readAllMessages();
-    for (Message msg in all) {
+    List<Thread> allThreadNames = await _dbService.readAllThreads();
+    for (Thread t in allThreadNames) {
+      developer.log('Read all thread names( ${t.id}, ${t.name} )');
+    }
+
+    List<Message> allMessages = await _dbService.readAllMessages();
+    for (Message msg in allMessages) {
+      developer.log('Read all messages ( ${msg.id} )');
       developer.log(msg.toJson().toString());
     }
-    _messages = all;
+    _messages = allMessages;
     notifyListeners();
     return true;
   }
@@ -74,5 +81,12 @@ class MessageViewModel extends ChangeNotifier {
   Future<void> reloadMessages() async {
     await _dbService.init();
     await readAll();
+  }
+
+  Future<bool> createThreadName(Thread threadName) async {
+    Thread t = await _dbService.createThread(threadName);
+    _threads.add(t);
+    notifyListeners();
+    return true;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mono_story/fake_data.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class ThreadNameListBottomSheet extends StatelessWidget {
   const ThreadNameListBottomSheet({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class ThreadNameListBottomSheet extends StatelessWidget {
         Expanded(
           child: SizedBox(
             child: ListView.builder(
-                itemCount: fakeThreads.length,
+                itemCount: context.watch<MessageViewModel>().threads.length,
                 itemBuilder: (_, i) {
                   // -- THREAD LIST NAME ITEM --
                   return Container(
@@ -32,7 +33,7 @@ class ThreadNameListBottomSheet extends StatelessWidget {
                         ListTile(
                           leading: const Icon(Icons.topic),
                           title: Text(
-                            fakeThreads[i],
+                            context.watch<MessageViewModel>().threads[i].name,
                             style: TextStyle(
                               fontSize: textTheme.bodyText2?.fontSize,
                               fontWeight: FontWeight.bold,
@@ -44,7 +45,10 @@ class ThreadNameListBottomSheet extends StatelessWidget {
                           onTap: () => Navigator.of(context).pop(
                             ThreadNameListResult(
                               type: ThreadNameListResultType.threadName,
-                              data: fakeThreads[i],
+                              data: context
+                                  .watch<MessageViewModel>()
+                                  .threads[i]
+                                  .name,
                             ),
                           ),
                         ),

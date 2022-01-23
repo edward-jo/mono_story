@@ -2,6 +2,9 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/models/thread.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class NewThreadNameBottomSheet extends StatefulWidget {
   const NewThreadNameBottomSheet({Key? key}) : super(key: key);
@@ -13,6 +16,13 @@ class NewThreadNameBottomSheet extends StatefulWidget {
 
 class _NewThreadNameBottomSheetState extends State<NewThreadNameBottomSheet> {
   final _newThreadNameController = TextEditingController();
+  late final MessageViewModel _model;
+
+  @override
+  void initState() {
+    super.initState();
+    _model = context.read<MessageViewModel>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,13 +70,13 @@ class _NewThreadNameBottomSheetState extends State<NewThreadNameBottomSheet> {
     );
   }
 
-  void _done(BuildContext context) {
+  void _done(BuildContext context) async {
     final String name = _newThreadNameController.text.trim();
 
     if (name.isEmpty) return;
 
     developer.log('New thread name( $name )');
-    // TODO: insert new thread name to database
+    await _model.createThreadName(Thread(id: null, name: name));
 
     Navigator.of(context).pop(name);
   }
