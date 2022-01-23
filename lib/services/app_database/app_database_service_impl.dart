@@ -1,3 +1,5 @@
+import 'package:mono_story/models/thread.dart';
+
 import '/database/app_database.dart';
 import '/models/message.dart';
 import 'app_database_service.dart';
@@ -23,6 +25,15 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
+  Future<String> getAppDatabaseFilePath() async {
+    final db = _appDb.database;
+    return db.path;
+  }
+  //----------------------------------------------------------------------------
+  // Message
+  //----------------------------------------------------------------------------
+
+  @override
   Future<Message> createMessage(Message message) async {
     final db = _appDb.database;
     Map<String, dynamic> messageJson = message.toJson();
@@ -33,7 +44,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
-  Future<int> deleteMesssage(int id) async {
+  Future<int> deleteMessage(int id) async {
     final db = _appDb.database;
 
     return await db.delete(
@@ -87,10 +98,37 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       whereArgs: [message.id],
     );
   }
+  //----------------------------------------------------------------------------
+  // Thread
+  //----------------------------------------------------------------------------
 
   @override
-  Future<String> getAppDatabaseFilePath() async {
-    final db = _appDb.database;
-    return db.path;
+  Future<Thread> createThread(Thread thread) {
+    // TODO: implement createThread
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<int> deleteThread(int id) {
+    // TODO: implement deleteThread
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Thread>> readAllThreads() {
+    // TODO: implement readAllThreads
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Thread> readThread(int id) {
+    // TODO: implement readThread
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<int> updateThread(Thread thread) {
+    // TODO: implement updateThread
+    throw UnimplementedError();
   }
 }
