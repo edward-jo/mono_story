@@ -32,8 +32,8 @@ class AppDatabase {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
 CREATE TABLE $threadNamesTableName (
-  ${ThreadsTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
-  ${ThreadsTableCols.name} TEXT NOT NULL
+  ${ThreadNamesTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${ThreadNamesTableCols.name} TEXT NOT NULL
 )
 ''');
     await db.execute('''

@@ -69,7 +69,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       whereArgs: [id],
     );
 
-    if (messages.isEmpty) throw Exception('Failed to find id( $id )');
+    if (messages.isEmpty) throw Exception('Failed to find message id( $id )');
 
     return Message.fromJson(messages.first);
   }
@@ -103,32 +103,65 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   //----------------------------------------------------------------------------
 
   @override
-  Future<Thread> createThread(Thread thread) {
-    // TODO: implement createThread
-    throw UnimplementedError();
+  Future<Thread> createThread(Thread thread) async {
+    final db = _appDb.database;
+    Map<String, dynamic> threadJson = thread.toJson();
+    final id = await db.insert(threadNamesTableName, threadJson);
+    threadJson[ThreadNamesTableCols.id] = id;
+
+    return Thread.fromJson(threadJson);
   }
 
   @override
-  Future<int> deleteThread(int id) {
-    // TODO: implement deleteThread
-    throw UnimplementedError();
+  Future<int> deleteThread(int id) async {
+    final db = _appDb.database;
+
+    return await db.delete(
+      threadNamesTableName,
+      where: '${ThreadNamesTableCols.id} = ?',
+      whereArgs: [id],
+    );
   }
 
   @override
-  Future<List<Thread>> readAllThreads() {
-    // TODO: implement readAllThreads
-    throw UnimplementedError();
+  Future<List<Thread>> readAllThreads() async {
+    final db = _appDb.database;
+    final threads = await db.query(
+      threadNamesTableName,
+      orderBy: '${ThreadNamesTableCols.name} ASC',
+    );
+    return threads.map((e) {
+      return Thread.fromJson(e);
+    }).toList();
   }
 
   @override
-  Future<Thread> readThread(int id) {
-    // TODO: implement readThread
-    throw UnimplementedError();
+  Future<Thread> readThread(int id) async {
+    final db = _appDb.database;
+    final threads = await db.query(
+      threadNamesTableName,
+      columns: [
+        ThreadNamesTableCols.id,
+        ThreadNamesTableCols.name,
+      ],
+      where: '${ThreadNamesTableCols.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (threads.isEmpty) throw Exception('Failed to find thread id ( $id )');
+
+    return Thread.fromJson(threads.first);
   }
 
   @override
-  Future<int> updateThread(Thread thread) {
-    // TODO: implement updateThread
-    throw UnimplementedError();
+  Future<int> updateThread(Thread thread) async {
+    final db = _appDb.database;
+
+    return await db.update(
+      threadNamesTableName,
+      thread.toJson(),
+      where: '${ThreadNamesTableCols.id} = ?',
+      whereArgs: [thread.id],
+    );
   }
 }

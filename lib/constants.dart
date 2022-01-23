@@ -10,7 +10,7 @@ const int appDatabaseVersion = 1;
 const String threadNamesTableName = 'thread_names';
 const String messagesTableName = 'messages';
 
-class ThreadsTableCols {
+class ThreadNamesTableCols {
   static const String id = '_id';
   static const String name = 'name';
 }
