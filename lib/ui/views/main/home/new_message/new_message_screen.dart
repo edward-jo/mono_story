@@ -144,9 +144,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
-      builder: (ctx) {
-        return const NewThreadNameBottomSheet();
-      },
+      builder: (_) => const NewThreadNameBottomSheet(),
     );
 
     if (newThreadName == null || newThreadName.isEmpty) return;

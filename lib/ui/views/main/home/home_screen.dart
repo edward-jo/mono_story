@@ -93,13 +93,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showNewThreadName(BuildContext context) async {
     final String? newThreadName = await showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
-      builder: (ctx) {
-        return const NewThreadNameBottomSheet();
-      },
+      builder: (_) => const NewThreadNameBottomSheet(),
     );
 
     if (newThreadName == null || newThreadName.isEmpty) return;
