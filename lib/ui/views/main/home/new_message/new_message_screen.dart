@@ -3,12 +3,12 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/models/message.dart';
-import 'package:mono_story/ui/views/main/home/new_message/new_thread_name_bottom_sheet.dart';
+import 'package:mono_story/ui/views/main/home/common/new_thread_name_bottom_sheet.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '/constants.dart';
-import '../threadname_list_bottom_sheet.dart';
+import '../common/thread_name_list_bottom_sheet.dart';
 
 class NewMessageScreen extends StatefulWidget {
   const NewMessageScreen({Key? key}) : super(key: key);
@@ -126,9 +126,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
       builder: (ctx) {
-        return ThreadNameListBottomSheet(onTap: (threadName) {
-          Navigator.of(context).pop(threadName);
-        });
+        return const ThreadNameListBottomSheet();
       },
     );
     if (selectedThreadName == null) {
@@ -140,14 +138,22 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
 
   void _showNewThreadName(BuildContext context) async {
     final String? newThreadName = await showModalBottomSheet(
-        context: context,
-        backgroundColor: Theme.of(context).canvasColor,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
-        ),
-        builder: (ctx) {
-          return NewThreadNameBottomSheet(onTap: (_) {});
-        });
+      context: context,
+      backgroundColor: Theme.of(context).canvasColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (ctx) {
+        return const NewThreadNameBottomSheet();
+      },
+    );
+
+    if (newThreadName == null || newThreadName.isEmpty) return;
+
+    developer.log('New thread name is $newThreadName');
+    setState(() => _currentThreadName = newThreadName);
+    return;
   }
 }
 

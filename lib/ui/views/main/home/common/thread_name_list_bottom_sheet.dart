@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/fake_data.dart';
 
 class ThreadNameListBottomSheet extends StatelessWidget {
-  final void Function(String) onTap;
-  const ThreadNameListBottomSheet({
-    Key? key,
-    required this.onTap,
-  }) : super(key: key);
+  const ThreadNameListBottomSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +41,12 @@ class ThreadNameListBottomSheet extends StatelessWidget {
                             softWrap: false,
                           ),
                           trailing: const SizedBox(width: 20),
-                          onTap: () => onTap(fakeThreads[i]),
+                          onTap: () => Navigator.of(context).pop(
+                            ThreadNameListResult(
+                              type: ThreadNameListResultType.threadName,
+                              data: fakeThreads[i],
+                            ),
+                          ),
                         ),
                         const Divider(height: 1),
                       ],
@@ -53,8 +54,28 @@ class ThreadNameListBottomSheet extends StatelessWidget {
                   );
                 }),
           ),
-        )
+        ),
+        const SizedBox(height: 10),
+
+        // -- CREATE NEW THREAD BUTTON --
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(ThreadNameListResult(
+            type: ThreadNameListResultType.newThreadNameRequest,
+          )),
+          child: const Text('Create New Thread'),
+        ),
       ],
     );
   }
+}
+
+enum ThreadNameListResultType {
+  threadName,
+  newThreadNameRequest,
+}
+
+class ThreadNameListResult {
+  late final ThreadNameListResultType type;
+  late final dynamic data;
+  ThreadNameListResult({required this.type, this.data});
 }

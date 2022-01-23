@@ -3,17 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/fake_data.dart';
 
 class NewThreadNameBottomSheet extends StatelessWidget {
-  final void Function(String) onTap;
-  const NewThreadNameBottomSheet({
-    Key? key,
-    required this.onTap,
-  }) : super(key: key);
+  const NewThreadNameBottomSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         // -- BOTTOM SHEET HEAD --
         const SizedBox(height: 20),

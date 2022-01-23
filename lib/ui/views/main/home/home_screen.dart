@@ -4,7 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:mono_story/ui/common/modal_page_route.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 
-import 'threadname_list_bottom_sheet.dart';
+import 'common/new_thread_name_bottom_sheet.dart';
+import 'common/thread_name_list_bottom_sheet.dart';
 import 'thread_name_button.dart';
 import 'message_listview.dart';
 
@@ -16,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _currentThread = 'All';
+  String _currentThreadName = 'All';
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // -- TITLE --
           title: Builder(builder: (context) {
             return ThreadNameButton(
-              name: _currentThread,
+              name: _currentThreadName,
               onPressed: () => _showThreadNameList(context),
             );
           }),
@@ -53,25 +54,29 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showThreadNameList(BuildContext context) async {
-    final String? selectedThreadName = await showModalBottomSheet<String>(
+    final ThreadNameListResult? result;
+    result = await showModalBottomSheet<ThreadNameListResult>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
-      builder: (ctx) {
-        return ThreadNameListBottomSheet(onTap: (threadName) {
-          Navigator.of(context).pop(threadName);
-        });
-      },
+      builder: (_) => const ThreadNameListBottomSheet(),
     );
 
-    if (selectedThreadName == null) {
-      return;
-    }
+    if (result == null) return;
 
-    developer.log('Selected thread name is $selectedThreadName');
-    setState(() => _currentThread = selectedThreadName);
+    switch (result.type) {
+      case ThreadNameListResultType.threadName:
+        final threadName = result.data as String;
+        developer.log('Selected thread name is $threadName');
+        setState(() => _currentThreadName = threadName);
+        break;
+      case ThreadNameListResultType.newThreadNameRequest:
+        _showNewThreadName(context);
+        break;
+    }
+    return;
   }
 
   void _showNewMessage(BuildContext context) {
@@ -79,9 +84,28 @@ class _HomeScreenState extends State<HomeScreen> {
       ModalPageRoute(
         child: const NewMessageScreen(),
         settings: RouteSettings(
-          arguments: NewMessageScreenArguments(threadName: _currentThread),
+          arguments: NewMessageScreenArguments(threadName: _currentThreadName),
         ),
       ),
     );
+  }
+
+  void _showNewThreadName(BuildContext context) async {
+    final String? newThreadName = await showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).canvasColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (ctx) {
+        return const NewThreadNameBottomSheet();
+      },
+    );
+
+    if (newThreadName == null || newThreadName.isEmpty) return;
+
+    developer.log('New thread name is $newThreadName');
+    setState(() => _currentThreadName = newThreadName);
+    return;
   }
 }
