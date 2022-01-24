@@ -61,7 +61,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       columns: [
         MessagesTableCols.id,
         MessagesTableCols.message,
-        MessagesTableCols.fkThreadNameId,
+        MessagesTableCols.fkThreadId,
         MessagesTableCols.createdTime,
       ],
       where: '${MessagesTableCols.id} = ?',

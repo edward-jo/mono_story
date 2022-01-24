@@ -7,7 +7,7 @@ const String appDatabaseFileName = 'app.db';
 const String appDatabaseBackupFileName = 'app.db.backup';
 const int appDatabaseVersion = 1;
 
-const String threadNamesTableName = 'thread_names';
+const String threadNamesTableName = 'threads';
 const String messagesTableName = 'messages';
 
 class ThreadNamesTableCols {
@@ -18,7 +18,7 @@ class ThreadNamesTableCols {
 class MessagesTableCols {
   static const String id = '_id';
   static const String message = 'message';
-  static const String fkThreadNameId = 'fk_thread_name_id';
+  static const String fkThreadId = 'fk_thread_id';
   static const String createdTime = 'created_time';
 }
 
@@ -30,5 +30,6 @@ class ErrorMessages {
 const double scaffoldBodyWidthRate = 0.9;
 const Color threadNameTextColor = Color(0xFFD9730D);
 const Color threadNameBgColor = Color(0xFFFAEBDD);
+const Color undefinedThreadBgColor = Color(0xFFEBECED);
 const Color dateTimeBgColor = Color(0xFFDDEBF1);
 const Color dateTimeTextcolor = Color(0xFF0B6E99);

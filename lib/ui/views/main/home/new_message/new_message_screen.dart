@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
-import 'package:mono_story/ui/views/main/home/common/new_thread_name_bottom_sheet.dart';
-import 'package:mono_story/ui/views/main/home/common/thread_name_list_bottom_sheet.dart';
+import 'package:mono_story/models/thread.dart';
+import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
+import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,7 @@ class NewMessageScreen extends StatefulWidget {
 
 class _NewMessageScreenState extends State<NewMessageScreen> {
   final _newMessageController = TextEditingController();
-  String _currentThreadName = '';
+  Thread? _currentThread;
   bool _loadedInitData = false;
   late final MessageViewModel _model;
 
@@ -34,7 +35,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       NewMessageScreenArguments arguments = ModalRoute.of(context)!
           .settings
           .arguments as NewMessageScreenArguments;
-      _currentThreadName = arguments.threadName;
+      _currentThread = arguments.thread;
       _loadedInitData = true;
     }
     super.didChangeDependencies();
@@ -71,8 +72,10 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                 // -- THREAD NAME --
                 Builder(builder: (context) {
                   return ActionChip(
-                    backgroundColor: threadNameBgColor,
-                    label: Text(_currentThreadName),
+                    backgroundColor: _currentThread == null
+                        ? undefinedThreadBgColor
+                        : threadNameBgColor,
+                    label: Text(_currentThread?.name ?? 'Select thread'),
                     onPressed: () => _showThreadNameList(context),
                   );
                 }),
@@ -108,53 +111,51 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     developer.log('Save messasge( $message )');
     await _model.save(
       Message(
-          id: null,
-          message: message,
-          threadNameId: 1,
-          createdTime: DateTime.now()),
+        id: null,
+        message: message,
+        threadNameId: _currentThread?.id,
+        createdTime: DateTime.now(),
+      ),
     );
     Navigator.of(context).pop();
     return;
   }
 
   void _showThreadNameList(BuildContext context) async {
-    final String? selectedThreadName = await showModalBottomSheet(
+    final Thread? selectedThread = await showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
-      builder: (ctx) {
-        return const ThreadNameListBottomSheet();
-      },
+      builder: (ctx) => const ThreadListBottomSheet(),
     );
-    if (selectedThreadName == null) {
-      _showNewThreadName(context);
+    if (selectedThread == null) {
       return;
     }
-    setState(() => _currentThreadName = selectedThreadName);
+    setState(() => _currentThread = selectedThread);
   }
 
   void _showNewThreadName(BuildContext context) async {
-    final String? newThreadName = await showModalBottomSheet(
+    final Thread? newThread = await showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
-      builder: (_) => const NewThreadNameBottomSheet(),
+      builder: (_) => const NewThreadBottomSheet(),
     );
 
-    if (newThreadName == null || newThreadName.isEmpty) return;
+    if (newThread == null || newThread.name.isEmpty) return;
 
-    developer.log('New thread name is $newThreadName');
-    setState(() => _currentThreadName = newThreadName);
+    developer.log('New thread name is ${newThread.name}');
+    setState(() => _currentThread = newThread);
     return;
   }
 }
 
 class NewMessageScreenArguments {
-  final String threadName;
-  const NewMessageScreenArguments({required this.threadName});
+  final Thread? thread;
+  const NewMessageScreenArguments({required this.thread});
 }

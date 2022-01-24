@@ -6,15 +6,14 @@ import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class NewThreadNameBottomSheet extends StatefulWidget {
-  const NewThreadNameBottomSheet({Key? key}) : super(key: key);
+class NewThreadBottomSheet extends StatefulWidget {
+  const NewThreadBottomSheet({Key? key}) : super(key: key);
 
   @override
-  State<NewThreadNameBottomSheet> createState() =>
-      _NewThreadNameBottomSheetState();
+  State<NewThreadBottomSheet> createState() => _NewThreadBottomSheetState();
 }
 
-class _NewThreadNameBottomSheetState extends State<NewThreadNameBottomSheet> {
+class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
   final _newThreadNameController = TextEditingController();
   late final MessageViewModel _model;
 
@@ -76,8 +75,8 @@ class _NewThreadNameBottomSheetState extends State<NewThreadNameBottomSheet> {
     if (name.isEmpty) return;
 
     developer.log('New thread name( $name )');
-    await _model.createThreadName(Thread(id: null, name: name));
+    Thread t = await _model.createThreadName(Thread(id: null, name: name));
 
-    Navigator.of(context).pop(name);
+    Navigator.of(context).pop(t);
   }
 }

@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mono_story/constants.dart';
 
-class ThreadNameButton extends StatelessWidget {
+class ThreadButton extends StatelessWidget {
   final String name;
   final void Function() onPressed;
 
-  const ThreadNameButton({
+  const ThreadButton({
     Key? key,
     required this.name,
     required this.onPressed,

@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class ThreadNameListBottomSheet extends StatelessWidget {
-  const ThreadNameListBottomSheet({Key? key}) : super(key: key);
+class ThreadListBottomSheet extends StatelessWidget {
+  const ThreadListBottomSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +44,8 @@ class ThreadNameListBottomSheet extends StatelessWidget {
                           trailing: const SizedBox(width: 20),
                           onTap: () => Navigator.of(context).pop(
                             ThreadNameListResult(
-                              type: ThreadNameListResultType.threadName,
-                              data: context
-                                  .watch<MessageViewModel>()
-                                  .threads[i]
-                                  .name,
+                              type: ThreadListResultType.thread,
+                              data: context.read<MessageViewModel>().threads[i],
                             ),
                           ),
                         ),
@@ -64,7 +61,7 @@ class ThreadNameListBottomSheet extends StatelessWidget {
         // -- CREATE NEW THREAD BUTTON --
         TextButton(
           onPressed: () => Navigator.of(context).pop(ThreadNameListResult(
-            type: ThreadNameListResultType.newThreadNameRequest,
+            type: ThreadListResultType.newThreadRequest,
           )),
           child: const Text('Create New Thread'),
         ),
@@ -73,13 +70,13 @@ class ThreadNameListBottomSheet extends StatelessWidget {
   }
 }
 
-enum ThreadNameListResultType {
-  threadName,
-  newThreadNameRequest,
+enum ThreadListResultType {
+  thread,
+  newThreadRequest,
 }
 
 class ThreadNameListResult {
-  late final ThreadNameListResultType type;
+  late final ThreadListResultType type;
   late final dynamic data;
   ThreadNameListResult({required this.type, this.data});
 }

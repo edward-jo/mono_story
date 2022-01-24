@@ -31,6 +31,7 @@ class MessageViewModel extends ChangeNotifier {
     for (Thread t in allThreadNames) {
       developer.log('Read all thread names( ${t.id}, ${t.name} )');
     }
+    _threads = allThreadNames;
 
     List<Message> allMessages = await _dbService.readAllMessages();
     for (Message msg in allMessages) {
@@ -83,10 +84,14 @@ class MessageViewModel extends ChangeNotifier {
     await readAll();
   }
 
-  Future<bool> createThreadName(Thread threadName) async {
+  Future<Thread> createThreadName(Thread threadName) async {
     Thread t = await _dbService.createThread(threadName);
     _threads.add(t);
     notifyListeners();
-    return true;
+    return t;
+  }
+
+  Thread findThreadDataWithName(String name) {
+    return _threads.where((element) => element.name == name).toList().first;
   }
 }
