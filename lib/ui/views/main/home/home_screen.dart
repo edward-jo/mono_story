@@ -80,22 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return;
   }
 
-  void _showNewMessage(BuildContext context) {
-    Navigator.of(context).push(
-      ModalPageRoute(
-        child: const NewMessageScreen(),
-        settings: RouteSettings(
-          arguments: NewMessageScreenArguments(thread: _currentThread),
-        ),
-      ),
-    );
-  }
-
   void _showNewThread(BuildContext context) async {
     final Thread? newThread = await showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
       backgroundColor: Theme.of(context).canvasColor,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
@@ -107,5 +96,16 @@ class _HomeScreenState extends State<HomeScreen> {
     developer.log('New thread name is ${newThread.name}');
     setState(() => _currentThread = newThread);
     return;
+  }
+
+  void _showNewMessage(BuildContext context) {
+    Navigator.of(context).push(
+      ModalPageRoute(
+        child: const NewMessageScreen(),
+        settings: RouteSettings(
+          arguments: NewMessageScreenArguments(thread: _currentThread),
+        ),
+      ),
+    );
   }
 }

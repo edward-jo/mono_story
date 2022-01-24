@@ -76,7 +76,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                         ? undefinedThreadBgColor
                         : threadNameBgColor,
                     label: Text(_currentThread?.name ?? 'Select thread'),
-                    onPressed: () => _showThreadNameList(context),
+                    onPressed: () => _showThreadList(context),
                   );
                 }),
 
@@ -121,8 +121,9 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     return;
   }
 
-  void _showThreadNameList(BuildContext context) async {
-    final Thread? selectedThread = await showModalBottomSheet(
+  void _showThreadList(BuildContext context) async {
+    final ThreadNameListResult? result;
+    result = await showModalBottomSheet<ThreadNameListResult>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
@@ -130,13 +131,23 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       ),
       builder: (ctx) => const ThreadListBottomSheet(),
     );
-    if (selectedThread == null) {
-      return;
+
+    if (result == null) return;
+
+    switch (result.type) {
+      case ThreadListResultType.thread:
+        final thread = result.data as Thread;
+        developer.log('Selected thread name is ${thread.name}');
+        setState(() => _currentThread = thread);
+        break;
+      case ThreadListResultType.newThreadRequest:
+        _showNewThread(context);
+        break;
     }
-    setState(() => _currentThread = selectedThread);
+    return;
   }
 
-  void _showNewThreadName(BuildContext context) async {
+  void _showNewThread(BuildContext context) async {
     final Thread? newThread = await showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
