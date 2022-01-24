@@ -71,11 +71,20 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
               children: <Widget>[
                 // -- THREAD NAME --
                 Builder(builder: (context) {
-                  return ActionChip(
-                    backgroundColor: _currentThread == null
-                        ? undefinedThreadBgColor
-                        : threadNameBgColor,
-                    label: Text(_currentThread?.name ?? 'Select thread'),
+                  if (_currentThread == null) {
+                    return ActionChip(
+                      backgroundColor: undefinedThreadBgColor,
+                      label: const Text('Select thread'),
+                      onPressed: () => _showThreadList(context),
+                    );
+                  }
+
+                  return InputChip(
+                    backgroundColor: threadNameBgColor,
+                    label: Text(_currentThread!.name),
+                    deleteIcon: const Icon(Icons.cancel),
+                    deleteIconColor: Colors.grey,
+                    onDeleted: () => setState(() => _currentThread = null),
                     onPressed: () => _showThreadList(context),
                   );
                 }),
