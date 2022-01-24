@@ -34,8 +34,8 @@ class AppDatabase {
     // Create thread names table
     await db.execute('''
 CREATE TABLE $threadNamesTableName (
-  ${ThreadNamesTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
-  ${ThreadNamesTableCols.name} TEXT NOT NULL
+  ${ThreadsTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${ThreadsTableCols.name} TEXT NOT NULL
 )
  ''');
 

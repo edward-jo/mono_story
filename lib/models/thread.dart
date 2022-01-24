@@ -5,9 +5,9 @@ part 'thread.g.dart';
 
 @JsonSerializable()
 class Thread {
-  @JsonKey(name: ThreadNamesTableCols.id)
+  @JsonKey(name: ThreadsTableCols.id)
   final int? id;
-  @JsonKey(name: ThreadNamesTableCols.name)
+  @JsonKey(name: ThreadsTableCols.name)
   final String name;
 
   Thread({this.id, required this.name});

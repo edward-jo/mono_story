@@ -106,7 +106,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
     Map<String, dynamic> threadJson = thread.toJson();
     final id = await db.insert(threadNamesTableName, threadJson);
-    threadJson[ThreadNamesTableCols.id] = id;
+    threadJson[ThreadsTableCols.id] = id;
 
     return Thread.fromJson(threadJson);
   }
@@ -117,7 +117,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
 
     return await db.delete(
       threadNamesTableName,
-      where: '${ThreadNamesTableCols.id} = ?',
+      where: '${ThreadsTableCols.id} = ?',
       whereArgs: [id],
     );
   }
@@ -127,7 +127,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
     final threads = await db.query(
       threadNamesTableName,
-      orderBy: '${ThreadNamesTableCols.name} ASC',
+      orderBy: '${ThreadsTableCols.name} ASC',
     );
     return threads.map((e) {
       return Thread.fromJson(e);
@@ -140,10 +140,10 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final threads = await db.query(
       threadNamesTableName,
       columns: [
-        ThreadNamesTableCols.id,
-        ThreadNamesTableCols.name,
+        ThreadsTableCols.id,
+        ThreadsTableCols.name,
       ],
-      where: '${ThreadNamesTableCols.id} = ?',
+      where: '${ThreadsTableCols.id} = ?',
       whereArgs: [id],
     );
 
@@ -159,7 +159,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     return await db.update(
       threadNamesTableName,
       thread.toJson(),
-      where: '${ThreadNamesTableCols.id} = ?',
+      where: '${ThreadsTableCols.id} = ?',
       whereArgs: [thread.id],
     );
   }
