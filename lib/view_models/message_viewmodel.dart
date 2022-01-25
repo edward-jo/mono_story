@@ -91,7 +91,19 @@ class MessageViewModel extends ChangeNotifier {
     return t;
   }
 
-  Thread findThreadDataWithName(String name) {
-    return _threads.where((element) => element.name == name).toList().first;
+  Thread? findThreadData({int? id, String? name}) {
+    assert(id != null || name != null);
+    if (_threads.isEmpty) return null;
+    return _threads
+        .where((element) {
+          if (id != null && element.id == id) {
+            return true;
+          } else if (name != null && element.name == name) {
+            return true;
+          }
+          return false;
+        })
+        .toList()
+        .first;
   }
 }
