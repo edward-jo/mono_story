@@ -99,7 +99,11 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                   keyboardAppearance: Brightness.light,
                   controller: _newMessageController,
                   decoration: const InputDecoration(
+                    hintText: 'Compose story',
+                    filled: false,
                     border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
                   ),
                 ),
               ],
