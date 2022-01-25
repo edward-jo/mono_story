@@ -10,14 +10,14 @@ class Message {
   @JsonKey(name: MessagesTableCols.message)
   final String message;
   @JsonKey(name: MessagesTableCols.fkThreadId)
-  final int? threadNameId;
+  final int? threadId;
   @JsonKey(name: MessagesTableCols.createdTime)
   final DateTime createdTime;
 
   Message({
     this.id,
     required this.message,
-    required this.threadNameId,
+    required this.threadId,
     required this.createdTime,
   });
 
