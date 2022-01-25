@@ -49,13 +49,22 @@ class _MessageListViewState extends State<MessageListView> {
         }
 
         // -- MESSAGE LIST --
-        return ListView.builder(
-          itemCount: context.watch<MessageViewModel>().messages.length,
-          itemBuilder: (_, i) {
-            return MessageListViewItem(
-              message: context.watch<MessageViewModel>().messages[i],
-            );
-          },
+        return Column(
+          children: [
+            const SizedBox(height: 10.0),
+            Expanded(
+              child: SizedBox(
+                child: ListView.builder(
+                  itemCount: context.watch<MessageViewModel>().messages.length,
+                  itemBuilder: (_, i) {
+                    return MessageListViewItem(
+                      message: context.watch<MessageViewModel>().messages[i],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
