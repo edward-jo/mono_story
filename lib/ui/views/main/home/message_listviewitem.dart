@@ -31,7 +31,7 @@ class MessageListViewItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           // -- MESSAGE --
-          Text(message.message, style: Theme.of(context).textTheme.bodyText2),
+          Text(message.message, style: Theme.of(context).textTheme.bodyText1),
 
           // -- PADDING --
           const SizedBox(height: 10.0),
