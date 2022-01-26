@@ -1,14 +1,17 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/constants.dart';
+import 'package:mono_story/models/message.dart';
 import 'package:mono_story/models/thread.dart';
-import 'package:mono_story/ui/common/modal_page_route.dart';
+import 'package:mono_story/ui/common/platform_alert_dialog.dart';
+import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
-import 'package:mono_story/ui/views/main/home/message_listview.dart';
+import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -18,39 +21,89 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Thread? _currentThread;
+  Thread? _threadData;
+  late Future<List<Message>> _readThreadFuture;
+  late MessageViewModel _model;
+
+  @override
+  void initState() {
+    super.initState();
+    _model = context.read<MessageViewModel>();
+    _threadData = _model.currentThreadData;
+    _readThreadFuture = _model.readThread(_threadData?.id);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 5,
-      child: Scaffold(
-        // -- APP BAR --
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          // -- TITLE --
-          title: Builder(builder: (context) {
-            return ThreadButton(
-              name: _currentThread?.name ?? 'All',
-              onPressed: () => _showThreadList(context),
-            );
-          }),
-          // -- ACTIONS --
-          actions: <Widget>[
-            Builder(builder: (context) {
-              return IconButton(
-                onPressed: () => _showNewMessage(context),
-                icon: const Icon(Icons.add_outlined),
-              );
-            })
-          ],
+    return Scaffold(
+      // -- APP BAR --
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        // -- TITLE --
+        title: ThreadButton(
+          name: _threadData?.name ?? defaultThreadName,
+          onPressed: () => _showThreadList(context),
         ),
-
-        // -- BODY --
-        body: const SafeArea(
-          child: MessageListView(),
-        ),
+        // -- ACTIONS --
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => _showNewMessage(context),
+            icon: const Icon(Icons.add_outlined),
+          ),
+        ],
       ),
+      // -- BODY --
+      body: FutureBuilder<List<Message>>(
+        future: _readThreadFuture,
+        builder: _messageListBuilder,
+      ),
+    );
+  }
+
+  Widget _messageListBuilder(
+    BuildContext context,
+    AsyncSnapshot<List<Message>> snapshot,
+  ) {
+    // -- INDICATOR --
+    if (snapshot.connectionState != ConnectionState.done) {
+      return const Center(
+        child: PlatformIndicator(),
+      );
+    }
+    // -- ALERT DIALOG --
+    if (snapshot.hasError) {
+      showDialog(
+        context: context,
+        builder: (_) {
+          return PlatformAlertDialog(
+            content: Text(snapshot.error.toString()),
+          );
+        },
+      );
+      return Container();
+    }
+
+    if (!snapshot.hasData) return Container();
+
+    List<Message> messageList = snapshot.data!;
+
+    // -- MESSAGE LIST --
+    return Column(
+      children: [
+        const SizedBox(height: 10.0),
+        Expanded(
+          child: SizedBox(
+            child: ListView.builder(
+              itemCount: messageList.length,
+              itemBuilder: (_, i) {
+                return MessageListViewItem(
+                  message: messageList[i],
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -69,9 +122,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     switch (result.type) {
       case ThreadListResultType.thread:
-        final thread = result.data as Thread;
-        developer.log('Selected thread name is ${thread.name}');
-        setState(() => _currentThread = thread);
+        final threadId = result.data as int?;
+        setState(() {
+          _model.currentThreadId = threadId;
+          _threadData = _model.currentThreadData;
+          _readThreadFuture = _model.readThread(_threadData?.id);
+        });
         break;
       case ThreadListResultType.newThreadRequest:
         _showNewThread(context);
@@ -81,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showNewThread(BuildContext context) async {
-    final Thread? newThread = await showModalBottomSheet(
+    final int? threadId = await showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
@@ -91,21 +147,32 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (_) => const NewThreadBottomSheet(),
     );
 
-    if (newThread == null || newThread.name.isEmpty) return;
+    if (threadId == null) return;
 
-    developer.log('New thread name is ${newThread.name}');
-    setState(() => _currentThread = newThread);
+    setState(() {
+      _model.currentThreadId = threadId;
+      _threadData = _model.currentThreadData;
+      _readThreadFuture = _model.readThread(_threadData?.id);
+    });
+
     return;
   }
 
-  void _showNewMessage(BuildContext context) {
-    Navigator.of(context).push(
-      ModalPageRoute(
-        child: const NewMessageScreen(),
-        settings: RouteSettings(
-          arguments: NewMessageScreenArguments(thread: _currentThread),
-        ),
-      ),
+  void _showNewMessage(BuildContext context) async {
+    var result = await Navigator.of(context).pushNamed(
+      NewMessageScreen.routeName,
+      arguments: _threadData?.id,
     );
+
+    if (result == null) return;
+
+    result = result as NewMessageScreenResult;
+    bool isSaved = result.isSaved;
+    int? savedMessageThreadId = result.savedMessageThreadId;
+    if (isSaved && savedMessageThreadId == _threadData?.id) {
+      setState(() {
+        _readThreadFuture = _model.readThread(_threadData?.id);
+      });
+    }
   }
 }

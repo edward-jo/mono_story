@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mono_story/services/service_locator.dart';
+import 'package:mono_story/ui/common/modal_page_route.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
 import 'package:mono_story/ui/theme/themes.dart';
+import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/main_screen.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -80,6 +82,22 @@ class StartMyApp extends StatelessWidget {
       theme: appTheme,
       debugShowCheckedModeBanner: false,
       home: const MainScreen(),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case NewMessageScreen.routeName:
+            return ModalPageRoute(
+              settings: settings,
+              child: const NewMessageScreen(),
+            );
+
+          /// Example
+          // case NewMessageScreen.routeName:
+          //   return MaterialPageRoute(
+          //     settings: settings,
+          //     builder: (context) => const NewMessageScreen(),
+          //   );
+        }
+      },
     );
   }
 }

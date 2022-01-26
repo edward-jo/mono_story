@@ -74,6 +74,27 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
+  Future<List<Message>> readThreadMessages(int threadId) async {
+    final db = _appDb.database;
+    final messages = await db.query(
+      messagesTableName,
+      columns: [
+        MessagesTableCols.id,
+        MessagesTableCols.message,
+        MessagesTableCols.fkThreadId,
+        MessagesTableCols.createdTime,
+      ],
+      where: '${MessagesTableCols.fkThreadId} = ?',
+      whereArgs: [threadId],
+      orderBy: '${MessagesTableCols.createdTime} ASC',
+    );
+
+    return messages.map((e) {
+      return Message.fromJson(e);
+    }).toList();
+  }
+
+  @override
   Future<List<Message>> readAllMessages() async {
     final db = _appDb.database;
     final messages = await db.query(

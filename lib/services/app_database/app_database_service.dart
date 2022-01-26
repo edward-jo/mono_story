@@ -12,6 +12,7 @@ abstract class AppDatabaseService {
   Future<Message> createMessage(Message message);
   Future<int> deleteMessage(int id);
   Future<Message> readMessage(int id);
+  Future<List<Message>> readThreadMessages(int threadId);
   Future<List<Message>> readAllMessages();
   Future<int> updateMessage(Message message);
   //----------------------------------------------------------------------------

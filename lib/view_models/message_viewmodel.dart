@@ -13,11 +13,26 @@ class MessageViewModel extends ChangeNotifier {
   final AppDatabaseService _dbService = serviceLocator<AppDatabaseService>();
   final IcloudStorageService _iStorageService =
       serviceLocator<IcloudStorageService>();
+
   List<Message> _messages = [];
   List<Thread> _threads = [];
+  int? _currentThreadId;
 
   List<Message> get messages => _messages;
   List<Thread> get threads => _threads;
+
+  int? get currentThreadId => _currentThreadId;
+
+  set currentThreadId(int? id) {
+    _currentThreadId = id;
+  }
+
+  Thread? get currentThreadData {
+    if (_currentThreadId == null) {
+      return null;
+    }
+    return findThreadData(id: _currentThreadId);
+  }
 
   Future<bool> save(Message message) async {
     Message msg = await _dbService.createMessage(message);
@@ -26,21 +41,41 @@ class MessageViewModel extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> readAll() async {
-    List<Thread> allThreadNames = await _dbService.readAllThreads();
-    for (Thread t in allThreadNames) {
-      developer.log('Read all thread names( ${t.id}, ${t.name} )');
-    }
-    _threads = allThreadNames;
+  Future<List<Thread>> getThreadList() async {
+    List<Thread> threads = await _dbService.readAllThreads();
 
-    List<Message> allMessages = await _dbService.readAllMessages();
-    for (Message msg in allMessages) {
-      developer.log('Read all messages ( ${msg.id} )');
-      developer.log(msg.toJson().toString());
+    developer.log('Thread List');
+    for (Thread t in threads) {
+      developer.log('${t.id}: ${t.name}');
     }
-    _messages = allMessages;
-    notifyListeners();
-    return true;
+    _threads = threads;
+    return threads;
+  }
+
+  Future<List<Message>> readThread(int? id) async {
+    List<Thread> threads = await _dbService.readAllThreads();
+
+    developer.log('Thread List');
+    for (Thread t in threads) {
+      developer.log('${t.id}: ${t.name}');
+    }
+    _threads = threads;
+
+    List<Message> messages;
+    if (id == null) {
+      messages = await _dbService.readAllMessages();
+    } else {
+      messages = await _dbService.readThreadMessages(id);
+    }
+
+    developer.log('Message List');
+    for (Message m in messages) {
+      developer.log('id( ${m.id}: ' + m.toJson().toString());
+    }
+    _messages = messages;
+
+    // notifyListeners();
+    return messages;
   }
 
   Future<void> uploadMessages(
@@ -81,7 +116,7 @@ class MessageViewModel extends ChangeNotifier {
 
   Future<void> reloadMessages() async {
     await _dbService.init();
-    await readAll();
+    readThread(_currentThreadId);
   }
 
   Future<Thread> createThreadName(Thread threadName) async {

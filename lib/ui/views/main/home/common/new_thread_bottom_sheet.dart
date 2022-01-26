@@ -30,14 +30,17 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // -- BOTTOM SHEET HEAD --
           const SizedBox(height: 20),
+
           Text(
             'Create New Thread',
             style: textTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
           ),
+
           const SizedBox(height: 20),
 
           // -- THREAD NAME TEXT FILED --
@@ -54,6 +57,7 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
                   keyboardAppearance: Brightness.light,
                   controller: _newThreadNameController,
                 ),
+
                 const SizedBox(height: 10.0),
 
                 // -- DONE BUTTON --
@@ -61,6 +65,8 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
                   onPressed: () => _done(context),
                   child: const Text('Done'),
                 ),
+
+                const SizedBox(height: 20.0),
               ],
             ),
           ),
@@ -77,6 +83,6 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
     developer.log('New thread name( $name )');
     Thread t = await _model.createThreadName(Thread(id: null, name: name));
 
-    Navigator.of(context).pop(t);
+    Navigator.of(context).pop(t.id);
   }
 }

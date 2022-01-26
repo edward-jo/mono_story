@@ -4,8 +4,8 @@ final ThemeData appTheme = ThemeData(
   /// Typically, only the [brightness], [primaryColor], or [primarySwatch] are
   /// specified. That pair of values are used to construct the [colorScheme].
   brightness: Brightness.light,
-  primaryColor: Colors.lightBlue,
-  primarySwatch: Colors.lightBlue,
+  primaryColor: Colors.blue,
+  primarySwatch: Colors.blue,
   canvasColor: Colors.white,
 
   // -- FONT --
@@ -48,5 +48,13 @@ final ThemeData appTheme = ThemeData(
       borderSide: BorderSide(color: Colors.grey, width: 0.5),
     ),
     contentPadding: const EdgeInsets.all(5.0),
+  ),
+
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      textStyle: const TextStyle(
+        color: Colors.white,
+      ),
+    ),
   ),
 );

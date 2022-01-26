@@ -11,6 +11,7 @@ import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class NewMessageScreen extends StatefulWidget {
+  static const routeName = '/new_message';
   const NewMessageScreen({Key? key}) : super(key: key);
 
   @override
@@ -19,9 +20,8 @@ class NewMessageScreen extends StatefulWidget {
 
 class _NewMessageScreenState extends State<NewMessageScreen> {
   final _newMessageController = TextEditingController();
-  Thread? _currentThread;
-  bool _loadedInitData = false;
   late final MessageViewModel _model;
+  Thread? _threadData;
 
   @override
   void initState() {
@@ -31,14 +31,9 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
 
   @override
   void didChangeDependencies() {
-    if (!_loadedInitData) {
-      NewMessageScreenArguments arguments = ModalRoute.of(context)!
-          .settings
-          .arguments as NewMessageScreenArguments;
-      _currentThread = arguments.thread;
-      _loadedInitData = true;
-    }
     super.didChangeDependencies();
+    int? threadId = ModalRoute.of(context)!.settings.arguments as int?;
+    _threadData = threadId == null ? null : _model.findThreadData(id: threadId);
   }
 
   @override
@@ -47,11 +42,13 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       // -- APP BAR --
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        // -- CANCEL BUTTON --
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.close_outlined),
         ),
         title: const Text('New Message'),
+        // -- SAVE BUTTON --
         actions: <Widget>[
           IconButton(
             onPressed: () => _save(context),
@@ -61,53 +58,51 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       ),
 
       // -- BODY --
-      body: SafeArea(
-        child: Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * scaffoldBodyWidthRate,
-            alignment: Alignment.topCenter,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                // -- THREAD NAME --
-                Builder(builder: (context) {
-                  if (_currentThread == null) {
-                    return ActionChip(
-                      backgroundColor: undefinedThreadBgColor,
-                      label: const Text('Select thread'),
-                      onPressed: () => _showThreadList(context),
-                    );
-                  }
-
-                  return InputChip(
-                    backgroundColor: threadNameBgColor,
-                    label: Text(_currentThread!.name),
-                    deleteIcon: const Icon(Icons.cancel),
-                    deleteIconColor: Colors.grey,
-                    onDeleted: () => setState(() => _currentThread = null),
-                    onPressed: () => _showThreadList(context),
+      body: Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width * scaffoldBodyWidthRate,
+          alignment: Alignment.topCenter,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // -- THREAD NAME --
+              Builder(builder: (ctx) {
+                if (_threadData == null) {
+                  return ActionChip(
+                    backgroundColor: undefinedThreadBgColor,
+                    label: const Text('Select thread'),
+                    onPressed: () => _showThreadList(ctx),
                   );
-                }),
+                }
 
-                const Divider(),
+                return InputChip(
+                  backgroundColor: threadNameBgColor,
+                  label: Text(_threadData!.name),
+                  deleteIcon: const Icon(Icons.cancel),
+                  deleteIconColor: Colors.grey,
+                  onDeleted: () => setState(() => _threadData = null),
+                  onPressed: () => _showThreadList(ctx),
+                );
+              }),
 
-                // -- MESSAGE TEXT FIELD --
-                TextField(
-                  autofocus: true,
-                  maxLines: 7,
-                  keyboardType: TextInputType.text,
-                  keyboardAppearance: Brightness.light,
-                  controller: _newMessageController,
-                  decoration: const InputDecoration(
-                    hintText: 'Compose story',
-                    filled: false,
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                  ),
+              const Divider(),
+
+              // -- MESSAGE TEXT FIELD --
+              TextField(
+                autofocus: true,
+                maxLines: 7,
+                keyboardType: TextInputType.text,
+                keyboardAppearance: Brightness.light,
+                controller: _newMessageController,
+                decoration: const InputDecoration(
+                  hintText: 'Compose story',
+                  filled: false,
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -126,11 +121,17 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       Message(
         id: null,
         message: message,
-        threadId: _currentThread?.id,
+        threadId: _threadData?.id,
         createdTime: DateTime.now(),
       ),
     );
-    Navigator.of(context).pop();
+
+    final result = NewMessageScreenResult(
+      isSaved: true,
+      savedMessageThreadId: _threadData?.id,
+    );
+
+    Navigator.of(context).pop(result);
     return;
   }
 
@@ -149,9 +150,8 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
 
     switch (result.type) {
       case ThreadListResultType.thread:
-        final thread = result.data as Thread;
-        developer.log('Selected thread name is ${thread.name}');
-        setState(() => _currentThread = thread);
+        final threadId = result.data as int?;
+        _model.currentThreadId = threadId;
         break;
       case ThreadListResultType.newThreadRequest:
         _showNewThread(context);
@@ -174,12 +174,14 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     if (newThread == null || newThread.name.isEmpty) return;
 
     developer.log('New thread name is ${newThread.name}');
-    setState(() => _currentThread = newThread);
+    _model.currentThreadId = newThread.id;
     return;
   }
 }
 
-class NewMessageScreenArguments {
-  final Thread? thread;
-  const NewMessageScreenArguments({required this.thread});
+class NewMessageScreenResult {
+  final int? savedMessageThreadId;
+  final bool isSaved;
+  const NewMessageScreenResult(
+      {this.savedMessageThreadId, required this.isSaved});
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mono_story/constants.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:provider/src/provider.dart';
 
 class ThreadButton extends StatelessWidget {
   final String name;

@@ -14,10 +14,7 @@ class MessageListViewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final findThread = Provider.of<MessageViewModel>(
-      context,
-      listen: false,
-    ).findThreadData;
+    final findThread = context.read<MessageViewModel>().findThreadData;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 1.0),
