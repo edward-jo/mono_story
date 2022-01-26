@@ -113,7 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(bottomSheetRadius),
+        ),
       ),
       builder: (_) => const ThreadListBottomSheet(),
     );
@@ -142,7 +144,9 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(bottomSheetRadius),
+        ),
       ),
       builder: (_) => const NewThreadBottomSheet(),
     );

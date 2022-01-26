@@ -119,3 +119,5 @@ const Color threadNameBgColor = BgColorLM.orange;
 const Color undefinedThreadBgColor = BgColorLM.gray;
 const Color dateTimeBgColor = BgColorLM.blue;
 const Color threadInfoBgColor = BgColorLM.pink;
+
+const double bottomSheetRadius = 15.0;

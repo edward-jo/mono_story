@@ -141,7 +141,9 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(bottomSheetRadius),
+        ),
       ),
       builder: (ctx) => const ThreadListBottomSheet(),
     );
@@ -166,7 +168,9 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(bottomSheetRadius),
+        ),
       ),
       builder: (_) => const NewThreadBottomSheet(),
     );

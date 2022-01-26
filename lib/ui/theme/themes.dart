@@ -55,6 +55,7 @@ final ThemeData appTheme = ThemeData(
       textStyle: const TextStyle(
         color: Colors.white,
       ),
+      elevation: 0.0,
     ),
   ),
 );
