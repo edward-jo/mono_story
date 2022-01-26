@@ -1,19 +1,23 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../constants.dart';
+import 'package:mono_story/constants.dart';
+
 part 'message.g.dart';
 
 @JsonSerializable()
 class Message {
-  @JsonKey(name: MessagesDbCols.id)
+  @JsonKey(name: MessagesTableCols.id)
   final int? id;
-  @JsonKey(name: MessagesDbCols.message)
+  @JsonKey(name: MessagesTableCols.message)
   final String message;
-  @JsonKey(name: MessagesDbCols.createdTime)
+  @JsonKey(name: MessagesTableCols.fkThreadId)
+  final int? threadId;
+  @JsonKey(name: MessagesTableCols.createdTime)
   final DateTime createdTime;
 
   Message({
     this.id,
     required this.message,
+    required this.threadId,
     required this.createdTime,
   });
 

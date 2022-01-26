@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/search/search_textfield.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -16,8 +17,13 @@ class _SearchScreenState extends State<SearchScreen> {
         appBar: AppBar(
           title: const SearchTextField(),
         ),
-        body: const Center(
-          child: Text('Search Screen'),
+        body: Center(
+          child: ElevatedButton(
+            onPressed: () => Navigator.of(context).pushNamed(
+              NewMessageScreen.routeName,
+            ),
+            child: const Text('Search Screen'),
+          ),
         ),
       ),
     );

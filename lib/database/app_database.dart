@@ -1,7 +1,8 @@
 import 'dart:developer' as developer;
+
+import 'package:mono_story/constants.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import '../constants.dart';
 
 class AppDatabase {
   Database? _database;
@@ -30,11 +31,22 @@ class AppDatabase {
   }
 
   Future _onCreate(Database db, int version) async {
+    // Create thread names table
+    await db.execute('''
+CREATE TABLE $threadNamesTableName (
+  ${ThreadsTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${ThreadsTableCols.name} TEXT NOT NULL
+)
+ ''');
+
+    // Create messages table
     await db.execute('''
 CREATE TABLE $messagesTableName (
-  ${MessagesDbCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
-  ${MessagesDbCols.message} TEXT NOT NULL,
-  ${MessagesDbCols.createdTime} TEXT NOT NULL
+  ${MessagesTableCols.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${MessagesTableCols.message} TEXT NOT NULL,
+  ${MessagesTableCols.fkThreadId} INTEGER,
+  ${MessagesTableCols.createdTime} TEXT NOT NULL,
+  FOREIGN KEY(${MessagesTableCols.fkThreadId}) REFERENCES $threadNamesTableName(id)
 )
 ''');
   }

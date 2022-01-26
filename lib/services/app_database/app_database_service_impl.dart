@@ -1,7 +1,8 @@
-import '/database/app_database.dart';
-import '/models/message.dart';
-import 'app_database_service.dart';
-import '../../constants.dart';
+import 'package:mono_story/constants.dart';
+import 'package:mono_story/database/app_database.dart';
+import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/thread.dart';
+import 'package:mono_story/services/app_database/app_database_service.dart';
 
 final AppDatabase _appDb = AppDatabase();
 
@@ -23,22 +24,31 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
+  Future<String> getAppDatabaseFilePath() async {
+    final db = _appDb.database;
+    return db.path;
+  }
+  //----------------------------------------------------------------------------
+  // Message
+  //----------------------------------------------------------------------------
+
+  @override
   Future<Message> createMessage(Message message) async {
     final db = _appDb.database;
     Map<String, dynamic> messageJson = message.toJson();
     final id = await db.insert(messagesTableName, messageJson);
-    messageJson[MessagesDbCols.id] = id;
+    messageJson[MessagesTableCols.id] = id;
 
     return Message.fromJson(messageJson);
   }
 
   @override
-  Future<int> deleteMesssage(int id) async {
+  Future<int> deleteMessage(int id) async {
     final db = _appDb.database;
 
     return await db.delete(
       messagesTableName,
-      where: '${MessagesDbCols.id} = ?',
+      where: '${MessagesTableCols.id} = ?',
       whereArgs: [id],
     );
   }
@@ -49,17 +59,39 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final messages = await db.query(
       messagesTableName,
       columns: [
-        MessagesDbCols.id,
-        MessagesDbCols.message,
-        MessagesDbCols.createdTime,
+        MessagesTableCols.id,
+        MessagesTableCols.message,
+        MessagesTableCols.fkThreadId,
+        MessagesTableCols.createdTime,
       ],
-      where: '${MessagesDbCols.id} = ?',
+      where: '${MessagesTableCols.id} = ?',
       whereArgs: [id],
     );
 
-    if (messages.isEmpty) throw Exception('Failed to find id( $id )');
+    if (messages.isEmpty) throw Exception('Failed to find message id( $id )');
 
     return Message.fromJson(messages.first);
+  }
+
+  @override
+  Future<List<Message>> readThreadMessages(int threadId) async {
+    final db = _appDb.database;
+    final messages = await db.query(
+      messagesTableName,
+      columns: [
+        MessagesTableCols.id,
+        MessagesTableCols.message,
+        MessagesTableCols.fkThreadId,
+        MessagesTableCols.createdTime,
+      ],
+      where: '${MessagesTableCols.fkThreadId} = ?',
+      whereArgs: [threadId],
+      orderBy: '${MessagesTableCols.createdTime} ASC',
+    );
+
+    return messages.map((e) {
+      return Message.fromJson(e);
+    }).toList();
   }
 
   @override
@@ -67,7 +99,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
     final messages = await db.query(
       messagesTableName,
-      orderBy: '${MessagesDbCols.createdTime} ASC',
+      orderBy: '${MessagesTableCols.createdTime} ASC',
     );
 
     return messages.map((e) {
@@ -82,14 +114,74 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     return await db.update(
       messagesTableName,
       message.toJson(),
-      where: '${MessagesDbCols.id} = ?',
+      where: '${MessagesTableCols.id} = ?',
       whereArgs: [message.id],
+    );
+  }
+  //----------------------------------------------------------------------------
+  // Thread
+  //----------------------------------------------------------------------------
+
+  @override
+  Future<Thread> createThread(Thread thread) async {
+    final db = _appDb.database;
+    Map<String, dynamic> threadJson = thread.toJson();
+    final id = await db.insert(threadNamesTableName, threadJson);
+    threadJson[ThreadsTableCols.id] = id;
+
+    return Thread.fromJson(threadJson);
+  }
+
+  @override
+  Future<int> deleteThread(int id) async {
+    final db = _appDb.database;
+
+    return await db.delete(
+      threadNamesTableName,
+      where: '${ThreadsTableCols.id} = ?',
+      whereArgs: [id],
     );
   }
 
   @override
-  Future<String> getAppDatabaseFilePath() async {
+  Future<List<Thread>> readAllThreads() async {
     final db = _appDb.database;
-    return db.path;
+    final threads = await db.query(
+      threadNamesTableName,
+      orderBy: '${ThreadsTableCols.name} ASC',
+    );
+    return threads.map((e) {
+      return Thread.fromJson(e);
+    }).toList();
+  }
+
+  @override
+  Future<Thread> readThread(int id) async {
+    final db = _appDb.database;
+    final threads = await db.query(
+      threadNamesTableName,
+      columns: [
+        ThreadsTableCols.id,
+        ThreadsTableCols.name,
+      ],
+      where: '${ThreadsTableCols.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (threads.isEmpty) throw Exception('Failed to find thread id ( $id )');
+
+    return Thread.fromJson(threads.first);
+  }
+
+  @override
+  Future<int> updateThread(Thread thread) async {
+    final db = _appDb.database;
+
+    return await db.update(
+      threadNamesTableName,
+      thread.toJson(),
+      where: '${ThreadsTableCols.id} = ?',
+      whereArgs: [thread.id],
+    );
   }
 }

@@ -1,19 +1,38 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
-import '../constants.dart';
-import '../models/message.dart';
-import '../services/icloud_storage/icloud_storage_service.dart';
-import '../services/app_database/app_database_service.dart';
-import '../services/service_locator.dart';
+import 'package:mono_story/constants.dart';
+import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/thread.dart';
+import 'package:mono_story/services/app_database/app_database_service.dart';
+import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
+import 'package:mono_story/services/service_locator.dart';
 
 class MessageViewModel extends ChangeNotifier {
   final AppDatabaseService _dbService = serviceLocator<AppDatabaseService>();
   final IcloudStorageService _iStorageService =
       serviceLocator<IcloudStorageService>();
+
   List<Message> _messages = [];
+  List<Thread> _threads = [];
+  int? _currentThreadId;
 
   List<Message> get messages => _messages;
+  List<Thread> get threads => _threads;
+
+  int? get currentThreadId => _currentThreadId;
+
+  set currentThreadId(int? id) {
+    _currentThreadId = id;
+  }
+
+  Thread? get currentThreadData {
+    if (_currentThreadId == null) {
+      return null;
+    }
+    return findThreadData(id: _currentThreadId);
+  }
 
   Future<bool> save(Message message) async {
     Message msg = await _dbService.createMessage(message);
@@ -22,14 +41,41 @@ class MessageViewModel extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> readAll() async {
-    List<Message> all = await _dbService.readAllMessages();
-    for (Message msg in all) {
-      developer.log(msg.toJson().toString());
+  Future<List<Thread>> getThreadList() async {
+    List<Thread> threads = await _dbService.readAllThreads();
+
+    developer.log('Thread List');
+    for (Thread t in threads) {
+      developer.log('${t.id}: ${t.name}');
     }
-    _messages = all;
-    notifyListeners();
-    return true;
+    _threads = threads;
+    return threads;
+  }
+
+  Future<List<Message>> readThread(int? id) async {
+    List<Thread> threads = await _dbService.readAllThreads();
+
+    developer.log('Thread List');
+    for (Thread t in threads) {
+      developer.log('${t.id}: ${t.name}');
+    }
+    _threads = threads;
+
+    List<Message> messages;
+    if (id == null) {
+      messages = await _dbService.readAllMessages();
+    } else {
+      messages = await _dbService.readThreadMessages(id);
+    }
+
+    developer.log('Message List');
+    for (Message m in messages) {
+      developer.log('id( ${m.id}: ' + m.toJson().toString());
+    }
+    _messages = messages;
+
+    // notifyListeners();
+    return messages;
   }
 
   Future<void> uploadMessages(
@@ -70,6 +116,29 @@ class MessageViewModel extends ChangeNotifier {
 
   Future<void> reloadMessages() async {
     await _dbService.init();
-    await readAll();
+    readThread(_currentThreadId);
+  }
+
+  Future<Thread> createThreadName(Thread threadName) async {
+    Thread t = await _dbService.createThread(threadName);
+    _threads.add(t);
+    notifyListeners();
+    return t;
+  }
+
+  Thread? findThreadData({int? id, String? name}) {
+    assert(id != null || name != null);
+    if (_threads.isEmpty) return null;
+    return _threads
+        .where((element) {
+          if (id != null && element.id == id) {
+            return true;
+          } else if (name != null && element.name == name) {
+            return true;
+          }
+          return false;
+        })
+        .toList()
+        .first;
   }
 }

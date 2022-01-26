@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
-import 'home/home_screen.dart';
-import '../../common/platform_widget.dart';
-import 'search/search_screen.dart';
+import 'package:mono_story/ui/common/platform_widget.dart';
+import 'package:mono_story/ui/views/main/home/home_screen.dart';
+import 'package:mono_story/ui/views/main/search/search_screen.dart';
 
 class MainScreen extends StatefulWidget {
   static final routeName = '/main';
