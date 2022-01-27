@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/models/thread.dart';
+import 'package:mono_story/ui/common/mono_elevatedbutton.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,7 @@ class NewThreadBottomSheet extends StatefulWidget {
 class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
   final _newThreadNameController = TextEditingController();
   late final MessageViewModel _model;
+  final _bottomSheetPadding = const EdgeInsets.symmetric(horizontal: 25.0);
 
   @override
   void initState() {
@@ -25,10 +27,13 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
+    final textTheme = Theme.of(context).textTheme;
+    final inputDecorationTheme = Theme.of(context).inputDecorationTheme;
+    var inputDecoration = const InputDecoration(hintText: 'Thread name');
+    inputDecoration = inputDecoration.applyDefaults(inputDecorationTheme);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      padding: _bottomSheetPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -43,17 +48,18 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
 
           const SizedBox(height: 20),
 
-          // -- THREAD NAME TEXT FILED --
           Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
             child: Column(
               children: [
+                // -- THREAD NAME TEXT FILED --
                 TextField(
-                  autofocus: true,
                   maxLines: 1,
+                  autofocus: true,
                   keyboardType: TextInputType.text,
+                  decoration: inputDecoration,
                   keyboardAppearance: Brightness.light,
                   controller: _newThreadNameController,
                 ),
@@ -61,12 +67,16 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
                 const SizedBox(height: 10.0),
 
                 // -- DONE BUTTON --
-                TextButton(
+                MonoElevatedButton(
                   onPressed: () => _done(context),
                   child: const Text('Done'),
                 ),
 
-                const SizedBox(height: 20.0),
+                // -- CANCEL BUTTON --
+                TextButton(
+                  onPressed: () => _cancel(context),
+                  child: const Text('Cancel'),
+                ),
               ],
             ),
           ),
@@ -84,5 +94,9 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
     Thread t = await _model.createThreadName(Thread(id: null, name: name));
 
     Navigator.of(context).pop(t.id);
+  }
+
+  void _cancel(BuildContext context) {
+    Navigator.of(context).pop();
   }
 }

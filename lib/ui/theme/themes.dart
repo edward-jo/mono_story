@@ -38,14 +38,15 @@ final ThemeData appTheme = ThemeData(
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.grey.shade50,
-    border: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+    border: OutlineInputBorder(
+      borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+      borderSide: BorderSide(color: Colors.grey.shade700, width: 0.1),
     ),
-    enabledBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.grey, width: 0.5),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.grey.shade700, width: 0.1),
     ),
-    focusedBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.grey, width: 0.5),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.grey.shade700, width: 0.1),
     ),
     contentPadding: const EdgeInsets.all(5.0),
   ),

@@ -19,6 +19,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
   late Future<List<Thread>> _getThreadListFuture;
 
   final double _threadItemHeight = 50.0;
+  final _bottomSheetPadding = const EdgeInsets.symmetric(horizontal: 20.0);
 
   @override
   void initState() {
@@ -62,48 +63,51 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
 
     List<Thread> threadList = snapshot.data!;
 
-    // -- MESSAGE LIST --
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        // -- BOTTOM SHEET HEAD --
-        const SizedBox(height: 10),
+    // -- THREAD LIST --
+    return Padding(
+      padding: _bottomSheetPadding,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          // -- BOTTOM SHEET HEAD --
+          const SizedBox(height: 10),
 
-        // -- SEE ALL BUTTON --
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            child: const Text('See all'),
-            onPressed: () => _seeAll(context),
-          ),
-        ),
-
-        // -- THREAD NAME LIST --
-        Expanded(
-          child: SizedBox(
-            child: MediaQuery.removePadding(
-              context: context,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: threadList.length,
-                itemBuilder: (ctx, i) => _threadItemBuilder(ctx, i, threadList),
-              ),
-              removeTop: true,
-              removeBottom: true,
+          // -- SEE ALL BUTTON --
+          Container(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              child: const Text('See all'),
+              onPressed: () => _seeAll(context),
             ),
           ),
-        ),
 
-        // -- CREATE NEW THREAD BUTTON --
-        MonoElevatedButton(
-          child: const Text('Create New Thread'),
-          onPressed: () => _newThread(context),
-        ),
+          // -- THREAD NAME LIST --
+          Expanded(
+            child: SizedBox(
+              child: MediaQuery.removePadding(
+                context: context,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: threadList.length,
+                  itemBuilder: (ctx, i) =>
+                      _threadItemBuilder(ctx, i, threadList),
+                ),
+                removeTop: true,
+                removeBottom: true,
+              ),
+            ),
+          ),
 
-        // --
-        const SizedBox(height: 20),
-      ],
+          // -- CREATE NEW THREAD BUTTON --
+          MonoElevatedButton(
+            child: const Text('Create New Thread'),
+            onPressed: () => _newThread(context),
+          ),
+
+          // --
+          const SizedBox(height: 20),
+        ],
+      ),
     );
   }
 
