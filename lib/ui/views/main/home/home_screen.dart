@@ -93,13 +93,15 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 10.0),
         Expanded(
           child: SizedBox(
-            child: ListView.builder(
-              itemCount: messageList.length,
-              itemBuilder: (_, i) {
-                return MessageListViewItem(
-                  message: messageList[i],
-                );
-              },
+            child: Scrollbar(
+              child: ListView.builder(
+                itemCount: messageList.length,
+                itemBuilder: (_, i) {
+                  return MessageListViewItem(
+                    message: messageList[i],
+                  );
+                },
+              ),
             ),
           ),
         ),

@@ -86,11 +86,14 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
             child: SizedBox(
               child: MediaQuery.removePadding(
                 context: context,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: threadList.length,
-                  itemBuilder: (ctx, i) =>
-                      _threadItemBuilder(ctx, i, threadList),
+                child: Scrollbar(
+                  isAlwaysShown: true,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: threadList.length,
+                    itemBuilder: (ctx, i) =>
+                        _threadItemBuilder(ctx, i, threadList),
+                  ),
                 ),
                 removeTop: true,
                 removeBottom: true,
