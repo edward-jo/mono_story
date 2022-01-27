@@ -50,6 +50,7 @@ final ThemeData appTheme = ThemeData(
     contentPadding: const EdgeInsets.all(5.0),
   ),
 
+  // -- ELEVATED BUTTON --
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       textStyle: const TextStyle(
@@ -57,5 +58,14 @@ final ThemeData appTheme = ThemeData(
       ),
       elevation: 0.0,
     ),
+  ),
+
+  // -- TEXT THEME --
+  /// If you specify textTheme in ThemeData() constructor, ThemeData merges it
+  /// with defaultTextTheme
+  textTheme: const TextTheme(
+    bodyText1: TextStyle(fontSize: 16.0), // Material spec 16.0
+    bodyText2: TextStyle(fontSize: 16.0), // Material spec 14.0
+    caption: TextStyle(fontSize: 15.0),
   ),
 );

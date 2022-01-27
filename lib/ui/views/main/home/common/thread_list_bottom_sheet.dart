@@ -134,10 +134,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
             leading: const Icon(Icons.topic),
             title: Text(
               list[i].name,
-              style: TextStyle(
-                fontSize: Theme.of(context).textTheme.bodyText1?.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyText2,
               overflow: TextOverflow.fade,
               softWrap: false,
             ),
