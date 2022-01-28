@@ -54,9 +54,6 @@ class MessageListViewItem extends StatelessWidget {
                 ),
             ],
           ),
-
-          // -- DIVIDER --
-          const Divider(thickness: 0.5),
         ],
       ),
     );

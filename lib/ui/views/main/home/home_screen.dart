@@ -94,12 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
         Expanded(
           child: SizedBox(
             child: Scrollbar(
-              child: ListView.builder(
+              child: ListView.separated(
                 itemCount: messageList.length,
                 itemBuilder: (_, i) {
                   return MessageListViewItem(
                     message: messageList[i],
                   );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider(thickness: 0.5);
                 },
               ),
             ),
