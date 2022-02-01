@@ -86,7 +86,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       ],
       where: '${MessagesTableCols.fkThreadId} = ?',
       whereArgs: [threadId],
-      orderBy: '${MessagesTableCols.createdTime} ASC',
+      orderBy: '${MessagesTableCols.createdTime} DESC',
     );
 
     return messages.map((e) {
@@ -99,7 +99,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
     final messages = await db.query(
       messagesTableName,
-      orderBy: '${MessagesTableCols.createdTime} ASC',
+      orderBy: '${MessagesTableCols.createdTime} DESC',
     );
 
     return messages.map((e) {

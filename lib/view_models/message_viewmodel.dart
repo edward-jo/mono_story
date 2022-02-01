@@ -36,7 +36,7 @@ class MessageViewModel extends ChangeNotifier {
 
   Future<bool> save(Message message) async {
     Message msg = await _dbService.createMessage(message);
-    _messages.add(msg);
+    _messages.insert(0, msg);
     notifyListeners();
     return true;
   }
