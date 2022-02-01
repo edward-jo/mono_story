@@ -22,15 +22,26 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Thread? _threadData;
-  late Future<List<Message>> _readThreadFuture;
+  late Future<void> _readThreadFuture;
   late MessageViewModel _model;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _model = context.read<MessageViewModel>();
     _threadData = _model.currentThreadData;
-    _readThreadFuture = _model.readThread(_threadData?.id);
+    _scrollController.addListener(_scrollListener);
+    _readThreadFuture = _model.readThreadChunk(_threadData?.id);
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.outOfRange) return;
+
+    if (_scrollController.offset >=
+        _scrollController.position.maxScrollExtent / 2) {
+      _model.readThreadChunk(_threadData?.id);
+    }
   }
 
   @override
@@ -53,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       // -- BODY --
-      body: FutureBuilder<List<Message>>(
+      body: FutureBuilder<void>(
         future: _readThreadFuture,
         builder: _messageListBuilder,
       ),
@@ -62,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _messageListBuilder(
     BuildContext context,
-    AsyncSnapshot<List<Message>> snapshot,
+    AsyncSnapshot<void> snapshot,
   ) {
     // -- INDICATOR --
     if (snapshot.connectionState != ConnectionState.done) {
@@ -83,9 +94,9 @@ class _HomeScreenState extends State<HomeScreen> {
       return Container();
     }
 
-    if (!snapshot.hasData) return Container();
+    // if (!snapshot.hasData) return Container();
 
-    List<Message> messageList = snapshot.data!;
+    // List<Message> messageList = snapshot.data!;
 
     // -- MESSAGE LIST --
     return Column(
@@ -94,11 +105,13 @@ class _HomeScreenState extends State<HomeScreen> {
         Expanded(
           child: SizedBox(
             child: Scrollbar(
+              controller: _scrollController,
               child: ListView.separated(
-                itemCount: messageList.length,
+                controller: _scrollController,
+                itemCount: context.watch<MessageViewModel>().messages.length,
                 itemBuilder: (_, i) {
                   return MessageListViewItem(
-                    message: messageList[i],
+                    message: context.watch<MessageViewModel>().messages[i],
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) {
@@ -133,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _model.currentThreadId = threadId;
           _threadData = _model.currentThreadData;
-          _readThreadFuture = _model.readThread(_threadData?.id);
+          _readThreadFuture = _model.readThreadChunk(_threadData?.id);
         });
         break;
       case ThreadListResultType.newThreadRequest:
@@ -161,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _model.currentThreadId = threadId;
       _threadData = _model.currentThreadData;
-      _readThreadFuture = _model.readThread(_threadData?.id);
+      _readThreadFuture = _model.readThreadChunk(_threadData?.id);
     });
 
     return;
@@ -180,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
     int? savedMessageThreadId = result.savedMessageThreadId;
     if (isSaved && savedMessageThreadId == _threadData?.id) {
       setState(() {
-        _readThreadFuture = _model.readThread(_threadData?.id);
+        _readThreadFuture = _model.readThreadChunk(_threadData?.id);
       });
     }
   }
