@@ -175,7 +175,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 
   void _showNewThread(BuildContext context) async {
-    final Thread? newThread = await showModalBottomSheet(
+    final int? newThreadId = await showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
@@ -187,10 +187,9 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       builder: (_) => const NewThreadBottomSheet(),
     );
 
-    if (newThread == null || newThread.name.isEmpty) return;
+    if (newThreadId == null) return;
 
-    developer.log('New thread name is ${newThread.name}');
-    setState(() => _threadData = _model.findThreadData(id: newThread.id));
+    setState(() => _threadData = _model.findThreadData(id: newThreadId));
     return;
   }
 }
