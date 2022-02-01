@@ -1,9 +1,13 @@
 import 'dart:developer' as developer;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_elevatedbutton.dart';
+import 'package:mono_story/ui/common/platform_alert_dialog.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +22,7 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
   final _newThreadNameController = TextEditingController();
   late final MessageViewModel _model;
   final _bottomSheetPadding = const EdgeInsets.symmetric(horizontal: 25.0);
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -55,13 +60,27 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
             child: Column(
               children: [
                 // -- THREAD NAME TEXT FILED --
-                TextField(
-                  maxLines: 1,
-                  autofocus: true,
-                  keyboardType: TextInputType.text,
-                  decoration: inputDecoration,
-                  keyboardAppearance: Brightness.light,
-                  controller: _newThreadNameController,
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    maxLines: 1,
+                    autofocus: true,
+                    keyboardType: TextInputType.text,
+                    decoration: inputDecoration,
+                    keyboardAppearance: Brightness.light,
+                    controller: _newThreadNameController,
+                    inputFormatters: <TextInputFormatter>[LowerCaseFormatter()],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Thread name is required';
+                      } else if (value.length > threadNameMaxLength) {
+                        return 'Thread name should be with maximum of $threadNameMaxLength characters';
+                      } else if (_model.findThreadData(name: value) != null) {
+                        return '$value already exists';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 10.0),
@@ -86,6 +105,10 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
   }
 
   void _done(BuildContext context) async {
+    developer.log('_done');
+
+    if (!_formKey.currentState!.validate()) return;
+
     final String name = _newThreadNameController.text.trim();
 
     if (name.isEmpty) return;
@@ -98,5 +121,15 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
 
   void _cancel(BuildContext context) {
     Navigator.of(context).pop();
+  }
+}
+
+class LowerCaseFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(text: newValue.text.toLowerCase());
   }
 }
