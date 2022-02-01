@@ -17,6 +17,7 @@ class MessageViewModel extends ChangeNotifier {
   List<Message> _messages = [];
   List<Thread> _threads = [];
   int? _currentThreadId;
+  bool _hasNext = true;
 
   List<Message> get messages => _messages;
   List<Thread> get threads => _threads;
@@ -25,6 +26,8 @@ class MessageViewModel extends ChangeNotifier {
 
   set currentThreadId(int? id) {
     _currentThreadId = id;
+    _messages.clear();
+    _hasNext = true;
   }
 
   Thread? get currentThreadData {
@@ -76,6 +79,54 @@ class MessageViewModel extends ChangeNotifier {
 
     // notifyListeners();
     return messages;
+  }
+
+  final int _storyChunkLimit = 15;
+  bool _isReadingThread = false;
+  Future<void> readThreadChunk(int? threadId) async {
+    if (_isReadingThread) {
+      developer.log('Reading thread in progress');
+      return;
+    }
+
+    if (!_hasNext) {
+      developer.log('No next stories');
+      return;
+    }
+
+    _isReadingThread = true;
+
+    List<Thread> threads = await _dbService.readAllThreads();
+
+    developer.log('Thread List');
+    for (Thread t in threads) {
+      developer.log('${t.id}: ${t.name}');
+    }
+    _threads = threads;
+
+    List<Message> stories;
+    if (threadId == null) {
+      stories = await _dbService.readAllMessagesChunk(
+          _messages.length, _storyChunkLimit);
+    } else {
+      stories = await _dbService.readThreadMessagesChunk(
+          threadId, _messages.length, _storyChunkLimit);
+    }
+
+    developer.log('Message List');
+    for (Message m in stories) {
+      developer.log('id( ${m.id}: ' + m.toJson().toString());
+    }
+
+    _hasNext = (stories.length < _storyChunkLimit) ? false : true;
+
+    _messages.insertAll(_messages.length, stories);
+
+    notifyListeners();
+
+    _isReadingThread = false;
+
+    return;
   }
 
   Future<void> uploadMessages(

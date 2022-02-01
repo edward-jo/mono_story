@@ -22,6 +22,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   final _newMessageController = TextEditingController();
   late final MessageViewModel _model;
   Thread? _threadData;
+  bool _initialized = false;
 
   @override
   void initState() {
@@ -32,8 +33,15 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    int? threadId = ModalRoute.of(context)!.settings.arguments as int?;
-    _threadData = threadId == null ? null : _model.findThreadData(id: threadId);
+    if (!_initialized) {
+      int? threadId = ModalRoute.of(context)!.settings.arguments as int?;
+      if (threadId == null) {
+        _threadData = null;
+      } else {
+        _threadData = _model.findThreadData(id: threadId);
+      }
+      _initialized = true;
+    }
   }
 
   @override
@@ -153,7 +161,11 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     switch (result.type) {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
-        _model.currentThreadId = threadId;
+        if (threadId == null) {
+          setState(() => _threadData = null);
+        } else {
+          setState(() => _threadData = _model.findThreadData(id: threadId));
+        }
         break;
       case ThreadListResultType.newThreadRequest:
         _showNewThread(context);
@@ -178,7 +190,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     if (newThread == null || newThread.name.isEmpty) return;
 
     developer.log('New thread name is ${newThread.name}');
-    _model.currentThreadId = newThread.id;
+    setState(() => _threadData = _model.findThreadData(id: newThread.id));
     return;
   }
 }
