@@ -121,3 +121,5 @@ const Color dateTimeBgColor = BgColorLM.blue;
 const Color threadInfoBgColor = BgColorLM.pink;
 
 const double bottomSheetRadius = 15.0;
+
+const int threadNameMaxLength = 30;
