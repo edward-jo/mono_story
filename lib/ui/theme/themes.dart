@@ -48,6 +48,12 @@ final ThemeData appTheme = ThemeData(
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(color: Colors.grey.shade700, width: 0.1),
     ),
+    errorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red.shade500, width: 1.0),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red.shade500, width: 1.0),
+    ),
     contentPadding: const EdgeInsets.all(5.0),
   ),
 
