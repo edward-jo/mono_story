@@ -186,7 +186,8 @@ class MessageViewModel extends ChangeNotifier {
           .where((element) {
             if (id != null && element.id == id) {
               return true;
-            } else if (name != null && element.name == name) {
+            } else if (name != null &&
+                element.name.toLowerCase() == name.toLowerCase()) {
               return true;
             }
             return false;
@@ -194,7 +195,7 @@ class MessageViewModel extends ChangeNotifier {
           .toList()
           .first;
     } catch (e) {
-      developer.log('Failed to find thread data');
+      developer.log('Cannot find out thread data');
       return null;
     }
   }
