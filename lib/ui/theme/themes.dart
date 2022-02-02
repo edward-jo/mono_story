@@ -55,6 +55,7 @@ final ThemeData appTheme = ThemeData(
       borderSide: BorderSide(color: Colors.red.shade500, width: 1.0),
     ),
     contentPadding: const EdgeInsets.all(5.0),
+    errorMaxLines: 2,
   ),
 
   // -- ELEVATED BUTTON --
