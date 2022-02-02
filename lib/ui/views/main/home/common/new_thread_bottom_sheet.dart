@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_elevatedbutton.dart';
-import 'package:mono_story/ui/common/platform_alert_dialog.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -95,10 +95,16 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
   }
 
   String? _validateNewThreadName(String? value) {
+    value = value?.trim();
+
     if (value == null || value.isEmpty) {
       return 'Thread name is required';
-    } else if (value.length > threadNameMaxLength) {
-      return 'Thread name should be with maximum of $threadNameMaxLength characters';
+    } else if (value.characters.length > threadNameMaxCharLength) {
+      developer.log(
+        'Thread name validation:',
+        error: jsonEncode('$value\'s length(${value.characters.length})'),
+      );
+      return 'Thread name should be with maximum of $threadNameMaxCharLength characters';
     } else if (_model.findThreadData(name: value) != null) {
       return '$value already exists';
     }

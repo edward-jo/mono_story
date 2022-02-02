@@ -122,4 +122,4 @@ const Color threadInfoBgColor = BgColorLM.pink;
 
 const double bottomSheetRadius = 15.0;
 
-const int threadNameMaxLength = 30;
+const int threadNameMaxCharLength = 30;
