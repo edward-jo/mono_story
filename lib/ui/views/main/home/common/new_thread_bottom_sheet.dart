@@ -69,17 +69,7 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
                     decoration: inputDecoration,
                     keyboardAppearance: Brightness.light,
                     controller: _newThreadNameController,
-                    inputFormatters: <TextInputFormatter>[LowerCaseFormatter()],
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Thread name is required';
-                      } else if (value.length > threadNameMaxLength) {
-                        return 'Thread name should be with maximum of $threadNameMaxLength characters';
-                      } else if (_model.findThreadData(name: value) != null) {
-                        return '$value already exists';
-                      }
-                      return null;
-                    },
+                    validator: _validateNewThreadName,
                   ),
                 ),
 
@@ -102,6 +92,17 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
         ],
       ),
     );
+  }
+
+  String? _validateNewThreadName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Thread name is required';
+    } else if (value.length > threadNameMaxLength) {
+      return 'Thread name should be with maximum of $threadNameMaxLength characters';
+    } else if (_model.findThreadData(name: value) != null) {
+      return '$value already exists';
+    }
+    return null;
   }
 
   void _done(BuildContext context) async {
