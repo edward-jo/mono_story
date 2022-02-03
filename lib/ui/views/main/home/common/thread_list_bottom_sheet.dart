@@ -4,7 +4,9 @@ import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_elevatedbutton.dart';
 import 'package:mono_story/ui/common/platform_alert_dialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
+import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ThreadListBottomSheet extends StatefulWidget {
@@ -15,7 +17,7 @@ class ThreadListBottomSheet extends StatefulWidget {
 }
 
 class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
-  late final MessageViewModel _model;
+  late final ThreadViewModel _threadVM;
   late Future<List<Thread>> _getThreadListFuture;
 
   final double _threadItemHeight = 50.0;
@@ -24,8 +26,8 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _model = context.read<MessageViewModel>();
-    _getThreadListFuture = _model.getThreadList();
+    _threadVM = context.read<ThreadViewModel>();
+    _getThreadListFuture = _threadVM.getThreadList();
   }
 
   @override
@@ -48,15 +50,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
     }
     // -- ALERT DIALOG --
     if (snapshot.hasError) {
-      showDialog(
-        context: context,
-        builder: (_) {
-          return PlatformAlertDialog(
-            content: Text(snapshot.error.toString()),
-          );
-        },
-      );
-      return Container();
+      return StyledBuilderErrorWidget(message: snapshot.error.toString());
     }
 
     if (!snapshot.hasData) return Container();

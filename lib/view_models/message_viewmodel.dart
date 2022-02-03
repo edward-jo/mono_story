@@ -14,27 +14,14 @@ class MessageViewModel extends ChangeNotifier {
   final IcloudStorageService _iStorageService =
       serviceLocator<IcloudStorageService>();
 
-  List<Message> _messages = [];
-  List<Thread> _threads = [];
-  int? _currentThreadId;
+  final List<Message> _messages = [];
   bool _hasNext = true;
 
   List<Message> get messages => _messages;
-  List<Thread> get threads => _threads;
 
-  int? get currentThreadId => _currentThreadId;
-
-  set currentThreadId(int? id) {
-    _currentThreadId = id;
+  void initMessages() {
     _messages.clear();
     _hasNext = true;
-  }
-
-  Thread? get currentThreadData {
-    if (_currentThreadId == null) {
-      return null;
-    }
-    return findThreadData(id: _currentThreadId);
   }
 
   Future<bool> save(Message message) async {
@@ -44,65 +31,25 @@ class MessageViewModel extends ChangeNotifier {
     return true;
   }
 
-  Future<List<Thread>> getThreadList() async {
-    List<Thread> threads = await _dbService.readAllThreads();
-
-    developer.log('Thread List');
-    for (Thread t in threads) {
-      developer.log('${t.id}: ${t.name}');
-    }
-    _threads = threads;
-    return threads;
-  }
-
-  Future<List<Message>> readThread(int? id) async {
-    List<Thread> threads = await _dbService.readAllThreads();
-
-    developer.log('Thread List');
-    for (Thread t in threads) {
-      developer.log('${t.id}: ${t.name}');
-    }
-    _threads = threads;
-
-    List<Message> messages;
-    if (id == null) {
-      messages = await _dbService.readAllMessages();
-    } else {
-      messages = await _dbService.readThreadMessages(id);
-    }
-
-    developer.log('Message List');
-    for (Message m in messages) {
-      developer.log('id( ${m.id}: ' + m.toJson().toString());
-    }
-    _messages = messages;
-
-    // notifyListeners();
-    return messages;
-  }
-
-  final int _storyChunkLimit = 15;
   bool _isReadingThread = false;
-  Future<void> readThreadChunk(int? threadId) async {
+
+  bool canReadThreadChunk() {
     if (_isReadingThread) {
       developer.log('Reading thread in progress');
-      return;
+      return false;
     }
 
     if (!_hasNext) {
       developer.log('No next stories');
-      return;
+      return false;
     }
 
+    return true;
+  }
+
+  final int _storyChunkLimit = 15;
+  Future<bool> readThreadChunk(int? threadId) async {
     _isReadingThread = true;
-
-    List<Thread> threads = await _dbService.readAllThreads();
-
-    developer.log('Thread List');
-    for (Thread t in threads) {
-      developer.log('${t.id}: ${t.name}');
-    }
-    _threads = threads;
 
     List<Message> stories;
     if (threadId == null) {
@@ -119,14 +66,11 @@ class MessageViewModel extends ChangeNotifier {
     }
 
     _hasNext = (stories.length < _storyChunkLimit) ? false : true;
-
     _messages.insertAll(_messages.length, stories);
-
+    _isReadingThread = false;
     notifyListeners();
 
-    _isReadingThread = false;
-
-    return;
+    return true;
   }
 
   Future<void> uploadMessages(
@@ -163,40 +107,5 @@ class MessageViewModel extends ChangeNotifier {
     await _dbService.deleteAppDatabase();
     _messages.clear();
     notifyListeners();
-  }
-
-  Future<void> reloadMessages() async {
-    await _dbService.init();
-    readThread(_currentThreadId);
-  }
-
-  Future<Thread> createThreadName(Thread threadName) async {
-    Thread t = await _dbService.createThread(threadName);
-    _threads.add(t);
-    notifyListeners();
-    return t;
-  }
-
-  Thread? findThreadData({int? id, String? name}) {
-    assert(id != null || name != null);
-    if (_threads.isEmpty) return null;
-
-    try {
-      return _threads
-          .where((element) {
-            if (id != null && element.id == id) {
-              return true;
-            } else if (name != null &&
-                element.name.toLowerCase() == name.toLowerCase()) {
-              return true;
-            }
-            return false;
-          })
-          .toList()
-          .first;
-    } catch (e) {
-      developer.log('Cannot find out thread data');
-      return null;
-    }
   }
 }
