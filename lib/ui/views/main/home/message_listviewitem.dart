@@ -1,9 +1,11 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
 class MessageListViewItem extends StatelessWidget {
@@ -14,7 +16,11 @@ class MessageListViewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final findThread = context.read<MessageViewModel>().findThreadData;
+    developer.log(
+      'Build MessageListViewItem(${message.id})',
+    );
+
+    final findThread = context.read<ThreadViewModel>().findThreadData;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 1.0),

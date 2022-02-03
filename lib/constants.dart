@@ -27,6 +27,7 @@ class MessagesTableCols {
 class ErrorMessages {
   static const String iCloudConnectionOrPermissionStr =
       'Platform Exception: iCloud container ID is not valid, or user is not signed in for iCloud, or user denied iCloud permission for this app';
+  static const String messageReadingFailure = 'Unexpected error occurred';
 }
 
 ///
