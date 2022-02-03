@@ -4,10 +4,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mono_story/services/service_locator.dart';
 import 'package:mono_story/ui/common/modal_page_route.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
+import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/theme/themes.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/main_screen.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 void main(List<String> args) async {
@@ -46,24 +48,21 @@ class MyApp extends StatelessWidget {
 
         // -- ALERT DIALOG --
         if (snapshot.hasError) {
-          showDialog(
-              context: ctx,
-              builder: (_) {
-                return PlatformWidget(
-                  cupertino: CupertinoAlertDialog(
-                    content: Text(snapshot.error.toString()),
-                  ),
-                  material: AlertDialog(
-                    content: Text(snapshot.error.toString()),
-                  ),
-                );
-              });
-          return Container();
+          return StyledBuilderErrorWidget(
+            message: snapshot.error.toString(),
+          );
         }
 
         // -- START MY APP --
-        return ChangeNotifierProvider.value(
-          value: serviceLocator<MessageViewModel>(),
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider.value(
+              value: serviceLocator<MessageViewModel>(),
+            ),
+            ChangeNotifierProvider.value(
+              value: serviceLocator<ThreadViewModel>(),
+            )
+          ],
           child: const StartMyApp(),
         );
       },

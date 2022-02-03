@@ -8,6 +8,7 @@ import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class NewMessageScreen extends StatefulWidget {
@@ -20,20 +21,30 @@ class NewMessageScreen extends StatefulWidget {
 
 class _NewMessageScreenState extends State<NewMessageScreen> {
   final _newMessageController = TextEditingController();
-  late final MessageViewModel _model;
+  late final ThreadViewModel _threadVM;
+  late final MessageViewModel _messageVM;
   Thread? _threadData;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    _model = context.read<MessageViewModel>();
+    _threadVM = context.read<ThreadViewModel>();
+    _messageVM = context.read<MessageViewModel>();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    int? threadId = ModalRoute.of(context)!.settings.arguments as int?;
-    _threadData = threadId == null ? null : _model.findThreadData(id: threadId);
+    if (!_initialized) {
+      int? threadId = ModalRoute.of(context)!.settings.arguments as int?;
+      if (threadId == null) {
+        _threadData = null;
+      } else {
+        _threadData = _threadVM.findThreadData(id: threadId);
+      }
+      _initialized = true;
+    }
   }
 
   @override
@@ -117,7 +128,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     }
 
     developer.log('Save messasge( $message )');
-    await _model.save(
+    await _messageVM.save(
       Message(
         id: null,
         message: message,
@@ -153,7 +164,11 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     switch (result.type) {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
-        _model.currentThreadId = threadId;
+        if (threadId == null) {
+          setState(() => _threadData = null);
+        } else {
+          setState(() => _threadData = _threadVM.findThreadData(id: threadId));
+        }
         break;
       case ThreadListResultType.newThreadRequest:
         _showNewThread(context);
@@ -163,7 +178,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 
   void _showNewThread(BuildContext context) async {
-    final Thread? newThread = await showModalBottomSheet(
+    final int? newThreadId = await showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
@@ -175,10 +190,9 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       builder: (_) => const NewThreadBottomSheet(),
     );
 
-    if (newThread == null || newThread.name.isEmpty) return;
+    if (newThreadId == null) return;
 
-    developer.log('New thread name is ${newThread.name}');
-    _model.currentThreadId = newThread.id;
+    setState(() => _threadData = _threadVM.findThreadData(id: newThreadId));
     return;
   }
 }

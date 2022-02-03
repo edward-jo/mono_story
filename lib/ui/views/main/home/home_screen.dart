@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
 import 'package:mono_story/models/thread.dart';
-import 'package:mono_story/ui/common/platform_alert_dialog.dart';
-import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
-import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
+import 'package:mono_story/ui/views/main/home/message_listview.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,15 +20,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Thread? _threadData;
-  late Future<List<Message>> _readThreadFuture;
-  late MessageViewModel _model;
+  late ThreadViewModel _threadVM;
+  late MessageViewModel _messageVM;
 
   @override
   void initState() {
     super.initState();
-    _model = context.read<MessageViewModel>();
-    _threadData = _model.currentThreadData;
-    _readThreadFuture = _model.readThread(_threadData?.id);
+    _threadVM = context.read<ThreadViewModel>();
+    _messageVM = context.read<MessageViewModel>();
+    _threadData = _threadVM.currentThreadData;
   }
 
   @override
@@ -53,62 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       // -- BODY --
-      body: FutureBuilder<List<Message>>(
-        future: _readThreadFuture,
-        builder: _messageListBuilder,
-      ),
-    );
-  }
-
-  Widget _messageListBuilder(
-    BuildContext context,
-    AsyncSnapshot<List<Message>> snapshot,
-  ) {
-    // -- INDICATOR --
-    if (snapshot.connectionState != ConnectionState.done) {
-      return const Center(
-        child: PlatformIndicator(),
-      );
-    }
-    // -- ALERT DIALOG --
-    if (snapshot.hasError) {
-      showDialog(
-        context: context,
-        builder: (_) {
-          return PlatformAlertDialog(
-            content: Text(snapshot.error.toString()),
-          );
-        },
-      );
-      return Container();
-    }
-
-    if (!snapshot.hasData) return Container();
-
-    List<Message> messageList = snapshot.data!;
-
-    // -- MESSAGE LIST --
-    return Column(
-      children: [
-        const SizedBox(height: 10.0),
-        Expanded(
-          child: SizedBox(
-            child: Scrollbar(
-              child: ListView.separated(
-                itemCount: messageList.length,
-                itemBuilder: (_, i) {
-                  return MessageListViewItem(
-                    message: messageList[i],
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return const Divider(thickness: 0.5);
-                },
-              ),
-            ),
-          ),
-        ),
-      ],
+      body: MessageListView(threadId: _threadData?.id),
     );
   }
 
@@ -131,9 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
         setState(() {
-          _model.currentThreadId = threadId;
-          _threadData = _model.currentThreadData;
-          _readThreadFuture = _model.readThread(_threadData?.id);
+          _threadVM.currentThreadId = threadId;
+          _messageVM.initMessages();
+          _threadData = _threadVM.currentThreadData;
         });
         break;
       case ThreadListResultType.newThreadRequest:
@@ -159,9 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (threadId == null) return;
 
     setState(() {
-      _model.currentThreadId = threadId;
-      _threadData = _model.currentThreadData;
-      _readThreadFuture = _model.readThread(_threadData?.id);
+      _threadVM.currentThreadId = threadId;
+      _messageVM.initMessages();
+      _threadData = _threadVM.currentThreadData;
     });
 
     return;
@@ -178,10 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
     result = result as NewMessageScreenResult;
     bool isSaved = result.isSaved;
     int? savedMessageThreadId = result.savedMessageThreadId;
-    if (isSaved && savedMessageThreadId == _threadData?.id) {
-      setState(() {
-        _readThreadFuture = _model.readThread(_threadData?.id);
-      });
+    if (_threadData?.id == null ||
+        isSaved && savedMessageThreadId == _threadData?.id) {
+      setState(() {});
     }
   }
 }

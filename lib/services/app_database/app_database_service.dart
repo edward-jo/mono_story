@@ -13,7 +13,16 @@ abstract class AppDatabaseService {
   Future<int> deleteMessage(int id);
   Future<Message> readMessage(int id);
   Future<List<Message>> readThreadMessages(int threadId);
+  Future<List<Message>> readThreadMessagesChunk(
+    int threadId,
+    int? offset,
+    int? limit,
+  );
   Future<List<Message>> readAllMessages();
+  Future<List<Message>> readAllMessagesChunk(
+    int? offset,
+    int? limit,
+  );
   Future<int> updateMessage(Message message);
   //----------------------------------------------------------------------------
   // Thread

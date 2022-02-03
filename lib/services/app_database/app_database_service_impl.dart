@@ -95,10 +95,52 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
+  Future<List<Message>> readThreadMessagesChunk(
+    int threadId,
+    int? offset,
+    int? limit,
+  ) async {
+    final db = _appDb.database;
+    final messages = await db.query(
+      messagesTableName,
+      columns: [
+        MessagesTableCols.id,
+        MessagesTableCols.message,
+        MessagesTableCols.fkThreadId,
+        MessagesTableCols.createdTime,
+      ],
+      where: '${MessagesTableCols.fkThreadId} = ?',
+      whereArgs: [threadId],
+      offset: offset,
+      limit: limit,
+      orderBy: '${MessagesTableCols.createdTime} DESC',
+    );
+
+    return messages.map((e) {
+      return Message.fromJson(e);
+    }).toList();
+  }
+
+  @override
   Future<List<Message>> readAllMessages() async {
     final db = _appDb.database;
     final messages = await db.query(
       messagesTableName,
+      orderBy: '${MessagesTableCols.createdTime} DESC',
+    );
+
+    return messages.map((e) {
+      return Message.fromJson(e);
+    }).toList();
+  }
+
+  @override
+  Future<List<Message>> readAllMessagesChunk(int? offset, int? limit) async {
+    final db = _appDb.database;
+    final messages = await db.query(
+      messagesTableName,
+      offset: offset,
+      limit: limit,
       orderBy: '${MessagesTableCols.createdTime} DESC',
     );
 
