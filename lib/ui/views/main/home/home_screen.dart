@@ -45,6 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
         // -- ACTIONS --
         actions: <Widget>[
           IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: MessageSearch());
+            },
+          ),
+          IconButton(
             onPressed: () => _showNewMessage(context),
             icon: const Icon(Icons.add_outlined),
           ),
@@ -125,5 +131,60 @@ class _HomeScreenState extends State<HomeScreen> {
         isSaved && savedMessageThreadId == _threadData?.id) {
       setState(() {});
     }
+  }
+}
+
+class MessageSearch extends SearchDelegate<String> {
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    return theme.copyWith(
+      appBarTheme: theme.appBarTheme.copyWith(elevation: 0),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: theme.inputDecorationTheme.hintStyle,
+        border: InputBorder.none,
+      ),
+    );
+  }
+
+  @override
+  PreferredSizeWidget? buildBottom(BuildContext context) {
+    return PreferredSize(
+      child: Container(color: Colors.grey, height: 0.5),
+      preferredSize: const Size.fromHeight(0.5),
+    );
+  }
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return <Widget>[
+      IconButton(
+        onPressed: () {
+          close(context, '');
+        },
+        icon: const Icon(Icons.clear),
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, '');
+      },
+      icon: const Icon(Icons.arrow_back_ios_new),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // TODO: implement buildResults
+    throw UnimplementedError();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return Container();
   }
 }
