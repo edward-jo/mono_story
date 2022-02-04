@@ -53,8 +53,8 @@ class MessageListViewItem extends StatelessWidget {
                     // -- DATE TIME --
                     MessageInfoContainer(
                       color: dateTimeBgColor,
-                      label: DateFormat('dd/MM/yyy hh:mm').format(
-                        message.createdTime,
+                      label: DateFormat.yMMMMd().format(
+                        message.createdTime.toLocal(),
                       ),
                     ),
 
