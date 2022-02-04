@@ -103,7 +103,6 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                 autofocus: true,
                 maxLines: 7,
                 keyboardType: TextInputType.text,
-                keyboardAppearance: Brightness.light,
                 controller: _newMessageController,
                 decoration: const InputDecoration(
                   hintText: 'Compose story',
@@ -133,7 +132,8 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
         id: null,
         message: message,
         threadId: _threadData?.id,
-        createdTime: DateTime.now(),
+        createdTime: DateTime.now().toUtc(),
+        starred: 0,
       ),
     );
 

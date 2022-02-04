@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 const String homeScreenTitleImgM = 'assets/images/appbar_title_white.png';
@@ -22,6 +23,7 @@ class MessagesTableCols {
   static const String message = 'message';
   static const String fkThreadId = 'fk_thread_id';
   static const String createdTime = 'created_time';
+  static const String starred = 'starred';
 }
 
 class ErrorMessages {
@@ -118,7 +120,7 @@ const double scaffoldBodyWidthRate = 0.9;
 // const Color threadNameTextColor = TextColorLM.orange;
 const Color threadNameBgColor = BgColorLM.orange;
 const Color undefinedThreadBgColor = BgColorLM.gray;
-const Color dateTimeBgColor = BgColorLM.blue;
+const Color dateTimeBgColor = Colors.transparent;
 const Color threadInfoBgColor = BgColorLM.pink;
 
 const double bottomSheetRadius = 15.0;

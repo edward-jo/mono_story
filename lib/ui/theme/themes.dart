@@ -8,6 +8,10 @@ final ThemeData appTheme = ThemeData(
   primarySwatch: Colors.blue,
   canvasColor: Colors.white,
 
+  /// If TextField's keyboardAppearance is unset, defaults to
+  /// primaryColorBrightness.
+  primaryColorBrightness: Brightness.light,
+
   // -- FONT --
   /// Use default font(San Francisco). Android(Roboto) iOS(San Francisco)
 

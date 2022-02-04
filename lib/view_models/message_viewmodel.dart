@@ -73,6 +73,29 @@ class MessageViewModel extends ChangeNotifier {
     return true;
   }
 
+  Future<void> deleteMessage(int index) async {
+    final message = _messages[index];
+    int affectedCount = await _dbService.deleteMessage(message.id!);
+    if (affectedCount != 1) {
+      developer.log('deleteMessage:', error: 'Failed to delete message');
+      return;
+    }
+    _messages.removeAt(index);
+    notifyListeners();
+  }
+
+  Future<void> starMessage(int index) async {
+    final message = _messages[index];
+    message.starred = message.starred == 0 ? 1 : 0;
+    int affectedCount = await _dbService.updateMessage(message);
+    if (affectedCount != 1) {
+      developer.log('starMessage:', error: 'Failed to star message');
+      return;
+    }
+    _messages[index] = message;
+    notifyListeners();
+  }
+
   Future<void> uploadMessages(
     void Function(Stream<double>) onProgress,
   ) async {

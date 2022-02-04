@@ -48,8 +48,8 @@ class _MessageListViewState extends State<MessageListView> {
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -99,6 +99,12 @@ class _MessageListViewState extends State<MessageListView> {
                     itemBuilder: (_, i) {
                       return MessageListViewItem(
                         message: messageList[i],
+                        onStar: () async {
+                          await _messageVM.starMessage(i);
+                        },
+                        onDelete: () async {
+                          await _messageVM.deleteMessage(i);
+                        },
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
