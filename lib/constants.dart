@@ -23,6 +23,7 @@ class MessagesTableCols {
   static const String message = 'message';
   static const String fkThreadId = 'fk_thread_id';
   static const String createdTime = 'created_time';
+  static const String starred = 'starred';
 }
 
 class ErrorMessages {
