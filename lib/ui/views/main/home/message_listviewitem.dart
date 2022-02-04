@@ -9,17 +9,19 @@ import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
 class MessageListViewItem extends StatelessWidget {
-  const MessageListViewItem({Key? key, required this.message})
-      : super(key: key);
+  const MessageListViewItem({
+    Key? key,
+    required this.message,
+    required this.onDelete,
+    required this.onStar,
+  }) : super(key: key);
 
   final Message message;
+  final void Function() onStar;
+  final void Function() onDelete;
 
   @override
   Widget build(BuildContext context) {
-    developer.log(
-      'Build MessageListViewItem(${message.id})',
-    );
-
     final findThread = context.read<ThreadViewModel>().findThreadData;
 
     return Container(
@@ -40,24 +42,60 @@ class MessageListViewItem extends StatelessWidget {
           const SizedBox(height: 10.0),
 
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // -- DATE TIME --
-              MessageInfoContainer(
-                color: dateTimeBgColor,
-                label: DateFormat('dd/MM/yyy hh:mm').format(
-                  message.createdTime,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    // -- DATE TIME --
+                    MessageInfoContainer(
+                      color: dateTimeBgColor,
+                      label: DateFormat('dd/MM/yyy hh:mm').format(
+                        message.createdTime,
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    // -- Thread --
+                    if (message.threadId != null)
+                      MessageInfoContainer(
+                        color: threadInfoBgColor,
+                        label: findThread(id: message.threadId)?.name ??
+                            'undefined',
+                      ),
+                  ],
                 ),
               ),
-
-              const SizedBox(width: 10),
-
-              // -- Thread --
-              if (message.threadId != null)
-                MessageInfoContainer(
-                  color: threadInfoBgColor,
-                  label: findThread(id: message.threadId)?.name ?? 'undefined',
-                ),
+              PopupMenuButton(
+                onSelected: (value) {},
+                itemBuilder: (context) => <PopupMenuEntry>[
+                  PopupMenuItem(
+                    child: Row(
+                      children: const <Widget>[
+                        Icon(Icons.star_outline_rounded),
+                        SizedBox(width: 10),
+                        Text('Star'),
+                      ],
+                    ),
+                    onTap: onStar,
+                  ),
+                  PopupMenuItem(
+                    child: Row(
+                      children: const <Widget>[
+                        Icon(Icons.delete_rounded),
+                        SizedBox(width: 10),
+                        Text('Delete'),
+                      ],
+                    ),
+                    onTap: onDelete,
+                  ),
+                ],
+              ),
+              // IconButton(onPressed: onTab, icon: const Icon(Icons.more_horiz)),
             ],
           ),
         ],

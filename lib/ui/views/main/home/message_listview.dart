@@ -99,6 +99,10 @@ class _MessageListViewState extends State<MessageListView> {
                     itemBuilder: (_, i) {
                       return MessageListViewItem(
                         message: messageList[i],
+                        onStar: () {},
+                        onDelete: () async {
+                          _messageVM.deleteMessage(i);
+                        },
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
