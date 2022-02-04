@@ -132,7 +132,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
         id: null,
         message: message,
         threadId: _threadData?.id,
-        createdTime: DateTime.now(),
+        createdTime: DateTime.now().toUtc(),
       ),
     );
 
