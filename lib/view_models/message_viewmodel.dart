@@ -73,6 +73,17 @@ class MessageViewModel extends ChangeNotifier {
     return true;
   }
 
+  Future<void> deleteMessage(int index) async {
+    final message = _messages[index];
+    int affectedCount = await _dbService.deleteMessage(message.id!);
+    if (affectedCount != 1) {
+      developer.log('deleteMessage:', error: 'Failed to delete message');
+      return;
+    }
+    _messages.removeAt(index);
+    notifyListeners();
+  }
+
   Future<void> uploadMessages(
     void Function(Stream<double>) onProgress,
   ) async {
