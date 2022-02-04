@@ -46,6 +46,7 @@ CREATE TABLE $messagesTableName (
   ${MessagesTableCols.message} TEXT NOT NULL,
   ${MessagesTableCols.fkThreadId} INTEGER,
   ${MessagesTableCols.createdTime} TEXT NOT NULL,
+  ${MessagesTableCols.starred} INTEGER NOT NULL,
   FOREIGN KEY(${MessagesTableCols.fkThreadId}) REFERENCES $threadNamesTableName(id)
 )
 ''');

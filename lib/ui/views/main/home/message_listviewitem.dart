@@ -20,7 +20,9 @@ class MessageListViewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final findThread = context.read<ThreadViewModel>().findThreadData;
+    final threadVM = context.read<ThreadViewModel>();
+    final threadName =
+        threadVM.findThreadData(id: message.threadId)?.name ?? 'undefined';
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 1.0),
@@ -39,61 +41,41 @@ class MessageListViewItem extends StatelessWidget {
           // -- PADDING --
           const SizedBox(height: 10.0),
 
+          //
+          // -- MESSAGE INFO --
+          //
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
+              // -- CREATED TIME --
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    // -- CREATE TIME --
-                    MessageInfoContainer(
-                      label: genCreatedTimeInfo(message.createdTime),
-                      color: dateTimeBgColor,
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // -- THREAD --
-                    if (message.threadId != null)
-                      MessageInfoContainer(
-                        color: threadInfoBgColor,
-                        label: findThread(id: message.threadId)?.name ??
-                            'undefined',
-                      ),
-                  ],
+                child: Text(
+                  genCreatedTimeInfo(message.createdTime),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption
+                      ?.copyWith(fontSize: 12),
                 ),
               ),
-              PopupMenuButton(
-                onSelected: (value) {},
-                itemBuilder: (context) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    child: Row(
-                      children: const <Widget>[
-                        Icon(Icons.star_outline_rounded),
-                        SizedBox(width: 10),
-                        Text('Star'),
-                      ],
-                    ),
-                    onTap: onStar,
-                  ),
-                  PopupMenuItem(
-                    child: Row(
-                      children: const <Widget>[
-                        Icon(Icons.delete_rounded),
-                        SizedBox(width: 10),
-                        Text('Delete'),
-                      ],
-                    ),
-                    onTap: onDelete,
+              Row(
+                children: <Widget>[
+                  // -- STARRED --
+                  StarIconButton(starred: message.starred, onPressed: onStar),
+
+                  // -- DELETE BUTTON --
+                  IconButton(
+                    onPressed: onDelete,
+                    icon: const Icon(Icons.delete_outline_rounded, size: 20.0),
                   ),
                 ],
               ),
-              // IconButton(onPressed: onTab, icon: const Icon(Icons.more_horiz)),
             ],
           ),
+          // -- THREAD --
+          if (message.threadId != null) ThreadInfoWidget(label: threadName),
         ],
       ),
     );
@@ -113,31 +95,49 @@ class MessageListViewItem extends StatelessWidget {
   }
 }
 
-class MessageInfoContainer extends StatelessWidget {
-  final Color color;
-  final String label;
-
-  const MessageInfoContainer({
+class StarIconButton extends StatelessWidget {
+  const StarIconButton({
     Key? key,
-    required this.label,
-    required this.color,
+    required this.starred,
+    required this.onPressed,
   }) : super(key: key);
+
+  final int starred;
+  final Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: const BorderRadius.all(Radius.circular(3)),
-        ),
-        child: Text(
-          label,
-          overflow: TextOverflow.fade,
-          softWrap: false,
-          style: Theme.of(context).textTheme.caption?.copyWith(fontSize: 12),
-        ),
+    final icon = starred == 1
+        ? const Icon(Icons.star_rounded, color: Colors.yellow)
+        : const Icon(Icons.star_outline_rounded);
+
+    return IconButton(
+      icon: icon,
+      onPressed: onPressed,
+      iconSize: 20.0,
+    );
+  }
+}
+
+class ThreadInfoWidget extends StatelessWidget {
+  const ThreadInfoWidget({Key? key, required this.label}) : super(key: key);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return // -- THREAD --
+        Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5),
+      decoration: const BoxDecoration(
+        color: threadInfoBgColor,
+        borderRadius: BorderRadius.all(Radius.circular(3)),
+      ),
+      child: Text(
+        label,
+        overflow: TextOverflow.fade,
+        softWrap: false,
+        style: Theme.of(context).textTheme.caption?.copyWith(fontSize: 12),
       ),
     );
   }

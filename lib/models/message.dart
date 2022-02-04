@@ -13,12 +13,15 @@ class Message {
   final int? threadId;
   @JsonKey(name: MessagesTableCols.createdTime)
   final DateTime createdTime;
+  @JsonKey(name: MessagesTableCols.starred)
+  int starred;
 
   Message({
     this.id,
     required this.message,
     required this.threadId,
     required this.createdTime,
+    required this.starred,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>
