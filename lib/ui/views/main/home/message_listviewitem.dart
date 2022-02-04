@@ -1,12 +1,10 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 
 class MessageListViewItem extends StatelessWidget {
   const MessageListViewItem({
@@ -50,17 +48,15 @@ class MessageListViewItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    // -- DATE TIME --
+                    // -- CREATE TIME --
                     MessageInfoContainer(
+                      label: genCreatedTimeInfo(message.createdTime),
                       color: dateTimeBgColor,
-                      label: DateFormat('dd/MM/yyy hh:mm').format(
-                        message.createdTime,
-                      ),
                     ),
 
                     const SizedBox(width: 10),
 
-                    // -- Thread --
+                    // -- THREAD --
                     if (message.threadId != null)
                       MessageInfoContainer(
                         color: threadInfoBgColor,
@@ -102,6 +98,19 @@ class MessageListViewItem extends StatelessWidget {
       ),
     );
   }
+
+  /// createdTime: UTC time
+  String genCreatedTimeInfo(DateTime createdTime) {
+    final current = DateTime.now();
+    final created = createdTime.toLocal();
+
+    String time = DateFormat.jm().format(created);
+    String date = (created.year == current.year)
+        ? DateFormat.MMMMd().format(created)
+        : DateFormat.yMMMMd().format(created);
+
+    return '$time, $date';
+  }
 }
 
 class MessageInfoContainer extends StatelessWidget {
@@ -121,13 +130,13 @@ class MessageInfoContainer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: const BorderRadius.all(Radius.circular(25)),
+          borderRadius: const BorderRadius.all(Radius.circular(3)),
         ),
         child: Text(
           label,
           overflow: TextOverflow.fade,
           softWrap: false,
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.caption?.copyWith(fontSize: 12),
         ),
       ),
     );

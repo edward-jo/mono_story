@@ -68,7 +68,6 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
                     autofocus: true,
                     keyboardType: TextInputType.text,
                     decoration: inputDecoration,
-                    keyboardAppearance: Brightness.light,
                     controller: _newThreadNameController,
                     validator: _validateNewThreadName,
                   ),
