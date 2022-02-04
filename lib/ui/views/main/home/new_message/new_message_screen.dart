@@ -103,7 +103,6 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                 autofocus: true,
                 maxLines: 7,
                 keyboardType: TextInputType.text,
-                keyboardAppearance: Brightness.light,
                 controller: _newMessageController,
                 decoration: const InputDecoration(
                   hintText: 'Compose story',

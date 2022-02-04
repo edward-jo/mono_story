@@ -19,7 +19,6 @@ class _SearchTextFieldState extends State<SearchTextField> {
       maxLines: 1,
       style: textTheme.bodyText2,
       keyboardType: TextInputType.name,
-      keyboardAppearance: Brightness.light,
       controller: _searchController,
       onSubmitted: (value) => developer.log('Submitted: $value'),
       onChanged: (value) => developer.log('onChanged: $value'),

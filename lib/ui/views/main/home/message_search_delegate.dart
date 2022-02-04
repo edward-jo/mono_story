@@ -1,9 +1,11 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:mono_story/ui/views/main/home/message_search_result_listview.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:provider/src/provider.dart';
 
 class MessageSearchDelegate extends SearchDelegate<String> {
+  MessageSearchDelegate() : super(searchFieldLabel: 'Search hint');
+
   @override
   ThemeData appBarTheme(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -28,9 +30,7 @@ class MessageSearchDelegate extends SearchDelegate<String> {
   List<Widget>? buildActions(BuildContext context) {
     return <Widget>[
       IconButton(
-        onPressed: () {
-          query = '';
-        },
+        onPressed: () => query = '',
         icon: const Icon(Icons.clear),
       ),
     ];
@@ -39,9 +39,7 @@ class MessageSearchDelegate extends SearchDelegate<String> {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-      onPressed: () {
-        close(context, query);
-      },
+      onPressed: () => close(context, query),
       icon: const Icon(Icons.arrow_back_ios_new),
     );
   }
