@@ -5,6 +5,7 @@ import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/message_listview.dart';
+import 'package:mono_story/ui/views/main/home/message_search_delegate.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              showSearch(context: context, delegate: MessageSearch());
+              showSearch(context: context, delegate: MessageSearchDelegate());
             },
           ),
           IconButton(
@@ -131,60 +132,5 @@ class _HomeScreenState extends State<HomeScreen> {
         isSaved && savedMessageThreadId == _threadData?.id) {
       setState(() {});
     }
-  }
-}
-
-class MessageSearch extends SearchDelegate<String> {
-  @override
-  ThemeData appBarTheme(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    return theme.copyWith(
-      appBarTheme: theme.appBarTheme.copyWith(elevation: 0),
-      inputDecorationTheme: InputDecorationTheme(
-        hintStyle: theme.inputDecorationTheme.hintStyle,
-        border: InputBorder.none,
-      ),
-    );
-  }
-
-  @override
-  PreferredSizeWidget? buildBottom(BuildContext context) {
-    return PreferredSize(
-      child: Container(color: Colors.grey, height: 0.5),
-      preferredSize: const Size.fromHeight(0.5),
-    );
-  }
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return <Widget>[
-      IconButton(
-        onPressed: () {
-          close(context, '');
-        },
-        icon: const Icon(Icons.clear),
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        close(context, '');
-      },
-      icon: const Icon(Icons.arrow_back_ios_new),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    throw UnimplementedError();
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return Container();
   }
 }
