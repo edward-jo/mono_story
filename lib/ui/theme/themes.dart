@@ -80,4 +80,9 @@ final ThemeData appTheme = ThemeData(
     bodyText2: TextStyle(fontSize: 16.0), // Material spec 14.0
     caption: TextStyle(fontSize: 15.0),
   ),
+
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: Colors.white,
+    foregroundColor: Colors.black,
+  ),
 );
