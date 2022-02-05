@@ -51,14 +51,15 @@ class _HomeScreenState extends State<HomeScreen> {
               showSearch(context: context, delegate: MessageSearchDelegate());
             },
           ),
-          IconButton(
-            onPressed: () => _showNewMessage(context),
-            icon: const Icon(Icons.add_outlined),
-          ),
         ],
       ),
       // -- BODY --
       body: MessageListView(threadId: _threadData?.id),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showNewMessage(context),
+        child: const Icon(Icons.add),
+        tooltip: 'Create new story',
+      ),
     );
   }
 
