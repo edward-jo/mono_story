@@ -39,7 +39,6 @@ class ThreadViewModel extends ChangeNotifier {
   }
 
   Thread? findThreadData({int? id, String? name}) {
-    assert(id != null || name != null);
     if (_threads.isEmpty) return null;
 
     try {
