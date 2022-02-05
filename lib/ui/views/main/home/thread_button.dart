@@ -23,21 +23,24 @@ class ThreadButton extends StatelessWidget {
       child: Row(
         children: [
           Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10.0,
-                vertical: 5.0,
-              ),
-              decoration: const BoxDecoration(
-                color: threadNameBgColor,
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              ),
-              child: Text(
-                name,
-                overflow: TextOverflow.fade,
-                softWrap: false,
-                style: GoogleFonts.robotoMono(
-                  textStyle: Theme.of(context).textTheme.headline6,
+            child: InkWell(
+              onTap: onPressed,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 5.0,
+                ),
+                decoration: const BoxDecoration(
+                  color: threadNameBgColor,
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                ),
+                child: Text(
+                  name,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  style: GoogleFonts.robotoMono(
+                    textStyle: Theme.of(context).textTheme.headline6,
+                  ),
                 ),
               ),
             ),
