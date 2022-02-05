@@ -25,6 +25,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   late final MessageViewModel _messageVM;
   Thread? _threadData;
   bool _initialized = false;
+  bool _disableSaveButton = true;
 
   @override
   void initState() {
@@ -58,12 +59,12 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.close_outlined),
         ),
-        title: const Text('New Message'),
+        title: const Text('New Story'),
         // -- SAVE BUTTON --
         actions: <Widget>[
-          IconButton(
-            onPressed: () => _save(context),
-            icon: const Icon(Icons.save_alt_outlined),
+          TextButton(
+            onPressed: _disableSaveButton ? null : () => _save(context),
+            child: const Text('Save'),
           ),
         ],
       ),
@@ -99,17 +100,28 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
               const Divider(),
 
               // -- MESSAGE TEXT FIELD --
-              TextField(
-                autofocus: true,
-                maxLines: 7,
-                keyboardType: TextInputType.text,
-                controller: _newMessageController,
-                decoration: const InputDecoration(
-                  hintText: 'Compose story',
-                  filled: false,
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
+              Expanded(
+                child: TextField(
+                  autofocus: true,
+                  maxLines: null,
+                  maxLength: 1024,
+                  keyboardType: TextInputType.text,
+                  controller: _newMessageController,
+                  onSubmitted: (_) => _save(context),
+                  onChanged: (value) {
+                    if (value.isEmpty) {
+                      setState(() => _disableSaveButton = true);
+                    } else if (_disableSaveButton) {
+                      setState(() => _disableSaveButton = false);
+                    }
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Compose story',
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                  ),
                 ),
               ),
             ],

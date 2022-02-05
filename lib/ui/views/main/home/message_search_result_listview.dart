@@ -38,6 +38,15 @@ class _MessageSearchResultListViewState
         )
         .toList();
 
+    if (searchResult.isEmpty) {
+      return Center(
+        child: Text(
+          'No stories found for \'${widget.query}\'',
+          style: Theme.of(context).textTheme.headline6,
+        ),
+      );
+    }
+
     return Column(
       children: [
         const SizedBox(height: 10.0),
