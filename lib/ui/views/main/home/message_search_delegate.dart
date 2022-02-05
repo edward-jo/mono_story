@@ -3,8 +3,8 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:mono_story/ui/views/main/home/message_search_result_listview.dart';
 
-class MessageSearchDelegate extends SearchDelegate<String> {
-  MessageSearchDelegate() : super(searchFieldLabel: 'Search hint');
+class MessageSearchDelegate extends SearchDelegate<String?> {
+  MessageSearchDelegate() : super(searchFieldLabel: 'Search Story');
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -30,7 +30,13 @@ class MessageSearchDelegate extends SearchDelegate<String> {
   List<Widget>? buildActions(BuildContext context) {
     return <Widget>[
       IconButton(
-        onPressed: () => query = '',
+        onPressed: () {
+          if (query.isEmpty) {
+            close(context, null);
+            return;
+          }
+          query = '';
+        },
         icon: const Icon(Icons.clear),
       ),
     ];
@@ -46,11 +52,35 @@ class MessageSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
+    if (query.isEmpty) {
+      return const _SuggestionWidget();
+    }
     return MessageSearchResultListView(query: query);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();
+    return const _SuggestionWidget();
+  }
+}
+
+class _SuggestionWidget extends StatelessWidget {
+  const _SuggestionWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.search),
+          Text(
+            'Try searching for stories',
+            style: Theme.of(context).textTheme.headline6,
+          ),
+        ],
+      ),
+    );
   }
 }
