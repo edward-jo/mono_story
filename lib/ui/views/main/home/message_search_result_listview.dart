@@ -66,6 +66,7 @@ class _MessageSearchResultListViewState
                     onDelete: () async {
                       await _messageVM.deleteMessage(i);
                     },
+                    emphasis: widget.query,
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) {
