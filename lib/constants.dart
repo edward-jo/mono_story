@@ -8,7 +8,7 @@ const String appDatabaseFileName = 'app.db';
 const String appDatabaseBackupFileName = 'app.db.backup';
 const int appDatabaseVersion = 1;
 
-const String threadNamesTableName = 'threads';
+const String threadsTableName = 'threads';
 const String messagesTableName = 'messages';
 
 const String defaultThreadName = 'All';
