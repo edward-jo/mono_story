@@ -61,10 +61,10 @@ class _MessageSearchResultListViewState
                   return MessageListViewItem(
                     message: searchResult[i],
                     onStar: () async {
-                      await _messageVM.starMessage(i);
+                      await _messageVM.starMessage(searchResult[i].id!);
                     },
                     onDelete: () async {
-                      await _messageVM.deleteMessage(i);
+                      await _messageVM.deleteMessage(searchResult[i].id!);
                     },
                     emphasis: widget.query,
                   );
