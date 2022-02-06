@@ -60,9 +60,11 @@ class _MessageSearchResultListViewState
                 itemBuilder: (_, i) {
                   return MessageListViewItem(
                     message: searchResult[i],
-                    onStar: () {},
+                    onStar: () async {
+                      await _messageVM.starMessage(i);
+                    },
                     onDelete: () async {
-                      _messageVM.deleteMessage(i);
+                      await _messageVM.deleteMessage(i);
                     },
                   );
                 },
