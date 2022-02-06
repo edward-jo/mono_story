@@ -137,7 +137,10 @@ class ThreadInfoWidget extends StatelessWidget {
         label,
         overflow: TextOverflow.fade,
         softWrap: false,
-        style: Theme.of(context).textTheme.caption?.copyWith(fontSize: 12),
+        style: Theme.of(context).textTheme.caption?.copyWith(
+              fontSize: 12,
+              color: Colors.black,
+            ),
       ),
     );
   }
