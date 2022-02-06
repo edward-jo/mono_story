@@ -100,10 +100,10 @@ class _MessageListViewState extends State<MessageListView> {
                       return MessageListViewItem(
                         message: messageList[i],
                         onStar: () async {
-                          await _messageVM.starMessage(i);
+                          await _messageVM.starMessage(messageList[i].id!);
                         },
                         onDelete: () async {
-                          await _messageVM.deleteMessage(i);
+                          await _messageVM.deleteMessage(messageList[i].id!);
                         },
                       );
                     },
