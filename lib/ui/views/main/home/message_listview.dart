@@ -4,6 +4,7 @@ import 'package:mono_story/models/message.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/platform_alert_dialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
+import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
@@ -89,13 +90,13 @@ class _MessageListViewState extends State<MessageListView> {
               child: SizedBox(
                 child: Scrollbar(
                   controller: _scrollController,
-                  child: RefreshIndicator(
+                  child: PlatfomRefreshIndicator(
                     onRefresh: () => Future.delayed(
                       const Duration(milliseconds: 500),
                       () => setState(() {}),
                     ),
-                    color: Colors.black,
                     child: ListView.separated(
+                      shrinkWrap: true,
                       controller: _scrollController,
                       itemCount: messageList.length,
                       itemBuilder: (_, i) {
