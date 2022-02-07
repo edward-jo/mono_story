@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
 import 'package:mono_story/models/thread.dart';
-import 'package:mono_story/ui/common/platform_alert_dialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
@@ -98,8 +97,15 @@ class _MessageListViewState extends State<MessageListView> {
                     child: ListView.separated(
                       shrinkWrap: true,
                       controller: _scrollController,
-                      itemCount: messageList.length,
+                      itemCount: messageList.length + 1,
                       itemBuilder: (_, i) {
+                        if (i == messageList.length) {
+                          if (_messageVM.canReadThreadChunk()) {
+                            return const PlatformIndicator();
+                          }
+                          return Container();
+                        }
+
                         return MessageListViewItem(
                           message: messageList[i],
                           onStar: () async {
@@ -125,10 +131,10 @@ class _MessageListViewState extends State<MessageListView> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.outOfRange) return;
+    if (!_scrollController.position.outOfRange) return;
 
     if (_scrollController.offset >=
-        _scrollController.position.maxScrollExtent / 2) {
+        _scrollController.position.maxScrollExtent) {
       if (_messageVM.canReadThreadChunk()) {
         _messageVM.readThreadChunk(widget.threadId);
       }

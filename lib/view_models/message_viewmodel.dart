@@ -47,7 +47,8 @@ class MessageViewModel extends ChangeNotifier {
     return true;
   }
 
-  final int _storyChunkLimit = 15;
+  final int _storyChunkLimit = 5;
+  // final int _storyChunkLimit = 15;
   Future<bool> readThreadChunk(int? threadId) async {
     _isReadingThread = true;
 
