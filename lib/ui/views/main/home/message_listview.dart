@@ -33,17 +33,13 @@ class _MessageListViewState extends State<MessageListView> {
     _messageVM = context.read<MessageViewModel>();
     _scrollController.addListener(_scrollListener);
     _readThreadsFuture = _threadVM.getThreadList();
-    _readMessagesFuture = _readMessagesFuture = _messageVM.readThreadChunk(
-      widget.threadId,
-    );
+    _readMessagesFuture = _messageVM.readThreadChunk(widget.threadId);
   }
 
   @override
   void didUpdateWidget(covariant MessageListView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _readMessagesFuture = _readMessagesFuture = _messageVM.readThreadChunk(
-      widget.threadId,
-    );
+    _readMessagesFuture = _messageVM.readThreadChunk(widget.threadId);
   }
 
   @override
@@ -93,23 +89,30 @@ class _MessageListViewState extends State<MessageListView> {
               child: SizedBox(
                 child: Scrollbar(
                   controller: _scrollController,
-                  child: ListView.separated(
-                    controller: _scrollController,
-                    itemCount: messageList.length,
-                    itemBuilder: (_, i) {
-                      return MessageListViewItem(
-                        message: messageList[i],
-                        onStar: () async {
-                          await _messageVM.starMessage(messageList[i].id!);
-                        },
-                        onDelete: () async {
-                          await _messageVM.deleteMessage(messageList[i].id!);
-                        },
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const Divider(thickness: 0.5);
-                    },
+                  child: RefreshIndicator(
+                    onRefresh: () => Future.delayed(
+                      const Duration(milliseconds: 500),
+                      () => setState(() {}),
+                    ),
+                    color: Colors.black,
+                    child: ListView.separated(
+                      controller: _scrollController,
+                      itemCount: messageList.length,
+                      itemBuilder: (_, i) {
+                        return MessageListViewItem(
+                          message: messageList[i],
+                          onStar: () async {
+                            await _messageVM.starMessage(messageList[i].id!);
+                          },
+                          onDelete: () async {
+                            await _messageVM.deleteMessage(messageList[i].id!);
+                          },
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider(thickness: 0.5);
+                      },
+                    ),
                   ),
                 ),
               ),
