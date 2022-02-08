@@ -16,8 +16,11 @@ class MessageViewModel extends ChangeNotifier {
 
   final List<Message> _messages = [];
   bool _hasNext = true;
+  bool _isLoading = false;
 
   List<Message> get messages => _messages;
+  bool get isLoading => _isLoading;
+  bool get hasNext => _hasNext;
 
   void initMessages() {
     _messages.clear();
@@ -31,10 +34,8 @@ class MessageViewModel extends ChangeNotifier {
     return true;
   }
 
-  bool _isReadingThread = false;
-
-  bool canReadThreadChunk() {
-    if (_isReadingThread) {
+  bool canLoadMessagesChunk() {
+    if (_isLoading) {
       developer.log('Reading thread in progress');
       return false;
     }
@@ -49,7 +50,9 @@ class MessageViewModel extends ChangeNotifier {
 
   final int _storyChunkLimit = 15;
   Future<bool> readThreadChunk(int? threadId) async {
-    _isReadingThread = true;
+    _isLoading = true;
+
+    await Future.delayed(const Duration(seconds: 1));
 
     List<Message> stories;
     if (threadId == null) {
@@ -67,7 +70,7 @@ class MessageViewModel extends ChangeNotifier {
 
     _hasNext = (stories.length < _storyChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
-    _isReadingThread = false;
+    _isLoading = false;
     notifyListeners();
 
     return true;

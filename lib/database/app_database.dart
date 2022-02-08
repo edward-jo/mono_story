@@ -97,7 +97,7 @@ On the other hand, kReleaseMode is a constant. Therefore the compiler is correct
         '''If you plan to bring guests to this space, a private office or conference room booking is required. Please note that the number of guests is limited to the capacity of the room booked''',
 
         // 10
-        '''(1024) Today's memo is sponsored by Flatfile: Solve the critical stage of your product onboarding with the platform built to get customers to value, faster. Flatfile enables you to focus on building product features your customers need, not wasting cycles on cleaning spreadsheets. Your product deserves a world-class data import experience.
+        '''Today's memo is sponsored by Flatfile: Solve the critical stage of your product onboarding with the platform built to get customers to value, faster. Flatfile enables you to focus on building product features your customers need, not wasting cycles on cleaning spreadsheets. Your product deserves a world-class data import experience.
 
 I’m always thinking about how to be a better partner to my engineering counterparts and how to distill my learning into a repeatable formula I can adapt to any situation. I remember once kicking off a meeting for a PRD I had just written with a new engineering manager. My goal was to finish the meeting with a timeline and milestones. While we accomplished those things by the end of the meeting, I had a sinking feeling that the meeting didn’t go well, but I couldn’t pinpoint the reason.
 
@@ -153,35 +153,14 @@ A 의원은 “이기는 것만이 아니라 어떻게 이기느냐도 매우 �
       ];
 
       final baseDateTime = DateTime.parse('2022-01-01T01:00:00.000Z');
-      int index = 0;
       final random = Random();
 
-      await db.execute('''
+      for (int i = 0; i < 100; i++) {
+        await db.execute('''
 INSERT INTO $messagesTableName (${MessagesTableCols.message}, ${MessagesTableCols.fkThreadId}, ${MessagesTableCols.createdTime}, ${MessagesTableCols.starred})
-VALUES ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)}),
-
-       ("${fakeMessages[index++]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)});
+VALUES ("( $i ) ${fakeMessages[random.nextInt(21)]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)});
 ''');
+      }
     }
   }
 
