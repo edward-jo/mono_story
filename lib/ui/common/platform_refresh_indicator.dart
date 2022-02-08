@@ -21,6 +21,7 @@ class PlatformRefreshIndicator extends PlatformWidgetBase {
   @override
   Widget buildCupertinoWidget(BuildContext context) {
     return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       controller: controller,
       slivers: <Widget>[
         CupertinoSliverRefreshControl(
@@ -43,6 +44,7 @@ class PlatformRefreshIndicator extends PlatformWidgetBase {
       color: Colors.black,
       child: ListView.builder(
         shrinkWrap: true,
+        physics: const AlwaysScrollableScrollPhysics(),
         controller: controller,
         itemCount: itemCount,
         itemBuilder: itemBuilder,
