@@ -31,9 +31,10 @@ class MessageListViewItem extends StatelessWidget {
     TextStyle? textStyle = Theme.of(context).textTheme.bodyText2;
     if (emphasis != null && emphasis!.isNotEmpty) {
       // Generate span list
-      var textSpanList = splitStringWithWord(message.message, emphasis!);
+      final pattern = RegExp(emphasis!, caseSensitive: false, unicode: true);
+      var textSpanList = splitStringWithPattern(message.message, pattern);
       var textSpanWidgetList = textSpanList.map((e) {
-        final style = (e == emphasis)
+        final style = (e.toLowerCase() == emphasis!.toLowerCase())
             ? textStyle?.copyWith(fontWeight: FontWeight.bold)
             : textStyle;
         return TextSpan(text: e, style: style);
