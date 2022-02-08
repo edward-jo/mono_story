@@ -91,15 +91,10 @@ class _MessageListViewState extends State<MessageListView> {
               child: SizedBox(
                 child: PlatformRefreshIndicator(
                   controller: _scrollController,
-                  onRefresh: () => Future.delayed(
-                    const Duration(milliseconds: 500),
-                    () => setState(() {
-                      _messageVM.initMessages();
-                      _readMessagesFuture = _messageVM.readThreadChunk(
-                        widget.threadId,
-                      );
-                    }),
-                  ),
+                  onRefresh: () async {
+                    _messageVM.initMessages();
+                    await _messageVM.readThreadChunk(widget.threadId);
+                  },
                   itemCount: messageList.isEmpty ? 0 : messageList.length + 1,
                   itemBuilder: (_, i) {
                     // -- MESSAGE LIST ITEM --

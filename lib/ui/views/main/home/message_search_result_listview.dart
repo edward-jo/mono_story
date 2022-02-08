@@ -69,13 +69,10 @@ class _MessageSearchResultListViewState
           child: SizedBox(
             child: PlatformRefreshIndicator(
               controller: _scrollController,
-              onRefresh: () => Future.delayed(
-                const Duration(milliseconds: 500),
-                () async {
-                  _messageVM.initMessages();
-                  _messageVM.readThreadChunk(_threadId);
-                },
-              ),
+              onRefresh: () async {
+                _messageVM.initMessages();
+                await _messageVM.readThreadChunk(_threadId);
+              },
               itemCount: searchResult.isEmpty ? 0 : searchResult.length + 1,
               itemBuilder: (_, i) {
                 // -- MESSAGE LIST ITEM --
