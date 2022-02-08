@@ -20,39 +20,32 @@ class PlatformRefreshIndicator extends PlatformWidgetBase {
 
   @override
   Widget buildCupertinoWidget(BuildContext context) {
-    return CupertinoScrollbar(
-      isAlwaysShown: true,
+    return CustomScrollView(
       controller: controller,
-      child: CustomScrollView(
-        controller: controller,
-        slivers: <Widget>[
-          CupertinoSliverRefreshControl(
-            onRefresh: onRefresh,
+      slivers: <Widget>[
+        CupertinoSliverRefreshControl(
+          onRefresh: onRefresh,
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            itemBuilder,
+            childCount: itemCount,
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              itemBuilder,
-              childCount: itemCount,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   @override
   Widget buildMaterialWidget(BuildContext context) {
-    return Scrollbar(
-      controller: controller,
-      child: RefreshIndicator(
-        onRefresh: onRefresh,
-        color: Colors.black,
-        child: ListView.builder(
-          shrinkWrap: true,
-          controller: controller,
-          itemCount: itemCount,
-          itemBuilder: itemBuilder,
-        ),
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      color: Colors.black,
+      child: ListView.builder(
+        shrinkWrap: true,
+        controller: controller,
+        itemCount: itemCount,
+        itemBuilder: itemBuilder,
       ),
     );
   }
