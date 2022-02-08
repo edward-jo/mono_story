@@ -27,7 +27,6 @@ class _MessageListViewState extends State<MessageListView> {
   late Future<void> _readMessagesFuture;
   late Future<void> _readThreadsFuture;
   final _scrollController = ScrollController();
-  bool _loading = false;
 
   @override
   void initState() {
@@ -102,9 +101,6 @@ class _MessageListViewState extends State<MessageListView> {
                     }),
                   ),
                   itemCount: messageList.isEmpty ? 0 : messageList.length + 1,
-                  //
-                  // -- MESSAGE LIST BUILDER --
-                  //
                   itemBuilder: (_, i) {
                     // -- MESSAGE LIST ITEM --
                     if (i < messageList.length) {
