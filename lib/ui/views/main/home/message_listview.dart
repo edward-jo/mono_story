@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
@@ -25,6 +27,7 @@ class _MessageListViewState extends State<MessageListView> {
   late Future<void> _readMessagesFuture;
   late Future<void> _readThreadsFuture;
   final _scrollController = ScrollController();
+  bool _loading = false;
 
   @override
   void initState() {
@@ -87,40 +90,58 @@ class _MessageListViewState extends State<MessageListView> {
             const SizedBox(height: 10.0),
             Expanded(
               child: SizedBox(
-                child: Scrollbar(
+                child: PlatformRefreshIndicator(
                   controller: _scrollController,
-                  child: PlatfomRefreshIndicator(
-                    onRefresh: () => Future.delayed(
-                      const Duration(milliseconds: 500),
-                      () => setState(() {}),
-                    ),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      controller: _scrollController,
-                      itemCount: messageList.length + 1,
-                      itemBuilder: (_, i) {
-                        if (i == messageList.length) {
-                          if (_messageVM.canReadThreadChunk()) {
-                            return const PlatformIndicator();
-                          }
-                          return Container();
-                        }
-
-                        return MessageListViewItem(
-                          message: messageList[i],
-                          onStar: () async {
-                            await _messageVM.starMessage(messageList[i].id!);
-                          },
-                          onDelete: () async {
-                            await _messageVM.deleteMessage(messageList[i].id!);
-                          },
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return const Divider(thickness: 0.5);
-                      },
-                    ),
+                  onRefresh: () => Future.delayed(
+                    const Duration(milliseconds: 500),
+                    () => setState(() {
+                      _messageVM.initMessages();
+                      _readMessagesFuture = _messageVM.readThreadChunk(
+                        widget.threadId,
+                      );
+                    }),
                   ),
+                  itemCount: messageList.isEmpty ? 0 : messageList.length + 1,
+                  //
+                  // -- MESSAGE LIST BUILDER --
+                  //
+                  itemBuilder: (_, i) {
+                    // -- MESSAGE LIST ITEM --
+                    if (i < messageList.length) {
+                      return Column(
+                        children: <Widget>[
+                          if (i != 0) const Divider(thickness: 0.5),
+                          MessageListViewItem(
+                            message: messageList[i],
+                            onStar: () async {
+                              await _messageVM.starMessage(messageList[i].id!);
+                            },
+                            onDelete: () async {
+                              await _messageVM
+                                  .deleteMessage(messageList[i].id!);
+                            },
+                          ),
+                        ],
+                      );
+                    }
+
+                    // -- LOADING INDICATOR --
+                    if (_messageVM.hasNext) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 5.0),
+                        child: PlatformIndicator(),
+                      );
+                    }
+
+                    // -- END MESSAGE --
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('nothing more to load!',
+                            style: Theme.of(context).textTheme.caption),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -130,13 +151,15 @@ class _MessageListViewState extends State<MessageListView> {
     );
   }
 
-  void _scrollListener() {
-    if (!_scrollController.position.outOfRange) return;
+  void _scrollListener() async {
+    if (!_scrollController.position.outOfRange) {
+      return;
+    }
 
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_messageVM.canReadThreadChunk()) {
-        _messageVM.readThreadChunk(widget.threadId);
+      if (_messageVM.canLoadMessagesChunk()) {
+        await _messageVM.readThreadChunk(widget.threadId);
       }
     }
   }

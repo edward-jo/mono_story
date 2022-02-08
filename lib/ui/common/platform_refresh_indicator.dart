@@ -4,34 +4,56 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/ui/common/platform_widget_base.dart';
 
-class PlatfomRefreshIndicator extends PlatformWidgetBase {
-  const PlatfomRefreshIndicator({
+class PlatformRefreshIndicator extends PlatformWidgetBase {
+  const PlatformRefreshIndicator({
     Key? key,
-    required this.child,
     required this.onRefresh,
+    required this.itemCount,
+    required this.itemBuilder,
+    this.controller,
   }) : super(key: key);
 
-  final Widget child;
   final Future<void> Function() onRefresh;
+  final ScrollController? controller;
+  final int itemCount;
+  final Widget Function(BuildContext, int) itemBuilder;
 
   @override
   Widget buildCupertinoWidget(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        CupertinoSliverRefreshControl(
-          onRefresh: onRefresh,
-        ),
-        SliverToBoxAdapter(child: child),
-      ],
+    return CupertinoScrollbar(
+      isAlwaysShown: true,
+      controller: controller,
+      child: CustomScrollView(
+        controller: controller,
+        slivers: <Widget>[
+          CupertinoSliverRefreshControl(
+            onRefresh: onRefresh,
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              itemBuilder,
+              childCount: itemCount,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget buildMaterialWidget(BuildContext context) {
-    return RefreshIndicator(
-      child: child,
-      onRefresh: onRefresh,
-      color: Colors.black,
+    return Scrollbar(
+      controller: controller,
+      child: RefreshIndicator(
+        onRefresh: onRefresh,
+        color: Colors.black,
+        child: ListView.builder(
+          shrinkWrap: true,
+          controller: controller,
+          itemCount: itemCount,
+          itemBuilder: itemBuilder,
+        ),
+      ),
     );
   }
 }
