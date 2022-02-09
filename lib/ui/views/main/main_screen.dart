@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
 import 'package:mono_story/ui/views/main/home/home_screen.dart';
+import 'package:mono_story/ui/views/main/settings/settings_screen.dart';
 import 'package:mono_story/ui/views/main/starred/starred_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     const HomeScreen(),
     const StarredScreen(),
+    const SettingsScreen(),
   ];
 
   @override
@@ -55,6 +57,13 @@ class _MainScreenState extends State<MainScreen> {
           material: Icon(Icons.star),
         ),
         label: 'Starred',
+      ),
+      BottomNavigationBarItem(
+        icon: PlatformWidget(
+          cupertino: Icon(CupertinoIcons.settings), // CupertinoIcons.bars
+          material: Icon(Icons.settings), // Icons.menu
+        ),
+        label: 'Settings',
       ),
     ];
   }
