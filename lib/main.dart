@@ -8,7 +8,9 @@ import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/theme/themes.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/main_screen.dart';
+import 'package:mono_story/view_models/searched_message_viewmodel.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -58,6 +60,12 @@ class MyApp extends StatelessWidget {
           providers: [
             ChangeNotifierProvider.value(
               value: serviceLocator<MessageViewModel>(),
+            ),
+            ChangeNotifierProvider.value(
+              value: serviceLocator<SearchedMessageViewModel>(),
+            ),
+            ChangeNotifierProvider.value(
+              value: serviceLocator<StarredMessageViewModel>(),
             ),
             ChangeNotifierProvider.value(
               value: serviceLocator<ThreadViewModel>(),
