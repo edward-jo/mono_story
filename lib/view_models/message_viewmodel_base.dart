@@ -98,6 +98,31 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return true;
   }
 
+  Future<bool> searchStarredThreadChunk() async {
+    _isLoading = true;
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    List<Message> stories;
+
+    stories = await _dbService.searchAllStarredMessagesChunk(
+      _messages.length,
+      _messageChunkLimit,
+    );
+
+    developer.log('Message List');
+    for (Message m in stories) {
+      developer.log('id( ${m.id}: ' + m.toJson().toString());
+    }
+
+    _hasNext = (stories.length < _messageChunkLimit) ? false : true;
+    _messages.insertAll(_messages.length, stories);
+    _isLoading = false;
+    notifyListeners();
+
+    return true;
+  }
+
   Future<void> deleteMessage(int id) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);

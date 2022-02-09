@@ -28,6 +28,10 @@ abstract class AppDatabaseService {
     int? limit,
     String query,
   );
+  Future<List<Message>> searchAllStarredMessagesChunk(
+    int? offset,
+    int? limit,
+  );
   Future<int> updateMessage(Message message);
   //----------------------------------------------------------------------------
   // Thread

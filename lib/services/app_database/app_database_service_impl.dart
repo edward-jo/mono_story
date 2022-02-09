@@ -181,6 +181,26 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
+  Future<List<Message>> searchAllStarredMessagesChunk(
+    int? offset,
+    int? limit,
+  ) async {
+    final db = _appDb.database;
+    final messages = await db.query(
+      messagesTableName,
+      where: '${MessagesTableCols.starred} = ?',
+      whereArgs: [1],
+      offset: offset,
+      limit: limit,
+      orderBy: '${MessagesTableCols.createdTime} DESC',
+    );
+
+    return messages.map((e) {
+      return Message.fromJson(e);
+    }).toList();
+  }
+
+  @override
   Future<int> updateMessage(Message message) async {
     final db = _appDb.database;
 
