@@ -5,42 +5,37 @@ import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
-import 'package:mono_story/view_models/searched_message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
-class MessageSearchResultListView extends StatefulWidget {
-  const MessageSearchResultListView({
+class StarredMessageListView extends StatefulWidget {
+  const StarredMessageListView({
     Key? key,
-    required this.query,
   }) : super(key: key);
 
-  final String query;
-
   @override
-  State<MessageSearchResultListView> createState() =>
-      _MessageSearchResultListViewState();
+  State<StarredMessageListView> createState() => _StarredMessageListViewState();
 }
 
-class _MessageSearchResultListViewState
-    extends State<MessageSearchResultListView> {
-  late final SearchedMessageViewModel _searchedVM;
-  late Future<bool> _searchMessagesFuture;
+class _StarredMessageListViewState extends State<StarredMessageListView> {
+  late final StarredMessageViewModel _starredVM;
+  late Future<bool> _starredMessagesFuture;
   final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _searchedVM = context.read<SearchedMessageViewModel>();
-    _searchedVM.initMessages();
-    _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
+    _starredVM = context.read<StarredMessageViewModel>();
+    _starredVM.initMessages();
+    _starredMessagesFuture = _starredVM.searchStarredThreadChunk();
     _scrollController.addListener(_scrollListener);
   }
 
   @override
-  void didUpdateWidget(covariant MessageSearchResultListView oldWidget) {
+  void didUpdateWidget(covariant StarredMessageListView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _searchedVM.initMessages();
-    _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
+    _starredVM.initMessages();
+    _starredMessagesFuture = _starredVM.searchStarredThreadChunk();
   }
 
   @override
@@ -52,7 +47,7 @@ class _MessageSearchResultListViewState
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-      future: _searchMessagesFuture,
+      future: _starredMessagesFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(
@@ -72,13 +67,13 @@ class _MessageSearchResultListViewState
           );
         }
 
-        List<Message> searchResult;
-        searchResult = context.watch<SearchedMessageViewModel>().messages;
+        List<Message> starredList;
+        starredList = context.watch<StarredMessageViewModel>().messages;
 
-        if (searchResult.isEmpty) {
+        if (starredList.isEmpty) {
           return Center(
             child: Text(
-              'No stories found for \'${widget.query}\'',
+              'No starred stories found',
               style: Theme.of(context).textTheme.headline6,
             ),
           );
@@ -92,26 +87,24 @@ class _MessageSearchResultListViewState
                 child: PlatformRefreshIndicator(
                   controller: _scrollController,
                   onRefresh: () async {
-                    _searchedVM.initMessages();
-                    await _searchedVM.searchThreadChunk(widget.query);
+                    _starredVM.initMessages();
+                    await _starredVM.searchStarredThreadChunk();
                   },
-                  itemCount: searchResult.isEmpty ? 0 : searchResult.length + 1,
+                  itemCount: starredList.isEmpty ? 0 : starredList.length + 1,
                   itemBuilder: (_, i) {
                     // -- MESSAGE LIST ITEM --
-                    if (i < searchResult.length) {
+                    if (i < starredList.length) {
                       return Column(
                         children: <Widget>[
                           if (i != 0) const Divider(thickness: 0.5),
                           MessageListViewItem(
-                            emphasis: widget.query,
-                            message: searchResult[i],
+                            message: starredList[i],
                             onStar: () async {
-                              await _searchedVM
-                                  .starMessage(searchResult[i].id!);
+                              await _starredVM.starMessage(starredList[i].id!);
                             },
                             onDelete: () async {
-                              await _searchedVM
-                                  .deleteMessage(searchResult[i].id!);
+                              await _starredVM
+                                  .deleteMessage(starredList[i].id!);
                             },
                           ),
                         ],
@@ -119,7 +112,7 @@ class _MessageSearchResultListViewState
                     }
 
                     // -- LOADING INDICATOR --
-                    if (_searchedVM.hasNext) {
+                    if (_starredVM.hasNext) {
                       return const Padding(
                         padding: EdgeInsets.symmetric(vertical: 5.0),
                         child: PlatformIndicator(),
@@ -151,8 +144,8 @@ class _MessageSearchResultListViewState
 
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_searchedVM.canLoadMessagesChunk()) {
-        await _searchedVM.searchThreadChunk(widget.query);
+      if (_starredVM.canLoadMessagesChunk()) {
+        await _starredVM.searchStarredThreadChunk();
       }
     }
   }
