@@ -52,7 +52,7 @@ class MessageViewModel extends ChangeNotifier {
   Future<bool> readThreadChunk(int? threadId) async {
     _isLoading = true;
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 300));
 
     List<Message> stories;
     if (threadId == null) {
