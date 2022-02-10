@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
 import 'package:mono_story/ui/views/main/settings/about_screen.dart';
-import 'package:mono_story/ui/views/main/settings/thread_settings_screen.dart';
+import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -34,7 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 material: Icon(Icons.chevron_right, size: 20.0),
               ),
               onTap: () => Navigator.of(context).pushNamed(
-                ThreadSettingsScreen.routeName,
+                ThreadSettingScreen.routeName,
               ),
             ),
 
