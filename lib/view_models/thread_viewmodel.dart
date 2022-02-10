@@ -31,11 +31,29 @@ class ThreadViewModel extends ChangeNotifier {
     return threads;
   }
 
-  Future<Thread> createThread(Thread threadName) async {
-    Thread t = await _dbService.createThread(threadName);
+  Future<Thread> createThread(String name) async {
+    Thread t = await _dbService.createThread(Thread(name: name));
     _threads.add(t);
     notifyListeners();
     return t;
+  }
+
+  Future<void> renameThread(int id, String newName) async {
+    int index = _threads.indexWhere((e) => e.id == id);
+    if (index < 0) {
+      developer.log('Fail:', error: 'Failed to find thread($id');
+      return;
+    }
+
+    final thread = Thread.fromJson(_threads[index].toJson());
+    thread.name = newName;
+    int affectedCount = await _dbService.updateThread(thread);
+    if (affectedCount != 1) {
+      developer.log('Fail:', error: 'Failed to rename thread($id)');
+      return;
+    }
+    _threads[index] = thread;
+    notifyListeners();
   }
 
   Thread? findThreadData({int? id, String? name}) {

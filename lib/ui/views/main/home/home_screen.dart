@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showNewThread(BuildContext context) async {
-    final int? threadId = await showModalBottomSheet(
+    final int? threadId = await showModalBottomSheet<int>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,

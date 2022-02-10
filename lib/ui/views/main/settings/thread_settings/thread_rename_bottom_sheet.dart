@@ -8,18 +8,21 @@ import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_elevatedbutton.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class NewThreadBottomSheet extends StatefulWidget {
-  const NewThreadBottomSheet({Key? key}) : super(key: key);
+class ThreadRenameBottomSheet extends StatefulWidget {
+  const ThreadRenameBottomSheet({Key? key, required this.threadName})
+      : super(key: key);
+
+  final String threadName;
 
   @override
-  State<NewThreadBottomSheet> createState() => _NewThreadBottomSheetState();
+  State<ThreadRenameBottomSheet> createState() =>
+      _ThreadRenameBottomSheetState();
 }
 
-class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
+class _ThreadRenameBottomSheetState extends State<ThreadRenameBottomSheet> {
   final _newThreadNameController = TextEditingController();
   late final ThreadViewModel _threadVM;
   final _bottomSheetPadding = const EdgeInsets.symmetric(horizontal: 25.0);
@@ -29,6 +32,7 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
+    _newThreadNameController.text = widget.threadName;
   }
 
   @override
@@ -42,13 +46,12 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
       padding: _bottomSheetPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        // mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // -- BOTTOM SHEET HEAD --
           const SizedBox(height: 20),
 
           Text(
-            'Create New Thread',
+            'Rename Thread',
             style: textTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
           ),
 
@@ -119,10 +122,7 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
 
     if (name.isEmpty) return;
 
-    developer.log('New thread name( $name )');
-    Thread t = await _threadVM.createThread(name);
-
-    Navigator.of(context).pop(t.id);
+    Navigator.of(context).pop(name);
   }
 
   void _cancel(BuildContext context) {
