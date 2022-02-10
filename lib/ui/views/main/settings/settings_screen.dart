@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mono_story/constants.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
 import 'package:mono_story/ui/views/main/settings/about_screen.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
@@ -24,10 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: <Widget>[
             // THREADS
             ListTile(
-              leading: const PlatformWidget(
-                cupertino: Icon(CupertinoIcons.tag),
-                material: Icon(Icons.tag),
-              ),
+              leading: Icon(MonoStoryIcons.thread_icon),
               title: const Text('Threads'),
               trailing: const PlatformWidget(
                 cupertino: Icon(CupertinoIcons.chevron_forward, size: 20.0),

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mono_story/constants.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
 
 class ThreadSettingBottomSheet extends StatelessWidget {
@@ -20,10 +21,7 @@ class ThreadSettingBottomSheet extends StatelessWidget {
           const SizedBox(height: 20),
 
           // THREAD ICON
-          const PlatformWidget(
-            cupertino: Icon(CupertinoIcons.tag),
-            material: Icon(Icons.tag),
-          ),
+          Icon(MonoStoryIcons.thread_icon),
 
           // THREAD NAME
           Padding(
