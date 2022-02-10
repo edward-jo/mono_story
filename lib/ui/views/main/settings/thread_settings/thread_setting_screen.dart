@@ -17,6 +17,7 @@ class ThreadSettingScreen extends StatelessWidget {
       ),
       body: Theme(
         data: _themeData.copyWith(
+            dividerTheme: _themeData.dividerTheme.copyWith(space: 5.0),
             iconTheme: _themeData.iconTheme.copyWith(size: 20.0)),
         child: const ThreadSettingListView(),
       ),

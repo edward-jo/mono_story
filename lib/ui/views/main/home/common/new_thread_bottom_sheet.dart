@@ -42,7 +42,7 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
       padding: _bottomSheetPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        // mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // -- BOTTOM SHEET HEAD --
           const SizedBox(height: 20),
@@ -70,6 +70,7 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
                     decoration: inputDecoration,
                     controller: _newThreadNameController,
                     validator: _validateNewThreadName,
+                    onFieldSubmitted: (_) => _done(context),
                   ),
                 ),
 
@@ -112,8 +113,6 @@ class _NewThreadBottomSheetState extends State<NewThreadBottomSheet> {
   }
 
   void _done(BuildContext context) async {
-    developer.log('_done');
-
     if (!_formKey.currentState!.validate()) return;
 
     final String name = _newThreadNameController.text.trim();
