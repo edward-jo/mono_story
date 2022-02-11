@@ -164,8 +164,6 @@ class _MessageListViewState extends State<MessageListView> {
       onCancelPressed: () => Navigator.of(context).pop(),
       destructiveActionName: 'Delete',
       onDestructivePressed: () async {
-        final threadVM = context.read<ThreadViewModel>();
-        final messageVM = context.read<MessageViewModel>();
         await _messageVM.deleteMessage(id!);
         Navigator.of(context).pop();
       },

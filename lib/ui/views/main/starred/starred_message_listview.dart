@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
+import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
 class StarredMessageListView extends StatefulWidget {
@@ -103,8 +106,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
                               await _starredVM.starMessage(starredList[i].id!);
                             },
                             onDelete: () async {
-                              await _starredVM
-                                  .deleteMessage(starredList[i].id!);
+                              await _deleteStarredMessage(starredList[i].id!);
                             },
                           ),
                         ],
@@ -148,5 +150,20 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
         await _starredVM.searchStarredThreadChunk();
       }
     }
+  }
+
+  Future<void> _deleteStarredMessage(int? id) async {
+    return await MonoAlertDialog.showAlertConfirmDialog(
+      context: context,
+      title: 'Delete Story',
+      content: 'Are you sure you want to delete this Story?',
+      cancelActionName: 'Cancel',
+      onCancelPressed: () => Navigator.of(context).pop(),
+      destructiveActionName: 'Delete',
+      onDestructivePressed: () async {
+        await _starredVM.deleteMessage(id!);
+        Navigator.of(context).pop();
+      },
+    );
   }
 }
