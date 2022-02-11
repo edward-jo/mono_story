@@ -39,9 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         // -- TITLE --
-        title: ThreadButton(
-          name: _threadData?.name ?? defaultThreadName,
-          onPressed: () => _showThreadList(context),
+        title: Consumer<ThreadViewModel>(
+          builder: (context, model, _) => ThreadButton(
+            name: model.currentThreadData?.name ?? defaultThreadName,
+            onPressed: () => _showThreadList(context),
+          ),
         ),
         // -- ACTIONS --
         actions: <Widget>[
@@ -95,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showNewThread(BuildContext context) async {
-    final int? threadId = await showModalBottomSheet(
+    final int? threadId = await showModalBottomSheet<int>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,

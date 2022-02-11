@@ -8,6 +8,8 @@ import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/theme/themes.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/main_screen.dart';
+import 'package:mono_story/ui/views/main/settings/about_screen.dart';
+import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
 import 'package:mono_story/view_models/searched_message_viewmodel.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/starred_message_viewmodel.dart';
@@ -48,7 +50,7 @@ class MyApp extends StatelessWidget {
           );
         }
 
-        // -- ALERT DIALOG --
+        // -- ERROR MESSAGE --
         if (snapshot.hasError) {
           return StyledBuilderErrorWidget(
             message: snapshot.error.toString(),
@@ -96,13 +98,16 @@ class StartMyApp extends StatelessWidget {
               settings: settings,
               child: const NewMessageScreen(),
             );
-
-          /// Example
-          // case NewMessageScreen.routeName:
-          //   return MaterialPageRoute(
-          //     settings: settings,
-          //     builder: (context) => const NewMessageScreen(),
-          //   );
+          case ThreadSettingScreen.routeName:
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (context) => const ThreadSettingScreen(),
+            );
+          case AboutScreen.routeName:
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (context) => const AboutScreen(),
+            );
         }
       },
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_elevatedbutton.dart';
 import 'package:mono_story/ui/common/platform_alert_dialog.dart';
@@ -48,7 +49,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
         child: PlatformIndicator(),
       );
     }
-    // -- ALERT DIALOG --
+    // -- ERROR MESSAGE --
     if (snapshot.hasError) {
       return StyledBuilderErrorWidget(message: snapshot.error.toString());
     }
@@ -132,7 +133,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
         SizedBox(
           height: _threadItemHeight,
           child: ListTile(
-            leading: const Icon(Icons.topic),
+            leading: Icon(MonoStoryIcons.thread_icon),
             title: Text(
               list[i].name,
               style: Theme.of(context).textTheme.bodyText2,

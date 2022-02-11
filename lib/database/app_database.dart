@@ -27,9 +27,14 @@ class AppDatabase {
     _database = await openDatabase(
       databaseFilePath,
       version: appDatabaseVersion,
+      onConfigure: _onConfigure,
       onCreate: _onCreate,
     );
     developer.log('Opened database, status(${_database?.isOpen})');
+  }
+
+  Future<void> _onConfigure(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
   }
 
   Future _onCreate(Database db, int version) async {
@@ -49,7 +54,9 @@ CREATE TABLE $messagesTableName (
   ${MessagesTableCols.fkThreadId} INTEGER,
   ${MessagesTableCols.createdTime} TEXT NOT NULL,
   ${MessagesTableCols.starred} INTEGER NOT NULL,
-  FOREIGN KEY(${MessagesTableCols.fkThreadId}) REFERENCES $threadsTableName(id)
+  FOREIGN KEY(${MessagesTableCols.fkThreadId})
+  REFERENCES $threadsTableName (_id)
+  ON DELETE SET NULL
 )
 ''');
 
