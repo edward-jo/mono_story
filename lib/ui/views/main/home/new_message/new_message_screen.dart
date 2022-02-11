@@ -190,7 +190,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 
   void _showNewThread(BuildContext context) async {
-    final int? newThreadId = await showModalBottomSheet(
+    final int? newThreadId = await showModalBottomSheet<int>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,

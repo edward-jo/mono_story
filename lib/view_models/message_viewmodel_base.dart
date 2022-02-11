@@ -145,13 +145,15 @@ abstract class MessageViewModelBase extends ChangeNotifier {
 
   Future<void> starMessage(int id) async {
     try {
-      final message = _messages.firstWhere((e) => e.id == id);
+      final index = _messages.indexWhere((e) => e.id == id);
+      final message = Message.fromJson(_messages[index].toJson());
       message.starred = message.starred == 0 ? 1 : 0;
       int affectedCount = await _dbService.updateMessage(message);
       if (affectedCount != 1) {
         developer.log('Fail:', error: 'Failed to star message');
         return;
       }
+      _messages[index] = message;
       notifyListeners();
     } catch (e) {
       developer.log(

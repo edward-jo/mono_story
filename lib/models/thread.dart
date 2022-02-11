@@ -8,7 +8,7 @@ class Thread {
   @JsonKey(name: ThreadsTableCols.id)
   final int? id;
   @JsonKey(name: ThreadsTableCols.name)
-  final String name;
+  String name;
 
   Thread({this.id, required this.name});
 

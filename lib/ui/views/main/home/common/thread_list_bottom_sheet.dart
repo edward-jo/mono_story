@@ -49,7 +49,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
         child: PlatformIndicator(),
       );
     }
-    // -- ALERT DIALOG --
+    // -- ERROR MESSAGE --
     if (snapshot.hasError) {
       return StyledBuilderErrorWidget(message: snapshot.error.toString());
     }

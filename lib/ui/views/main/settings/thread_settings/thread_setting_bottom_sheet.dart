@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/ui/common/platform_widget.dart';
 
 class ThreadSettingBottomSheet extends StatelessWidget {
   const ThreadSettingBottomSheet({Key? key, required this.threadName})
@@ -41,7 +40,7 @@ class ThreadSettingBottomSheet extends StatelessWidget {
           // RENAME
           _ThreadListTile(
             title: 'Rename',
-            onTap: () => Navigator.of(context).pop(),
+            onTap: () => Navigator.of(context).pop(ThreadSettingMenus.rename),
           ),
 
           const Divider(thickness: 0.5),
@@ -49,7 +48,7 @@ class ThreadSettingBottomSheet extends StatelessWidget {
           // DELETE
           _ThreadListTile(
             title: 'Delete',
-            onTap: () => Navigator.of(context).pop(),
+            onTap: () => Navigator.of(context).pop(ThreadSettingMenus.delete),
           ),
           const SizedBox(height: 10),
         ],
@@ -57,6 +56,8 @@ class ThreadSettingBottomSheet extends StatelessWidget {
     );
   }
 }
+
+enum ThreadSettingMenus { rename, delete }
 
 class _ThreadListTile extends StatelessWidget {
   const _ThreadListTile({

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mono_story/constants.dart';
 
 final ThemeData appTheme = ThemeData(
   /// Typically, only the [brightness], [primaryColor], or [primarySwatch] are
@@ -35,7 +36,12 @@ final ThemeData appTheme = ThemeData(
 
   // -- BOTTOM SHEET --
   bottomSheetTheme: const BottomSheetThemeData(
-    backgroundColor: Colors.transparent,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(bottomSheetRadius),
+      ),
+    ),
   ),
 
   // -- INPUT DECORATION --

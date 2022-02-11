@@ -6,10 +6,16 @@ import 'package:mono_story/ui/common/platform_widget.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_bottom_sheet.dart';
 
 class ThreadSettingListViewItem extends StatefulWidget {
-  const ThreadSettingListViewItem({Key? key, required this.thread})
-      : super(key: key);
+  const ThreadSettingListViewItem({
+    Key? key,
+    required this.thread,
+    required this.onRename,
+    required this.onDelete,
+  }) : super(key: key);
 
   final Thread thread;
+  final Future<void> Function(Thread) onRename;
+  final Future<void> Function(Thread) onDelete;
 
   @override
   _ThreadSettingListViewItemState createState() =>
@@ -33,7 +39,7 @@ class _ThreadSettingListViewItemState extends State<ThreadSettingListViewItem> {
   }
 
   void _showThreadSetting(BuildContext context) async {
-    await showModalBottomSheet(
+    ThreadSettingMenus? result = await showModalBottomSheet<ThreadSettingMenus>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
@@ -42,5 +48,16 @@ class _ThreadSettingListViewItemState extends State<ThreadSettingListViewItem> {
       )),
       builder: (_) => ThreadSettingBottomSheet(threadName: widget.thread.name),
     );
+
+    switch (result) {
+      case ThreadSettingMenus.rename:
+        await widget.onRename(widget.thread);
+        break;
+      case ThreadSettingMenus.delete:
+        await widget.onDelete(widget.thread);
+        break;
+      default:
+        return;
+    }
   }
 }
