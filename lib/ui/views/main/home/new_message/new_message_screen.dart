@@ -147,6 +147,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
         createdTime: DateTime.now().toUtc(),
         starred: 0,
       ),
+      _threadVM.currentThreadId == _threadData?.id,
     );
 
     final result = NewMessageScreenResult(

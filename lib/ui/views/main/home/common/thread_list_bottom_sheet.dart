@@ -133,7 +133,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
         SizedBox(
           height: _threadItemHeight,
           child: ListTile(
-            leading: Icon(MonoStoryIcons.thread_icon),
+            leading: Icon(MonoIcons.thread_icon),
             title: Text(
               list[i].name,
               style: Theme.of(context).textTheme.bodyText2,

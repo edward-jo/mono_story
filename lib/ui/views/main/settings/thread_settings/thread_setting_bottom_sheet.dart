@@ -20,7 +20,7 @@ class ThreadSettingBottomSheet extends StatelessWidget {
           const SizedBox(height: 20),
 
           // THREAD ICON
-          Icon(MonoStoryIcons.thread_icon),
+          Icon(MonoIcons.thread_icon),
 
           // THREAD NAME
           Padding(
