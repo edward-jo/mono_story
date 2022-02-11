@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
 import 'package:mono_story/models/thread.dart';
+import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
@@ -108,8 +109,7 @@ class _MessageListViewState extends State<MessageListView> {
                               await _messageVM.starMessage(messageList[i].id!);
                             },
                             onDelete: () async {
-                              await _messageVM
-                                  .deleteMessage(messageList[i].id!);
+                              await _deleteMessage(messageList[i].id!);
                             },
                           ),
                         ],
@@ -153,5 +153,22 @@ class _MessageListViewState extends State<MessageListView> {
         await _messageVM.readThreadChunk(widget.threadId);
       }
     }
+  }
+
+  Future<void> _deleteMessage(int? id) async {
+    return await MonoAlertDialog.showAlertConfirmDialog(
+      context: context,
+      title: 'Delete Story',
+      content: 'Are you sure you want to delete this Story?',
+      cancelActionName: 'Cancel',
+      onCancelPressed: () => Navigator.of(context).pop(),
+      destructiveActionName: 'Delete',
+      onDestructivePressed: () async {
+        final threadVM = context.read<ThreadViewModel>();
+        final messageVM = context.read<MessageViewModel>();
+        await _messageVM.deleteMessage(id!);
+        Navigator.of(context).pop();
+      },
+    );
   }
 }
