@@ -11,18 +11,17 @@ import 'package:mono_story/ui/common/mono_elevatedbutton.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class ThreadRenameBottomSheet extends StatefulWidget {
-  const ThreadRenameBottomSheet({Key? key, required this.threadName})
+class RenameBottomSheet extends StatefulWidget {
+  const RenameBottomSheet({Key? key, required this.threadName})
       : super(key: key);
 
   final String threadName;
 
   @override
-  State<ThreadRenameBottomSheet> createState() =>
-      _ThreadRenameBottomSheetState();
+  State<RenameBottomSheet> createState() => _RenameBottomSheetState();
 }
 
-class _ThreadRenameBottomSheetState extends State<ThreadRenameBottomSheet> {
+class _RenameBottomSheetState extends State<RenameBottomSheet> {
   final _newThreadNameController = TextEditingController();
   late final ThreadViewModel _threadVM;
   final _bottomSheetPadding = const EdgeInsets.symmetric(horizontal: 25.0);

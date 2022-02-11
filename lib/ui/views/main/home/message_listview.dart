@@ -64,7 +64,7 @@ class _MessageListViewState extends State<MessageListView> {
             child: PlatformIndicator(),
           );
         }
-        // -- ALERT DIALOG --
+        // -- ERROR MESSAGE --
         if (snapshot.hasError || !snapshot.hasData) {
           return StyledBuilderErrorWidget(
             message: snapshot.error.toString(),

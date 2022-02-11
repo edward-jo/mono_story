@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/services/app_database/app_database_service.dart';
@@ -54,6 +55,26 @@ class ThreadViewModel extends ChangeNotifier {
     }
     _threads[index] = thread;
     notifyListeners();
+  }
+
+  Future<void> deleteThread(int id) async {
+    try {
+      final index = _threads.indexWhere((e) => e.id == id);
+      final thread = _threads[index];
+      int affectedCount = await _dbService.deleteThread(thread.id!);
+      if (affectedCount != 1) {
+        developer.log('deleteThread:', error: 'Failed to delete thread');
+        return;
+      }
+      _threads.removeAt(index);
+      notifyListeners();
+    } catch (e) {
+      developer.log(
+        'Error:',
+        error: 'Failed to delete thread with id($id) error( ${e.toString()})',
+      );
+      return;
+    }
   }
 
   Thread? findThreadData({int? id, String? name}) {

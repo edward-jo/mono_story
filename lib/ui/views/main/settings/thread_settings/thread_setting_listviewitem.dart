@@ -14,8 +14,8 @@ class ThreadSettingListViewItem extends StatefulWidget {
   }) : super(key: key);
 
   final Thread thread;
-  final Future<void> Function(Thread thread) onRename;
-  final Future<void> Function(Thread thread) onDelete;
+  final Future<void> Function(Thread) onRename;
+  final Future<void> Function(Thread) onDelete;
 
   @override
   _ThreadSettingListViewItemState createState() =>

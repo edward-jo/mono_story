@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
           );
         }
 
-        // -- ALERT DIALOG --
+        // -- ERROR MESSAGE --
         if (snapshot.hasError) {
           return StyledBuilderErrorWidget(
             message: snapshot.error.toString(),
