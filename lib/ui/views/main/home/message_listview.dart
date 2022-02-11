@@ -107,7 +107,7 @@ class _MessageListViewState extends State<MessageListView> {
                           MessageListViewItem(
                             message: messageList[i],
                             onStar: () async {
-                              await _messageVM.starMessage(messageList[i].id!);
+                              await _starMessage(messageList[i].id!);
                             },
                             onDelete: () async {
                               await _deleteMessage(messageList[i].id!);
@@ -154,6 +154,13 @@ class _MessageListViewState extends State<MessageListView> {
         await _messageVM.readThreadChunk(widget.threadId);
       }
     }
+  }
+
+  Future<void> _starMessage(int? id) async {
+    await _messageVM.starMessage(id!);
+
+    /// No need to update message/starred listview, user should pull down the
+    /// ListView to see the updated list.
   }
 
   Future<void> _deleteMessage(int? id) async {

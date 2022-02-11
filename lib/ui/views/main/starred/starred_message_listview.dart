@@ -103,7 +103,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
                           MessageListViewItem(
                             message: starredList[i],
                             onStar: () async {
-                              await _starredVM.starMessage(starredList[i].id!);
+                              await _starMessage(starredList[i].id!);
                             },
                             onDelete: () async {
                               await _deleteStarredMessage(starredList[i].id!);
@@ -150,6 +150,13 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
         await _starredVM.searchStarredThreadChunk();
       }
     }
+  }
+
+  Future<void> _starMessage(int? id) async {
+    await _starredVM.starMessage(id!);
+
+    /// No need to update message/starred listview, user should pull down the
+    /// ListView to see the updated list.
   }
 
   Future<void> _deleteStarredMessage(int? id) async {
