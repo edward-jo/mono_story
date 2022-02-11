@@ -37,13 +37,17 @@ class _MessageListViewState extends State<MessageListView> {
     _messageVM = context.read<MessageViewModel>();
     _scrollController.addListener(_scrollListener);
     _readThreadsFuture = _threadVM.getThreadList();
-    _readMessagesFuture = _messageVM.readThreadChunk(widget.threadId);
+    _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
   }
 
   @override
   void didUpdateWidget(covariant MessageListView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _readMessagesFuture = _messageVM.readThreadChunk(widget.threadId);
+    if (oldWidget.threadId != widget.threadId) {
+      _messageVM.initMessages();
+      _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
+      return;
+    }
   }
 
   @override
@@ -95,7 +99,7 @@ class _MessageListViewState extends State<MessageListView> {
                   controller: _scrollController,
                   onRefresh: () async {
                     _messageVM.initMessages();
-                    await _messageVM.readThreadChunk(widget.threadId);
+                    await _messageVM.readMessagesChunk(widget.threadId);
                   },
                   itemCount: messageList.isEmpty ? 0 : messageList.length + 1,
                   itemBuilder: (_, i) {
@@ -151,7 +155,7 @@ class _MessageListViewState extends State<MessageListView> {
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
       if (_messageVM.canLoadMessagesChunk()) {
-        await _messageVM.readThreadChunk(widget.threadId);
+        await _messageVM.readMessagesChunk(widget.threadId);
       }
     }
   }
