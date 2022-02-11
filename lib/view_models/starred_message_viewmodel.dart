@@ -24,19 +24,4 @@ class StarredMessageViewModel extends MessageViewModelBase {
       return;
     }
   }
-
-  void deleteMessageFromList(int id) {
-    try {
-      final index = messages.indexWhere((e) => e.id == id);
-      if (index < 0) return;
-      messages.removeAt(index);
-      notifyListeners();
-    } catch (e) {
-      log(
-        'Error:',
-        error: 'Failed to delete message with id($id) error( ${e.toString()})',
-      );
-      return;
-    }
-  }
 }

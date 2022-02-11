@@ -143,6 +143,21 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     }
   }
 
+  void deleteMessageFromList(int id) {
+    try {
+      final index = messages.indexWhere((e) => e.id == id);
+      if (index < 0) return;
+      messages.removeAt(index);
+      notifyListeners();
+    } catch (e) {
+      developer.log(
+        'Error:',
+        error: 'Failed to delete message with id($id) error( ${e.toString()})',
+      );
+      return;
+    }
+  }
+
   Future<void> starMessage(int id) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
