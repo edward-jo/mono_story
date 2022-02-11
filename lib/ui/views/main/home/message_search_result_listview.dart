@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
+import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/searched_message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
 class MessageSearchResultListView extends StatefulWidget {
@@ -106,12 +109,10 @@ class _MessageSearchResultListViewState
                             emphasis: widget.query,
                             message: searchResult[i],
                             onStar: () async {
-                              await _searchedVM
-                                  .starMessage(searchResult[i].id!);
+                              await _starMessage(searchResult[i].id!);
                             },
                             onDelete: () async {
-                              await _searchedVM
-                                  .deleteMessage(searchResult[i].id!);
+                              await _deleteMessage(searchResult[i].id!);
                             },
                           ),
                         ],
@@ -155,5 +156,29 @@ class _MessageSearchResultListViewState
         await _searchedVM.searchThreadChunk(widget.query);
       }
     }
+  }
+
+  Future<void> _starMessage(int? id) async {
+    await _searchedVM.starMessage(id!);
+
+    /// No need to update message/starred listview, user should pull down the
+    /// ListView to see the updated list.
+  }
+
+  Future<void> _deleteMessage(int? id) async {
+    return await MonoAlertDialog.showAlertConfirmDialog(
+      context: context,
+      title: 'Delete Story',
+      content: 'Are you sure you want to delete this Story?',
+      cancelActionName: 'Cancel',
+      onCancelPressed: () => Navigator.of(context).pop(),
+      destructiveActionName: 'Delete',
+      onDestructivePressed: () async {
+        await _searchedVM.deleteMessage(id!);
+        context.read<MessageViewModel>().deleteMessageFromList(id);
+        context.read<StarredMessageViewModel>().deleteMessageFromList(id);
+        Navigator.of(context).pop();
+      },
+    );
   }
 }

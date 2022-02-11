@@ -25,12 +25,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: <Widget>[
             // THREADS
             ListTile(
-              leading: Icon(MonoStoryIcons.thread_icon),
+              leading: Icon(MonoIcons.thread_icon),
               title: const Text('Threads'),
-              trailing: const PlatformWidget(
-                cupertino: Icon(CupertinoIcons.chevron_forward, size: 20.0),
-                material: Icon(Icons.chevron_right, size: 20.0),
-              ),
+              trailing: Icon(MonoIcons.chevron_forward, size: 20.0),
               onTap: () => Navigator.of(context).pushNamed(
                 ThreadSettingScreen.routeName,
               ),
@@ -63,10 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 material: Icon(Icons.info),
               ),
               title: const Text('About'),
-              trailing: const PlatformWidget(
-                cupertino: Icon(CupertinoIcons.chevron_forward, size: 20.0),
-                material: Icon(Icons.chevron_right, size: 20.0),
-              ),
+              trailing: Icon(MonoIcons.chevron_forward, size: 20.0),
               onTap: () => Navigator.of(context).pushNamed(
                 AboutScreen.routeName,
               ),

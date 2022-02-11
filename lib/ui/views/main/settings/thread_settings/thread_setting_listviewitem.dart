@@ -26,7 +26,7 @@ class _ThreadSettingListViewItemState extends State<ThreadSettingListViewItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(MonoStoryIcons.thread_icon),
+      leading: Icon(MonoIcons.thread_icon),
       title: Text(widget.thread.name),
       trailing: PlatformWidget(
         cupertino: IconButton(

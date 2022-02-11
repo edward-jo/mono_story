@@ -53,7 +53,7 @@ class MessageSearchDelegate extends SearchDelegate<String?> {
     if (query.isEmpty) {
       return const _SuggestionWidget();
     }
-    return MessageSearchResultListView(query: query);
+    return MessageSearchResultListView(query: query.trim());
   }
 
   @override

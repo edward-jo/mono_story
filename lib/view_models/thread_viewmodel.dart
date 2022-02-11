@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/services/app_database/app_database_service.dart';
@@ -13,7 +13,10 @@ class ThreadViewModel extends ChangeNotifier {
   List<Thread> get threads => _threads;
 
   int? get currentThreadId => _currentThreadId;
-  set currentThreadId(int? id) => _currentThreadId = id;
+  set currentThreadId(int? id) {
+    _currentThreadId = id;
+    notifyListeners();
+  }
 
   Thread? get currentThreadData {
     if (_currentThreadId == null) return null;

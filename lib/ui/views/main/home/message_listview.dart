@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
 import 'package:mono_story/models/thread.dart';
+import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -35,13 +37,17 @@ class _MessageListViewState extends State<MessageListView> {
     _messageVM = context.read<MessageViewModel>();
     _scrollController.addListener(_scrollListener);
     _readThreadsFuture = _threadVM.getThreadList();
-    _readMessagesFuture = _messageVM.readThreadChunk(widget.threadId);
+    _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
   }
 
   @override
   void didUpdateWidget(covariant MessageListView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _readMessagesFuture = _messageVM.readThreadChunk(widget.threadId);
+    if (oldWidget.threadId != widget.threadId) {
+      _messageVM.initMessages();
+      _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
+      return;
+    }
   }
 
   @override
@@ -93,7 +99,7 @@ class _MessageListViewState extends State<MessageListView> {
                   controller: _scrollController,
                   onRefresh: () async {
                     _messageVM.initMessages();
-                    await _messageVM.readThreadChunk(widget.threadId);
+                    await _messageVM.readMessagesChunk(widget.threadId);
                   },
                   itemCount: messageList.isEmpty ? 0 : messageList.length + 1,
                   itemBuilder: (_, i) {
@@ -105,11 +111,10 @@ class _MessageListViewState extends State<MessageListView> {
                           MessageListViewItem(
                             message: messageList[i],
                             onStar: () async {
-                              await _messageVM.starMessage(messageList[i].id!);
+                              await _starMessage(messageList[i].id!);
                             },
                             onDelete: () async {
-                              await _messageVM
-                                  .deleteMessage(messageList[i].id!);
+                              await _deleteMessage(messageList[i].id!);
                             },
                           ),
                         ],
@@ -150,8 +155,31 @@ class _MessageListViewState extends State<MessageListView> {
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
       if (_messageVM.canLoadMessagesChunk()) {
-        await _messageVM.readThreadChunk(widget.threadId);
+        await _messageVM.readMessagesChunk(widget.threadId);
       }
     }
+  }
+
+  Future<void> _starMessage(int? id) async {
+    await _messageVM.starMessage(id!);
+
+    /// No need to update message/starred listview, user should pull down the
+    /// ListView to see the updated list.
+  }
+
+  Future<void> _deleteMessage(int? id) async {
+    return await MonoAlertDialog.showAlertConfirmDialog(
+      context: context,
+      title: 'Delete Story',
+      content: 'Are you sure you want to delete this Story?',
+      cancelActionName: 'Cancel',
+      onCancelPressed: () => Navigator.of(context).pop(),
+      destructiveActionName: 'Delete',
+      onDestructivePressed: () async {
+        await _messageVM.deleteMessage(id!);
+        context.read<StarredMessageViewModel>().deleteMessageFromList(id);
+        Navigator.of(context).pop();
+      },
+    );
   }
 }
