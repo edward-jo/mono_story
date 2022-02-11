@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -126,3 +129,8 @@ const Color threadInfoBgColor = BgColorLM.pink;
 const double bottomSheetRadius = 15.0;
 
 const int threadNameMaxCharLength = 30;
+
+class MonoStoryIcons {
+  static IconData thread_icon =
+      Platform.isIOS ? CupertinoIcons.tag : Icons.label;
+}
