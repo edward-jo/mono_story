@@ -10,6 +10,7 @@ import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -165,6 +166,7 @@ class _MessageListViewState extends State<MessageListView> {
       destructiveActionName: 'Delete',
       onDestructivePressed: () async {
         await _messageVM.deleteMessage(id!);
+        context.read<StarredMessageViewModel>().deleteMessageFromList(id);
         Navigator.of(context).pop();
       },
     );
