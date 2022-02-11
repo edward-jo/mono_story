@@ -130,7 +130,9 @@ const double bottomSheetRadius = 15.0;
 
 const int threadNameMaxCharLength = 30;
 
-class MonoStoryIcons {
+class MonoIcons {
   static IconData thread_icon =
       Platform.isIOS ? CupertinoIcons.tag : Icons.label;
+  static IconData chevron_forward =
+      Platform.isIOS ? CupertinoIcons.chevron_forward : Icons.chevron_right;
 }
