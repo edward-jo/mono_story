@@ -24,10 +24,12 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     _hasNext = true;
   }
 
-  Future<bool> save(Message message) async {
+  Future<bool> save(Message message, bool insertAfterSaving) async {
     Message msg = await _dbService.createMessage(message);
-    _messages.insert(0, msg);
-    notifyListeners();
+    if (insertAfterSaving) {
+      _messages.insert(0, msg);
+      notifyListeners();
+    }
     return true;
   }
 
@@ -45,7 +47,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> readThreadChunk(int? threadId) async {
+  Future<bool> readMessagesChunk(int? threadId) async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));

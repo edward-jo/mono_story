@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/message_listview.dart';
 import 'package:mono_story/ui/views/main/home/message_search_delegate.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -20,16 +18,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Thread? _threadData;
   late ThreadViewModel _threadVM;
-  late MessageViewModel _messageVM;
 
   @override
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _messageVM = context.read<MessageViewModel>();
-    _threadData = _threadVM.currentThreadData;
   }
 
   @override
@@ -56,7 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       // -- BODY --
-      body: MessageListView(threadId: _threadData?.id),
+      body: Selector<ThreadViewModel, int?>(
+        selector: (_, vm) => vm.currentThreadId,
+        builder: (_, id, __) => MessageListView(threadId: id),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showNewMessage(context),
         child: const Icon(Icons.add),
@@ -83,11 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (result.type) {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
-        setState(() {
-          _threadVM.currentThreadId = threadId;
-          _messageVM.initMessages();
-          _threadData = _threadVM.currentThreadData;
-        });
+        _threadVM.currentThreadId = threadId;
         break;
       case ThreadListResultType.newThreadRequest:
         _showNewThread(context);
@@ -111,29 +104,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (threadId == null) return;
 
-    setState(() {
-      _threadVM.currentThreadId = threadId;
-      _messageVM.initMessages();
-      _threadData = _threadVM.currentThreadData;
-    });
-
+    _threadVM.currentThreadId = threadId;
     return;
   }
 
   void _showNewMessage(BuildContext context) async {
-    var result = await Navigator.of(context).pushNamed(
+    await Navigator.of(context).pushNamed(
       NewMessageScreen.routeName,
-      arguments: _threadData?.id,
+      arguments: _threadVM.currentThreadId,
     );
-
-    if (result == null) return;
-
-    result = result as NewMessageScreenResult;
-    bool isSaved = result.isSaved;
-    int? savedMessageThreadId = result.savedMessageThreadId;
-    if (_threadData?.id == null ||
-        isSaved && savedMessageThreadId == _threadData?.id) {
-      setState(() {});
-    }
   }
 }
