@@ -92,12 +92,12 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (result.type) {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
-        _threadVM.setCurrentThreadId(id: threadId, notify: true);
+        _threadVM.setCurrentThreadId(threadId, notify: true);
         break;
       case ThreadListResultType.newThreadRequest:
         final threadId = await _showCreateThreadBottomSheet(context);
         if (threadId == null) break;
-        _threadVM.setCurrentThreadId(id: threadId, notify: true);
+        _threadVM.setCurrentThreadId(threadId, notify: true);
         break;
     }
     return;

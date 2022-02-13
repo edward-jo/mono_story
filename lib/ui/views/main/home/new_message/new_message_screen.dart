@@ -154,8 +154,8 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
         createdTime: DateTime.now().toUtc(),
         starred: 0,
       ),
-      _threadVM.currentThreadId == _threadData?.id,
-      false,
+      insertAfterSaving: (_threadVM.currentThreadId == _threadData?.id),
+      notify: false,
     );
 
     if (insertedIndex != null) {

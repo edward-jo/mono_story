@@ -217,7 +217,10 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
       destructiveActionName: 'Delete',
       onDestructivePressed: () async {
         final message = await _starredVM.deleteMessage(id!);
-        context.read<MessageViewModel>().deleteMessageFromList(id);
+        context.read<MessageViewModel>().deleteMessageFromList(
+              id,
+              notify: true,
+            );
         Navigator.of(context).pop(message);
       },
     );

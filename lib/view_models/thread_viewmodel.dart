@@ -17,7 +17,7 @@ class ThreadViewModel extends ChangeNotifier {
     return findThreadData(id: currentThreadId);
   }
 
-  void setCurrentThreadId({int? id, bool notify = false}) {
+  void setCurrentThreadId(int? id, {bool notify = false}) {
     currentThreadId = id;
     if (notify) notifyListeners();
   }
@@ -59,7 +59,7 @@ class ThreadViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Thread?> deleteThread(int id, [bool notify = false]) async {
+  Future<Thread?> deleteThread(int id, {bool notify = false}) async {
     try {
       final index = _threads.indexWhere((e) => e.id == id);
       final thread = _threads[index];

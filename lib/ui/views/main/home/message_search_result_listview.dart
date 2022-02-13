@@ -220,8 +220,14 @@ class _MessageSearchResultListViewState
       destructiveActionName: 'Delete',
       onDestructivePressed: () async {
         final message = await _searchedVM.deleteMessage(id!);
-        context.read<MessageViewModel>().deleteMessageFromList(id);
-        context.read<StarredMessageViewModel>().deleteMessageFromList(id);
+        context.read<MessageViewModel>().deleteMessageFromList(
+              id,
+              notify: true,
+            );
+        context.read<StarredMessageViewModel>().deleteMessageFromList(
+              id,
+              notify: true,
+            );
         Navigator.of(context).pop(message);
       },
     );

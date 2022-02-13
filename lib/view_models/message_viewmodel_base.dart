@@ -25,7 +25,10 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }
 
   Future<int?> save(
-      Message message, bool insertAfterSaving, bool notify) async {
+    Message message, {
+    bool insertAfterSaving = false,
+    bool notify = false,
+  }) async {
     Message msg = await _dbService.createMessage(message);
     if (insertAfterSaving) {
       _messages.insert(0, msg);

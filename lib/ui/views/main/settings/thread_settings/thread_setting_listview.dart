@@ -117,7 +117,7 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
 
     final deletedThread = await threadVM.deleteThread(thread.id!);
     if (threadVM.currentThreadId == thread.id!) {
-      threadVM.setCurrentThreadId(id: null);
+      threadVM.setCurrentThreadId(null);
     }
 
     final messageVM = context.read<MessageViewModel>();
