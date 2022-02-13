@@ -127,7 +127,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return true;
   }
 
-  Future<Message?> deleteMessage(int id) async {
+  Future<Message?> deleteMessage(int id, {bool notify = false}) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
       final message = _messages[index];
@@ -137,7 +137,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
         return null;
       }
       _messages.removeAt(index);
-      notifyListeners();
+      if (notify) notifyListeners();
       return message;
     } catch (e) {
       developer.log(
@@ -148,12 +148,12 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     }
   }
 
-  void deleteMessageFromList(int id) {
+  void deleteMessageFromList(int id, {bool notify = false}) {
     try {
       final index = messages.indexWhere((e) => e.id == id);
       if (index < 0) return;
       messages.removeAt(index);
-      notifyListeners();
+      if (notify) notifyListeners();
     } catch (e) {
       developer.log(
         'Error:',

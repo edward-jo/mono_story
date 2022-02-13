@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => _showThreadListBottomSheet(context),
           ),
         ),
+
         // -- ACTIONS --
         actions: <Widget>[
           IconButton(
@@ -54,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
@@ -62,6 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
           listKey: _listKey,
         ),
       ),
+
+      // FLOATING BUTTON
       floatingActionButton: FloatingActionButton(
         onPressed: () => _pushNewMessageScreen(context),
         child: const Icon(Icons.add),
