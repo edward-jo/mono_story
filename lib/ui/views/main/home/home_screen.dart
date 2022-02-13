@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
@@ -19,6 +21,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late ThreadViewModel _threadVM;
+  final dynamic _listKey = Platform.isIOS
+      ? GlobalKey<SliverAnimatedListState>()
+      : GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -52,7 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
-        builder: (_, id, __) => MessageListView(threadId: id),
+        builder: (_, id, __) => MessageListView(
+          threadId: id,
+          listKey: _listKey,
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showNewMessage(context),
@@ -111,7 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showNewMessage(BuildContext context) async {
     await Navigator.of(context).pushNamed(
       NewMessageScreen.routeName,
-      arguments: _threadVM.currentThreadId,
+      arguments: NewMessageScreenArgument(
+        _threadVM.currentThreadId,
+        _listKey,
+      ),
     );
   }
 }

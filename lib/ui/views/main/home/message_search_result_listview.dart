@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
@@ -29,6 +31,7 @@ class _MessageSearchResultListViewState
   late final SearchedMessageViewModel _searchedVM;
   late Future<bool> _searchMessagesFuture;
   final _scrollController = ScrollController();
+  late final dynamic _listKey;
 
   @override
   void initState() {
@@ -36,6 +39,9 @@ class _MessageSearchResultListViewState
     _searchedVM = context.read<SearchedMessageViewModel>();
     _searchedVM.initMessages();
     _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
+    _listKey = Platform.isIOS
+        ? GlobalKey<SliverAnimatedListState>()
+        : GlobalKey<AnimatedListState>();
     _scrollController.addListener(_scrollListener);
   }
 
@@ -93,30 +99,17 @@ class _MessageSearchResultListViewState
             Expanded(
               child: SizedBox(
                 child: PlatformRefreshIndicator(
+                  listKey: _listKey,
                   controller: _scrollController,
                   onRefresh: () async {
                     _searchedVM.initMessages();
                     await _searchedVM.searchThreadChunk(widget.query);
                   },
                   itemCount: searchResult.isEmpty ? 0 : searchResult.length + 1,
-                  itemBuilder: (_, i) {
+                  itemBuilder: (_, i, animation) {
                     // -- MESSAGE LIST ITEM --
                     if (i < searchResult.length) {
-                      return Column(
-                        children: <Widget>[
-                          if (i != 0) const Divider(thickness: 0.5),
-                          MessageListViewItem(
-                            emphasis: widget.query,
-                            message: searchResult[i],
-                            onStar: () async {
-                              await _starMessage(searchResult[i].id!);
-                            },
-                            onDelete: () async {
-                              await _deleteMessage(searchResult[i].id!);
-                            },
-                          ),
-                        ],
-                      );
+                      return _buildItem(searchResult[i], i, animation);
                     }
 
                     // -- LOADING INDICATOR --
@@ -145,6 +138,58 @@ class _MessageSearchResultListViewState
     );
   }
 
+  Widget _buildItem(Message item, int index, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: Column(
+        children: <Widget>[
+          if (index != 0) const Divider(thickness: 0.5),
+          MessageListViewItem(
+            emphasis: widget.query,
+            message: item,
+            onStar: () async {
+              await _starMessage(item.id!);
+            },
+            onDelete: () async {
+              final message = await _deleteMessage(item.id!);
+              if (message != null) {
+                _listKey.currentState?.removeItem(
+                  index,
+                  (context, animation) => _buildRemovedItem(
+                    message,
+                    index,
+                    animation,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRemovedItem(
+    Message item,
+    int index,
+    Animation<double> animation,
+  ) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: Column(
+        children: <Widget>[
+          if (index != 0) const Divider(thickness: 0.5),
+          MessageListViewItem(
+            emphasis: widget.query,
+            message: item,
+            onStar: () {},
+            onDelete: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
   void _scrollListener() async {
     if (!_scrollController.position.outOfRange) {
       return;
@@ -165,7 +210,7 @@ class _MessageSearchResultListViewState
     /// ListView to see the updated list.
   }
 
-  Future<void> _deleteMessage(int? id) async {
+  Future<Message?> _deleteMessage(int? id) async {
     return await MonoAlertDialog.showAlertConfirmDialog(
       context: context,
       title: 'Delete Story',
@@ -174,10 +219,10 @@ class _MessageSearchResultListViewState
       onCancelPressed: () => Navigator.of(context).pop(),
       destructiveActionName: 'Delete',
       onDestructivePressed: () async {
-        await _searchedVM.deleteMessage(id!);
+        final message = await _searchedVM.deleteMessage(id!);
         context.read<MessageViewModel>().deleteMessageFromList(id);
         context.read<StarredMessageViewModel>().deleteMessageFromList(id);
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(message);
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
@@ -15,9 +16,14 @@ import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class MessageListView extends StatefulWidget {
-  const MessageListView({Key? key, required this.threadId}) : super(key: key);
+  const MessageListView({
+    Key? key,
+    required this.threadId,
+    required this.listKey,
+  }) : super(key: key);
 
   final int? threadId;
+  final Key listKey;
 
   @override
   State<MessageListView> createState() => _MessageListViewState();
@@ -29,6 +35,7 @@ class _MessageListViewState extends State<MessageListView> {
   late Future<void> _readMessagesFuture;
   late Future<void> _readThreadsFuture;
   final _scrollController = ScrollController();
+  late final dynamic _listKey;
 
   @override
   void initState() {
@@ -38,6 +45,9 @@ class _MessageListViewState extends State<MessageListView> {
     _scrollController.addListener(_scrollListener);
     _readThreadsFuture = _threadVM.getThreadList();
     _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
+    _listKey = Platform.isIOS
+        ? widget.listKey as GlobalKey<SliverAnimatedListState>
+        : widget.listKey as GlobalKey<AnimatedListState>;
   }
 
   @override
@@ -96,29 +106,17 @@ class _MessageListViewState extends State<MessageListView> {
             Expanded(
               child: SizedBox(
                 child: PlatformRefreshIndicator(
+                  listKey: _listKey,
                   controller: _scrollController,
                   onRefresh: () async {
                     _messageVM.initMessages();
                     await _messageVM.readMessagesChunk(widget.threadId);
                   },
                   itemCount: messageList.isEmpty ? 0 : messageList.length + 1,
-                  itemBuilder: (_, i) {
+                  itemBuilder: (_, i, animation) {
                     // -- MESSAGE LIST ITEM --
                     if (i < messageList.length) {
-                      return Column(
-                        children: <Widget>[
-                          if (i != 0) const Divider(thickness: 0.5),
-                          MessageListViewItem(
-                            message: messageList[i],
-                            onStar: () async {
-                              await _starMessage(messageList[i].id!);
-                            },
-                            onDelete: () async {
-                              await _deleteMessage(messageList[i].id!);
-                            },
-                          ),
-                        ],
-                      );
+                      return _buildItem(messageList[i], i, animation);
                     }
 
                     // -- LOADING INDICATOR --
@@ -133,8 +131,10 @@ class _MessageListViewState extends State<MessageListView> {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('nothing more to load!',
-                            style: Theme.of(context).textTheme.caption),
+                        child: Text(
+                          'nothing more to load!',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
                       ),
                     );
                   },
@@ -144,6 +144,52 @@ class _MessageListViewState extends State<MessageListView> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildItem(Message item, int index, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: Column(
+        children: <Widget>[
+          if (index != 0) const Divider(thickness: 0.5),
+          MessageListViewItem(
+            message: item,
+            onStar: () async {
+              await _starMessage(item.id!);
+            },
+            onDelete: () async {
+              final message = await _showDeleteMessageAlertDialog(item.id!);
+              if (message != null) {
+                _listKey.currentState?.removeItem(
+                  index,
+                  (context, animation) => _buildRemovedItem(
+                    message,
+                    index,
+                    animation,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRemovedItem(
+    Message item,
+    int index,
+    Animation<double> animation,
+  ) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: Column(
+        children: <Widget>[
+          if (index != 0) const Divider(thickness: 0.5),
+          MessageListViewItem(message: item, onStar: () {}, onDelete: () {}),
+        ],
+      ),
     );
   }
 
@@ -167,7 +213,7 @@ class _MessageListViewState extends State<MessageListView> {
     /// ListView to see the updated list.
   }
 
-  Future<void> _deleteMessage(int? id) async {
+  Future<Message?> _showDeleteMessageAlertDialog(int? id) async {
     return await MonoAlertDialog.showAlertConfirmDialog(
       context: context,
       title: 'Delete Story',
@@ -176,9 +222,9 @@ class _MessageListViewState extends State<MessageListView> {
       onCancelPressed: () => Navigator.of(context).pop(),
       destructiveActionName: 'Delete',
       onDestructivePressed: () async {
-        await _messageVM.deleteMessage(id!);
+        final message = await _messageVM.deleteMessage(id!);
         context.read<StarredMessageViewModel>().deleteMessageFromList(id);
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(message);
       },
     );
   }

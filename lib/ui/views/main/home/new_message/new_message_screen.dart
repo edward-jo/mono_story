@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -26,6 +27,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   Thread? _threadData;
   bool _initialized = false;
   bool _disableSaveButton = true;
+  late final dynamic _listKey;
 
   @override
   void initState() {
@@ -38,12 +40,17 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      int? threadId = ModalRoute.of(context)!.settings.arguments as int?;
+      final arguments = ModalRoute.of(context)!.settings.arguments
+          as NewMessageScreenArgument;
+      int? threadId = arguments.threadId;
       if (threadId == null) {
         _threadData = null;
       } else {
         _threadData = _threadVM.findThreadData(id: threadId);
       }
+      _listKey = Platform.isIOS
+          ? arguments.listKey as GlobalKey<SliverAnimatedListState>
+          : arguments.listKey as GlobalKey<AnimatedListState>;
       _initialized = true;
     }
   }
@@ -139,7 +146,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     }
 
     developer.log('Save messasge( $message )');
-    await _messageVM.save(
+    int? insertedIndex = await _messageVM.save(
       Message(
         id: null,
         message: message,
@@ -149,6 +156,13 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       ),
       _threadVM.currentThreadId == _threadData?.id,
     );
+
+    if (insertedIndex != null) {
+      _listKey.currentState?.insertItem(
+        insertedIndex,
+        duration: const Duration(milliseconds: 300),
+      );
+    }
 
     final result = NewMessageScreenResult(
       isSaved: true,
@@ -208,6 +222,13 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     setState(() => _threadData = _threadVM.findThreadData(id: newThreadId));
     return;
   }
+}
+
+class NewMessageScreenArgument {
+  final int? threadId;
+  final Key listKey;
+
+  NewMessageScreenArgument(this.threadId, this.listKey);
 }
 
 class NewMessageScreenResult {
