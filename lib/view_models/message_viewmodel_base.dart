@@ -24,13 +24,14 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     _hasNext = true;
   }
 
-  Future<bool> save(Message message, bool insertAfterSaving) async {
+  Future<int?> save(Message message, bool insertAfterSaving) async {
     Message msg = await _dbService.createMessage(message);
     if (insertAfterSaving) {
       _messages.insert(0, msg);
       notifyListeners();
+      return 0;
     }
-    return true;
+    return null;
   }
 
   bool canLoadMessagesChunk() {
@@ -125,23 +126,24 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return true;
   }
 
-  Future<void> deleteMessage(int id) async {
+  Future<Message?> deleteMessage(int id) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
       final message = _messages[index];
       int affectedCount = await _dbService.deleteMessage(message.id!);
       if (affectedCount != 1) {
         developer.log('deleteMessage:', error: 'Failed to delete message');
-        return;
+        return null;
       }
       _messages.removeAt(index);
       notifyListeners();
+      return message;
     } catch (e) {
       developer.log(
         'Error:',
         error: 'Failed to delete message with id($id) error( ${e.toString()})',
       );
-      return;
+      return null;
     }
   }
 
