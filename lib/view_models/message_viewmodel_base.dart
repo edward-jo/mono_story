@@ -24,11 +24,12 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     _hasNext = true;
   }
 
-  Future<int?> save(Message message, bool insertAfterSaving) async {
+  Future<int?> save(
+      Message message, bool insertAfterSaving, bool notify) async {
     Message msg = await _dbService.createMessage(message);
     if (insertAfterSaving) {
       _messages.insert(0, msg);
-      notifyListeners();
+      if (notify) notifyListeners();
       return 0;
     }
     return null;
@@ -62,10 +63,10 @@ abstract class MessageViewModelBase extends ChangeNotifier {
           threadId, _messages.length, _messageChunkLimit);
     }
 
-    developer.log('Message List');
-    for (Message m in stories) {
-      developer.log('id( ${m.id}: ' + m.toJson().toString());
-    }
+    // developer.log('Message List');
+    // for (Message m in stories) {
+    //   developer.log('id( ${m.id}: ' + m.toJson().toString());
+    // }
 
     _hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
@@ -88,10 +89,10 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       query,
     );
 
-    developer.log('Message List');
-    for (Message m in stories) {
-      developer.log('id( ${m.id}: ' + m.toJson().toString());
-    }
+    // developer.log('Message List');
+    // for (Message m in stories) {
+    //   developer.log('id( ${m.id}: ' + m.toJson().toString());
+    // }
 
     _hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
@@ -113,10 +114,10 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       _messageChunkLimit,
     );
 
-    developer.log('Message List');
-    for (Message m in stories) {
-      developer.log('id( ${m.id}: ' + m.toJson().toString());
-    }
+    // developer.log('Message List');
+    // for (Message m in stories) {
+    //   developer.log('id( ${m.id}: ' + m.toJson().toString());
+    // }
 
     _hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);

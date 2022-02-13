@@ -43,7 +43,7 @@ class _MessageListViewState extends State<MessageListView> {
     _threadVM = context.read<ThreadViewModel>();
     _messageVM = context.read<MessageViewModel>();
     _scrollController.addListener(_scrollListener);
-    _readThreadsFuture = _threadVM.getThreadList();
+    _readThreadsFuture = _threadVM.readThreadList();
     _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
     _listKey = Platform.isIOS
         ? widget.listKey as GlobalKey<SliverAnimatedListState>

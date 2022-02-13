@@ -155,6 +155,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
         starred: 0,
       ),
       _threadVM.currentThreadId == _threadData?.id,
+      false,
     );
 
     if (insertedIndex != null) {
@@ -174,8 +175,8 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 
   void _showThreadList(BuildContext context) async {
-    final ThreadNameListResult? result;
-    result = await showModalBottomSheet<ThreadNameListResult>(
+    final ThreadListResult? result;
+    result = await showModalBottomSheet<ThreadListResult>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(

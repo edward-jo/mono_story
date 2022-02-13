@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Consumer<ThreadViewModel>(
           builder: (context, model, _) => ThreadButton(
             name: model.currentThreadData?.name ?? defaultThreadName,
-            onPressed: () => _showThreadList(context),
+            onPressed: () => _showThreadListBottomSheet(context),
           ),
         ),
         // -- ACTIONS --
@@ -63,16 +63,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showNewMessage(context),
+        onPressed: () => _pushNewMessageScreen(context),
         child: const Icon(Icons.add),
         tooltip: 'Create new story',
       ),
     );
   }
 
-  void _showThreadList(BuildContext context) async {
-    final ThreadNameListResult? result;
-    result = await showModalBottomSheet<ThreadNameListResult>(
+  void _showThreadListBottomSheet(BuildContext context) async {
+    final ThreadListResult? result;
+    result = await showModalBottomSheet<ThreadListResult>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
@@ -88,17 +88,19 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (result.type) {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
-        _threadVM.currentThreadId = threadId;
+        _threadVM.setCurrentThreadId(id: threadId, notify: true);
         break;
       case ThreadListResultType.newThreadRequest:
-        _showNewThread(context);
+        final threadId = await _showCreateThreadBottomSheet(context);
+        if (threadId == null) break;
+        _threadVM.setCurrentThreadId(id: threadId, notify: true);
         break;
     }
     return;
   }
 
-  void _showNewThread(BuildContext context) async {
-    final int? threadId = await showModalBottomSheet<int>(
+  Future<int?> _showCreateThreadBottomSheet(BuildContext context) async {
+    return await showModalBottomSheet<int>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
@@ -109,14 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       builder: (_) => const NewThreadBottomSheet(),
     );
-
-    if (threadId == null) return;
-
-    _threadVM.currentThreadId = threadId;
-    return;
   }
 
-  void _showNewMessage(BuildContext context) async {
+  void _pushNewMessageScreen(BuildContext context) async {
     await Navigator.of(context).pushNamed(
       NewMessageScreen.routeName,
       arguments: NewMessageScreenArgument(
