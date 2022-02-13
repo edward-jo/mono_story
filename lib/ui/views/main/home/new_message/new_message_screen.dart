@@ -161,7 +161,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     if (insertedIndex != null) {
       _listKey.currentState?.insertItem(
         insertedIndex,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 500),
       );
     }
 
