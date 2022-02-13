@@ -7,6 +7,7 @@ import 'package:mono_story/ui/common/platform_widget_base.dart';
 class PlatformRefreshIndicator extends PlatformWidgetBase {
   const PlatformRefreshIndicator({
     Key? key,
+    this.listKey,
     required this.onRefresh,
     required this.itemCount,
     required this.itemBuilder,
@@ -16,7 +17,8 @@ class PlatformRefreshIndicator extends PlatformWidgetBase {
   final Future<void> Function() onRefresh;
   final ScrollController? controller;
   final int itemCount;
-  final Widget Function(BuildContext, int) itemBuilder;
+  final Widget Function(BuildContext, int, Animation<double>) itemBuilder;
+  final Key? listKey;
 
   @override
   Widget buildCupertinoWidget(BuildContext context) {
@@ -27,11 +29,10 @@ class PlatformRefreshIndicator extends PlatformWidgetBase {
         CupertinoSliverRefreshControl(
           onRefresh: onRefresh,
         ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            itemBuilder,
-            childCount: itemCount,
-          ),
+        SliverAnimatedList(
+          key: listKey,
+          initialItemCount: itemCount,
+          itemBuilder: itemBuilder,
         ),
       ],
     );
@@ -42,11 +43,12 @@ class PlatformRefreshIndicator extends PlatformWidgetBase {
     return RefreshIndicator(
       onRefresh: onRefresh,
       color: Colors.black,
-      child: ListView.builder(
+      child: AnimatedList(
+        key: listKey,
         shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
         controller: controller,
-        itemCount: itemCount,
+        initialItemCount: itemCount,
         itemBuilder: itemBuilder,
       ),
     );
