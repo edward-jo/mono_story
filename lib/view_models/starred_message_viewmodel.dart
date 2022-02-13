@@ -4,7 +4,7 @@ import 'package:mono_story/view_models/message_viewmodel_base.dart';
 
 class StarredMessageViewModel extends MessageViewModelBase {
   @override
-  Future<void> starMessage(int id) async {
+  Future<Message?> starMessage(int id) async {
     try {
       final index = messages.indexWhere((e) => e.id == id);
       final message = Message.fromJson(messages[index].toJson());
@@ -12,16 +12,17 @@ class StarredMessageViewModel extends MessageViewModelBase {
       int affectedCount = await dbService.updateMessage(message);
       if (affectedCount != 1) {
         log('Fail:', error: 'Failed to star message');
-        return;
+        return null;
       }
       messages.removeAt(index);
       notifyListeners();
+      return message;
     } catch (e) {
       log(
         'Error:',
         error: 'Failed to star message with id($id) error( ${e.toString()})',
       );
-      return;
+      return null;
     }
   }
 }
