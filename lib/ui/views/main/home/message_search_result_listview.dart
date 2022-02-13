@@ -151,7 +151,7 @@ class _MessageSearchResultListViewState
               await _starMessage(item.id!);
             },
             onDelete: () async {
-              final message = await _deleteMessage(item.id!);
+              final message = await _showDeleteMessageAlertDialog(item.id!);
               if (message != null) {
                 _listKey.currentState?.removeItem(
                   index,
@@ -210,7 +210,7 @@ class _MessageSearchResultListViewState
     /// ListView to see the updated list.
   }
 
-  Future<Message?> _deleteMessage(int? id) async {
+  Future<Message?> _showDeleteMessageAlertDialog(int? id) async {
     return await MonoAlertDialog.showAlertConfirmDialog(
       context: context,
       title: 'Delete Story',

@@ -154,7 +154,9 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
               }
             },
             onDelete: () async {
-              final message = await _deleteStarredMessage(item.id!);
+              final message = await _showDeleteStarredMessageAlertDialog(
+                item.id!,
+              );
               if (message != null) {
                 _listKey.currentState?.removeItem(
                   index,
@@ -205,7 +207,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     return await _starredVM.starMessage(id!);
   }
 
-  Future<Message?> _deleteStarredMessage(int? id) async {
+  Future<Message?> _showDeleteStarredMessageAlertDialog(int? id) async {
     return await MonoAlertDialog.showAlertConfirmDialog(
       context: context,
       title: 'Delete Story',
