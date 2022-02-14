@@ -27,7 +27,6 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   Thread? _threadData;
   bool _initialized = false;
   bool _disableSaveButton = true;
-  late final dynamic _listKey;
 
   @override
   void initState() {
@@ -48,9 +47,6 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       } else {
         _threadData = _threadVM.findThreadData(id: threadId);
       }
-      _listKey = Platform.isIOS
-          ? arguments.listKey as GlobalKey<SliverAnimatedListState>
-          : arguments.listKey as GlobalKey<AnimatedListState>;
       _initialized = true;
     }
   }
@@ -208,9 +204,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
 
 class NewMessageScreenArgument {
   final int? threadId;
-  final Key listKey;
-
-  NewMessageScreenArgument(this.threadId, this.listKey);
+  NewMessageScreenArgument(this.threadId);
 }
 
 class NewMessageScreenResult {

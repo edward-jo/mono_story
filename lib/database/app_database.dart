@@ -162,7 +162,7 @@ A 의원은 “이기는 것만이 아니라 어떻게 이기느냐도 매우 �
       final baseDateTime = DateTime.parse('2022-01-01T01:00:00.000Z');
       final random = Random();
 
-      for (int i = 0; i < 100; i++) {
+      for (int i = 0; i < 50; i++) {
         await db.execute('''
 INSERT INTO $messagesTableName (${MessagesTableCols.message}, ${MessagesTableCols.fkThreadId}, ${MessagesTableCols.createdTime}, ${MessagesTableCols.starred})
 VALUES ("( $i ) ${fakeMessages[random.nextInt(21)]}", ${random.nextInt(10) + 1}, "${baseDateTime.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", ${random.nextInt(2)});
