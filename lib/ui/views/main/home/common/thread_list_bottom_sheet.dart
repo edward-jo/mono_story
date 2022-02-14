@@ -63,6 +63,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
       padding: _bottomSheetPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // -- BOTTOM SHEET HEAD --
           const SizedBox(height: 10),
@@ -77,24 +78,36 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
           ),
 
           // -- THREAD NAME LIST --
-          Expanded(
-            child: SizedBox(
-              child: MediaQuery.removePadding(
-                context: context,
-                child: Scrollbar(
-                  isAlwaysShown: true,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: threadList.length,
-                    itemBuilder: (ctx, i) =>
-                        _threadItemBuilder(ctx, i, threadList),
+          (threadList.isEmpty)
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Center(
+                    child: Text(
+                      'You don\'t have any threads yet',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                  ),
+                )
+              : Flexible(
+                  child: SizedBox(
+                    child: MediaQuery.removePadding(
+                      context: context,
+                      child: Scrollbar(
+                        isAlwaysShown: true,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: threadList.length,
+                          itemBuilder: (ctx, i) =>
+                              _threadItemBuilder(ctx, i, threadList),
+                        ),
+                      ),
+                      removeTop: true,
+                      removeBottom: true,
+                    ),
                   ),
                 ),
-                removeTop: true,
-                removeBottom: true,
-              ),
-            ),
-          ),
+
+          const SizedBox(height: 10),
 
           // -- CREATE NEW THREAD BUTTON --
           MonoElevatedButton(

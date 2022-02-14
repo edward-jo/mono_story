@@ -76,6 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final ThreadListResult? result;
     result = await showModalBottomSheet<ThreadListResult>(
       context: context,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.6,
+      ),
+      isScrollControlled: true,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
