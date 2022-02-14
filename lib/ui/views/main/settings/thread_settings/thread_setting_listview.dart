@@ -136,9 +136,11 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     final messageVM = context.read<MessageViewModel>();
     messageVM.initMessages();
     await messageVM.readMessagesChunk(threadVM.currentThreadId);
+    // TODO: have to rebuild MessageListView
 
     final starredVM = context.read<StarredMessageViewModel>();
     starredVM.initMessages();
     await starredVM.searchStarredThreadChunk();
+    // TODO: have to rebuild StarredMessageListView
   }
 }
