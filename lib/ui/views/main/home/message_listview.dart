@@ -108,8 +108,6 @@ class _MessageListViewState extends State<MessageListView> {
     List<Message> messageList;
     messageList = context.watch<MessageViewModel>().messages;
 
-    developer.log('--- aaa ${messageList.length} ---');
-
     // -- MESSAGE LIST --
     return Column(
       children: [
@@ -136,8 +134,6 @@ class _MessageListViewState extends State<MessageListView> {
     Animation<double> animation,
     List<Message> list,
   ) {
-    developer.log('--- aaa $index/${list.length} ---');
-
     // -- MESSAGE LIST ITEM --
     if (index < list.length) {
       return _buildMessageItem(list[index], index, animation);
@@ -185,8 +181,11 @@ class _MessageListViewState extends State<MessageListView> {
                   // Animate removed item
                   _listKey.currentState?.removeItem(
                     index,
-                    (context, animation) =>
-                        _buildRemovedMessageItem(message, index, animation),
+                    (context, animation) => _buildRemovedMessageItem(
+                      message,
+                      index,
+                      animation,
+                    ),
                   );
                   // Remove item from Starred Messages
                   _starredVM.deleteMessageFromList(item.id!, notify: true);
@@ -241,8 +240,8 @@ class _MessageListViewState extends State<MessageListView> {
     /// ListView to see the updated list.
   }
 
-  Future<bool?> _showDeleteMessageAlertDialog<bool>(int? id) async {
-    return await MonoAlertDialog.showAlertConfirmDialog(
+  Future<bool?> _showDeleteMessageAlertDialog(int? id) async {
+    return await MonoAlertDialog.showAlertConfirmDialog<bool>(
       context: context,
       title: 'Delete Story',
       content: 'Are you sure you want to delete this Story?',

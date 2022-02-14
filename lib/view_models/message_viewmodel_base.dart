@@ -104,7 +104,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> searchStarredThreadChunk() async {
+  Future<int> searchStarredThreadChunk() async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -126,7 +126,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
 
-    return true;
+    return stories.length;
   }
 
   Future<Message?> deleteMessage(int id, {bool notify = false}) async {
