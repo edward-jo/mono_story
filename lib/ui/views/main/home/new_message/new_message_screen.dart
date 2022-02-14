@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -26,6 +27,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   Thread? _threadData;
   bool _initialized = false;
   bool _disableSaveButton = true;
+  late final dynamic _listKey;
 
   @override
   void initState() {
@@ -38,12 +40,17 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      int? threadId = ModalRoute.of(context)!.settings.arguments as int?;
+      final arguments = ModalRoute.of(context)!.settings.arguments
+          as NewMessageScreenArgument;
+      int? threadId = arguments.threadId;
       if (threadId == null) {
         _threadData = null;
       } else {
         _threadData = _threadVM.findThreadData(id: threadId);
       }
+      _listKey = Platform.isIOS
+          ? arguments.listKey as GlobalKey<SliverAnimatedListState>
+          : arguments.listKey as GlobalKey<AnimatedListState>;
       _initialized = true;
     }
   }
@@ -138,21 +145,10 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       return;
     }
 
-    developer.log('Save messasge( $message )');
-    await _messageVM.save(
-      Message(
-        id: null,
-        message: message,
-        threadId: _threadData?.id,
-        createdTime: DateTime.now().toUtc(),
-        starred: 0,
-      ),
-      _threadVM.currentThreadId == _threadData?.id,
-    );
-
     final result = NewMessageScreenResult(
       isSaved: true,
       savedMessageThreadId: _threadData?.id,
+      message: message,
     );
 
     Navigator.of(context).pop(result);
@@ -160,8 +156,8 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 
   void _showThreadList(BuildContext context) async {
-    final ThreadNameListResult? result;
-    result = await showModalBottomSheet<ThreadNameListResult>(
+    final ThreadListResult? result;
+    result = await showModalBottomSheet<ThreadListResult>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
@@ -210,9 +206,20 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 }
 
+class NewMessageScreenArgument {
+  final int? threadId;
+  final Key listKey;
+
+  NewMessageScreenArgument(this.threadId, this.listKey);
+}
+
 class NewMessageScreenResult {
   final int? savedMessageThreadId;
   final bool isSaved;
-  const NewMessageScreenResult(
-      {this.savedMessageThreadId, required this.isSaved});
+  final String message;
+  const NewMessageScreenResult({
+    this.savedMessageThreadId,
+    required this.isSaved,
+    required this.message,
+  });
 }
