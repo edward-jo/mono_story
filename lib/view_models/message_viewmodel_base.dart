@@ -11,26 +11,30 @@ abstract class MessageViewModelBase extends ChangeNotifier {
 
   final List<Message> _messages = [];
   final int _messageChunkLimit = 15;
-  bool _hasNext = true;
   bool _isLoading = false;
+  bool hasNext = true;
 
   AppDatabaseService get dbService => _dbService;
   List<Message> get messages => _messages;
   bool get isLoading => _isLoading;
-  bool get hasNext => _hasNext;
 
   void initMessages() {
     _messages.clear();
-    _hasNext = true;
+    hasNext = true;
   }
 
-  Future<bool> save(Message message, bool insertAfterSaving) async {
+  Future<int?> save(
+    Message message, {
+    bool insertAfterSaving = false,
+    bool notify = false,
+  }) async {
     Message msg = await _dbService.createMessage(message);
     if (insertAfterSaving) {
       _messages.insert(0, msg);
-      notifyListeners();
+      if (notify) notifyListeners();
+      return 0;
     }
-    return true;
+    return null;
   }
 
   bool canLoadMessagesChunk() {
@@ -39,7 +43,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       return false;
     }
 
-    if (!_hasNext) {
+    if (!hasNext) {
       developer.log('No next stories');
       return false;
     }
@@ -47,7 +51,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> readMessagesChunk(int? threadId) async {
+  Future<int> readMessagesChunk(int? threadId) async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -61,20 +65,20 @@ abstract class MessageViewModelBase extends ChangeNotifier {
           threadId, _messages.length, _messageChunkLimit);
     }
 
-    developer.log('Message List');
-    for (Message m in stories) {
-      developer.log('id( ${m.id}: ' + m.toJson().toString());
-    }
+    // developer.log('Message List');
+    // for (Message m in stories) {
+    //   developer.log('id( ${m.id}: ' + m.toJson().toString());
+    // }
 
-    _hasNext = (stories.length < _messageChunkLimit) ? false : true;
+    hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
-    return true;
+    return stories.length;
   }
 
-  Future<bool> searchThreadChunk(String query) async {
+  Future<int> searchThreadChunk(String query) async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -87,20 +91,20 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       query,
     );
 
-    developer.log('Message List');
-    for (Message m in stories) {
-      developer.log('id( ${m.id}: ' + m.toJson().toString());
-    }
+    // developer.log('Message List');
+    // for (Message m in stories) {
+    //   developer.log('id( ${m.id}: ' + m.toJson().toString());
+    // }
 
-    _hasNext = (stories.length < _messageChunkLimit) ? false : true;
+    hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
-    return true;
+    return stories.length;
   }
 
-  Future<bool> searchStarredThreadChunk() async {
+  Future<int> searchStarredThreadChunk() async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -112,45 +116,46 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       _messageChunkLimit,
     );
 
-    developer.log('Message List');
-    for (Message m in stories) {
-      developer.log('id( ${m.id}: ' + m.toJson().toString());
-    }
+    // developer.log('Message List');
+    // for (Message m in stories) {
+    //   developer.log('id( ${m.id}: ' + m.toJson().toString());
+    // }
 
-    _hasNext = (stories.length < _messageChunkLimit) ? false : true;
+    hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
-    return true;
+    return stories.length;
   }
 
-  Future<void> deleteMessage(int id) async {
+  Future<Message?> deleteMessage(int id, {bool notify = false}) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
       final message = _messages[index];
       int affectedCount = await _dbService.deleteMessage(message.id!);
       if (affectedCount != 1) {
         developer.log('deleteMessage:', error: 'Failed to delete message');
-        return;
+        return null;
       }
       _messages.removeAt(index);
-      notifyListeners();
+      if (notify) notifyListeners();
+      return message;
     } catch (e) {
       developer.log(
         'Error:',
         error: 'Failed to delete message with id($id) error( ${e.toString()})',
       );
-      return;
+      return null;
     }
   }
 
-  void deleteMessageFromList(int id) {
+  void deleteMessageFromList(int id, {bool notify = false}) {
     try {
       final index = messages.indexWhere((e) => e.id == id);
       if (index < 0) return;
       messages.removeAt(index);
-      notifyListeners();
+      if (notify) notifyListeners();
     } catch (e) {
       developer.log(
         'Error:',

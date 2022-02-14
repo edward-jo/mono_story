@@ -28,7 +28,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _getThreadListFuture = _threadVM.getThreadList();
+    _getThreadListFuture = _threadVM.readThreadList();
   }
 
   @override
@@ -111,19 +111,19 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
 
   void _seeAll(BuildContext context) {
     Navigator.of(context).pop(
-      ThreadNameListResult(type: ThreadListResultType.thread, data: null),
+      ThreadListResult(type: ThreadListResultType.thread, data: null),
     );
   }
 
   void _tapThread(BuildContext context, int? id) {
     Navigator.of(context).pop(
-      ThreadNameListResult(type: ThreadListResultType.thread, data: id),
+      ThreadListResult(type: ThreadListResultType.thread, data: id),
     );
   }
 
   void _newThread(BuildContext context) {
     Navigator.of(context).pop(
-      ThreadNameListResult(type: ThreadListResultType.newThreadRequest),
+      ThreadListResult(type: ThreadListResultType.newThreadRequest),
     );
   }
 
@@ -154,8 +154,8 @@ enum ThreadListResultType {
   newThreadRequest,
 }
 
-class ThreadNameListResult {
+class ThreadListResult {
   late final ThreadListResultType type;
   late final dynamic data;
-  ThreadNameListResult({required this.type, this.data});
+  ThreadListResult({required this.type, this.data});
 }

@@ -135,4 +135,6 @@ class MonoIcons {
       Platform.isIOS ? CupertinoIcons.tag : Icons.label;
   static IconData chevron_forward =
       Platform.isIOS ? CupertinoIcons.chevron_forward : Icons.chevron_right;
+  static IconData more =
+      Platform.isIOS ? CupertinoIcons.ellipsis : Icons.more_horiz;
 }

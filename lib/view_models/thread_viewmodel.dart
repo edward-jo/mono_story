@@ -8,22 +8,21 @@ import 'package:mono_story/services/service_locator.dart';
 class ThreadViewModel extends ChangeNotifier {
   final AppDatabaseService _dbService = serviceLocator<AppDatabaseService>();
   List<Thread> _threads = [];
-  int? _currentThreadId;
+  int? currentThreadId;
 
   List<Thread> get threads => _threads;
 
-  int? get currentThreadId => _currentThreadId;
-  set currentThreadId(int? id) {
-    _currentThreadId = id;
-    notifyListeners();
-  }
-
   Thread? get currentThreadData {
-    if (_currentThreadId == null) return null;
-    return findThreadData(id: _currentThreadId);
+    if (currentThreadId == null) return null;
+    return findThreadData(id: currentThreadId);
   }
 
-  Future<List<Thread>> getThreadList() async {
+  void setCurrentThreadId(int? id, {bool notify = false}) {
+    currentThreadId = id;
+    if (notify) notifyListeners();
+  }
+
+  Future<List<Thread>> readThreadList() async {
     List<Thread> threads = await _dbService.readAllThreads();
 
     developer.log('Thread List');
@@ -60,23 +59,27 @@ class ThreadViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteThread(int id) async {
+  Future<Thread?> deleteThread(int id, {bool notify = false}) async {
     try {
       final index = _threads.indexWhere((e) => e.id == id);
       final thread = _threads[index];
       int affectedCount = await _dbService.deleteThread(thread.id!);
       if (affectedCount != 1) {
         developer.log('deleteThread:', error: 'Failed to delete thread');
-        return;
+        return null;
       }
+
       _threads.removeAt(index);
-      notifyListeners();
+
+      if (notify) notifyListeners();
+
+      return thread;
     } catch (e) {
       developer.log(
         'Error:',
         error: 'Failed to delete thread with id($id) error( ${e.toString()})',
       );
-      return;
+      return null;
     }
   }
 
@@ -97,7 +100,6 @@ class ThreadViewModel extends ChangeNotifier {
           .toList()
           .first;
     } catch (e) {
-      developer.log('Cannot find out thread data');
       return null;
     }
   }

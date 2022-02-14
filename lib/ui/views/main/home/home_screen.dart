@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
+import 'package:mono_story/models/message.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/message_listview.dart';
 import 'package:mono_story/ui/views/main/home/message_search_delegate.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -19,11 +23,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late ThreadViewModel _threadVM;
+  late MessageViewModel _messageVM;
+  final dynamic _listKey = Platform.isIOS
+      ? GlobalKey<SliverAnimatedListState>()
+      : GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
+    _messageVM = context.read<MessageViewModel>();
   }
 
   @override
@@ -36,9 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Consumer<ThreadViewModel>(
           builder: (context, model, _) => ThreadButton(
             name: model.currentThreadData?.name ?? defaultThreadName,
-            onPressed: () => _showThreadList(context),
+            onPressed: () => _showThreadListBottomSheet(context),
           ),
         ),
+
         // -- ACTIONS --
         actions: <Widget>[
           IconButton(
@@ -49,22 +59,28 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
-        builder: (_, id, __) => MessageListView(threadId: id),
+        builder: (_, id, __) => MessageListView(
+          threadId: id,
+          listKey: _listKey,
+        ),
       ),
+
+      // FLOATING BUTTON
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showNewMessage(context),
+        onPressed: () => _pushNewMessageScreen(context),
         child: const Icon(Icons.add),
         tooltip: 'Create new story',
       ),
     );
   }
 
-  void _showThreadList(BuildContext context) async {
-    final ThreadNameListResult? result;
-    result = await showModalBottomSheet<ThreadNameListResult>(
+  void _showThreadListBottomSheet(BuildContext context) async {
+    final ThreadListResult? result;
+    result = await showModalBottomSheet<ThreadListResult>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       shape: const RoundedRectangleBorder(
@@ -80,17 +96,19 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (result.type) {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
-        _threadVM.currentThreadId = threadId;
+        _threadVM.setCurrentThreadId(threadId, notify: true);
         break;
       case ThreadListResultType.newThreadRequest:
-        _showNewThread(context);
+        final threadId = await _showCreateThreadBottomSheet(context);
+        if (threadId == null) break;
+        _threadVM.setCurrentThreadId(threadId, notify: true);
         break;
     }
     return;
   }
 
-  void _showNewThread(BuildContext context) async {
-    final int? threadId = await showModalBottomSheet<int>(
+  Future<int?> _showCreateThreadBottomSheet(BuildContext context) async {
+    return await showModalBottomSheet<int>(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
@@ -101,17 +119,39 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       builder: (_) => const NewThreadBottomSheet(),
     );
-
-    if (threadId == null) return;
-
-    _threadVM.currentThreadId = threadId;
-    return;
   }
 
-  void _showNewMessage(BuildContext context) async {
-    await Navigator.of(context).pushNamed(
+  void _pushNewMessageScreen(BuildContext context) async {
+    var ret = await Navigator.of(context).pushNamed(
       NewMessageScreen.routeName,
-      arguments: _threadVM.currentThreadId,
+      arguments: NewMessageScreenArgument(
+        _threadVM.currentThreadId,
+        _listKey,
+      ),
     );
+
+    ret = ret as NewMessageScreenResult?;
+
+    if (ret == null) return;
+
+    int? insertedIndex = await _messageVM.save(
+      Message(
+        id: null,
+        message: ret.message,
+        threadId: ret.savedMessageThreadId,
+        createdTime: DateTime.now().toUtc(),
+        starred: 0,
+      ),
+      insertAfterSaving: (_threadVM.currentThreadId == null ||
+          _threadVM.currentThreadId == ret.savedMessageThreadId),
+      notify: false,
+    );
+
+    if (insertedIndex != null) {
+      _listKey.currentState?.insertItem(
+        insertedIndex,
+        duration: const Duration(milliseconds: 500),
+      );
+    }
   }
 }
