@@ -35,9 +35,8 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     _messageVM = context.read<MessageViewModel>();
     _starredVM.initMessages();
     _starredMessagesFuture = _starredVM.searchStarredThreadChunk();
-    _listKey = Platform.isIOS
-        ? GlobalKey<SliverAnimatedListState>()
-        : GlobalKey<AnimatedListState>();
+    _starredVM.removedItemBuilder = _buildRemovedStarredItem;
+    _listKey = _starredVM.listKey;
     _scrollController.addListener(_scrollListener);
   }
 
@@ -104,7 +103,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
             child: PlatformRefreshIndicator(
               listKey: _listKey,
               controller: _scrollController,
-              itemCount: starredList.length + 1,
+              itemCount: starredList.length,
               itemBuilder: (_, i, animation) {
                 return _buildStarredListViewItem(i, animation, starredList);
               },
@@ -121,34 +120,8 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     Animation<double> animation,
     List<Message> list,
   ) {
-    // -- MESSAGE LIST ITEM --
-    if (index < list.length) {
-      return _buildStarredItem(list[index], index, animation);
-    }
+    final item = list[index];
 
-    // -- LOADING INDICATOR --
-    if (_starredVM.hasNext) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 5.0),
-        child: PlatformIndicator(),
-      );
-    }
-
-    // -- END MESSAGE --
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text('nothing more to load!',
-            style: Theme.of(context).textTheme.caption),
-      ),
-    );
-  }
-
-  Widget _buildStarredItem(
-    Message item,
-    int index,
-    Animation<double> animation,
-  ) {
     return SizeTransition(
       sizeFactor: animation,
       child: Column(
@@ -157,45 +130,43 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
           MessageListViewItem(
             message: item,
             onStar: () async {
-              final message = await _starMessage(item.id!);
-              if (message != null) {
-                _listKey.currentState?.removeItem(
-                  index,
-                  (context, animation) => _buildRemovedStarredItem(
-                    message,
-                    index,
-                    animation,
-                  ),
-                );
-              }
+              await _starMessage(item.id!);
             },
             onDelete: () async {
               bool? ret = await _showDeleteStarredMessageAlertDialog(item.id!);
               if (ret != null && ret) {
                 final message = await _starredVM.deleteMessage(item.id!);
                 if (message != null) {
-                  _listKey.currentState?.removeItem(
-                    index,
-                    (context, animation) => _buildRemovedStarredItem(
-                      message,
-                      index,
-                      animation,
-                    ),
-                  );
-                  // Remove item from Messages
                   _messageVM.deleteMessageFromList(item.id!, notify: true);
                 }
               }
             },
           ),
+          // -- LOADING INDICATOR --
+          if (index == list.length - 1 && _messageVM.hasNext)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 5.0),
+              child: PlatformIndicator(),
+            )
+          // -- END MESSAGE --
+          else if (index == list.length - 1)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'nothing more to load!',
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
   Widget _buildRemovedStarredItem(
-    Message item,
     int index,
+    Message item,
     Animation<double> animation,
   ) {
     return SizeTransition(
@@ -217,13 +188,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
       if (_starredVM.canLoadMessagesChunk()) {
-        int length = _starredVM.messages.length;
-        int count = await _starredVM.searchStarredThreadChunk();
-        if (count > 0) {
-          for (int i = 0; i < count; i++) {
-            _listKey.currentState?.insertItem(length + i);
-          }
-        }
+        await _starredVM.searchStarredThreadChunk();
       }
     }
   }

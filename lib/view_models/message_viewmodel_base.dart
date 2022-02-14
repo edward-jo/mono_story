@@ -35,8 +35,8 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }
 
   void clearAllItem() {
-    for (int i = 0; i < _messages.length; i++) {
-      removeItem(i);
+    while (_messages.isNotEmpty) {
+      removeItem(_messages.length - 1);
     }
   }
 

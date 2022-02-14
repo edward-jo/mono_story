@@ -140,7 +140,7 @@ class _MessageListViewState extends State<MessageListView> {
         children: <Widget>[
           if (index != 0) const Divider(thickness: 0.5),
           MessageListViewItem(
-            message: list[index],
+            message: item,
             onStar: () async => await _starMessage(item.id!),
             onDelete: () async {
               // Show alert dialog to confirm again
