@@ -30,17 +30,17 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   void initMessages() {
-    _clearAllItem();
+    clearAllItem();
     hasNext = true;
   }
 
-  void _clearAllItem() {
+  void clearAllItem() {
     for (int i = 0; i < _messages.length; i++) {
-      _removeItem(i);
+      removeItem(i);
     }
   }
 
-  void _insertItem(int index, Message message) {
+  void insertItem(int index, Message message) {
     _messages.insert(index, message);
     dynamic listCurrentState = Platform.isIOS
         ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
@@ -48,13 +48,13 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     listCurrentState?.insertItem(index);
   }
 
-  void _insertAllItem(int index, List<Message> newList) {
+  void insertAllItem(int index, List<Message> newList) {
     for (int i = 0; i < newList.length; i++) {
-      _insertItem(index + i, newList[i]);
+      insertItem(index + i, newList[i]);
     }
   }
 
-  void _removeItem(int index) {
+  void removeItem(int index) {
     Message removedItem = _messages.removeAt(index);
     dynamic listCurrentState = Platform.isIOS
         ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
@@ -71,7 +71,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }) async {
     Message msg = await _dbService.createMessage(message);
     if (insertAfterSaving) {
-      _insertItem(0, msg);
+      insertItem(0, msg);
       if (notify) notifyListeners();
       return 0;
     }
@@ -112,7 +112,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     // }
 
     hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    _insertAllItem(_messages.length, stories);
+    insertAllItem(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
@@ -138,7 +138,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     // }
 
     hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    _insertAllItem(_messages.length, stories);
+    insertAllItem(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
@@ -163,7 +163,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     // }
 
     hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    _insertAllItem(_messages.length, stories);
+    insertAllItem(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
@@ -179,7 +179,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
         developer.log('deleteMessage:', error: 'Failed to delete message');
         return null;
       }
-      _removeItem(index);
+      removeItem(index);
       if (notify) notifyListeners();
       return message;
     } catch (e) {
@@ -195,7 +195,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     try {
       final index = messages.indexWhere((e) => e.id == id);
       if (index < 0) return;
-      _removeItem(index);
+      removeItem(index);
       if (notify) notifyListeners();
     } catch (e) {
       developer.log(
