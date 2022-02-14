@@ -18,7 +18,24 @@ class ThreadSettingListView extends StatefulWidget {
 }
 
 class _ThreadSettingListViewState extends State<ThreadSettingListView> {
-  final _listKey = GlobalKey<AnimatedListState>();
+  late final ThreadViewModel _threadVM;
+  late final GlobalKey<AnimatedListState> _listKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _threadVM = context.read<ThreadViewModel>();
+    _threadVM.removedItemBuilder = _buildRemovedThreadItem;
+    _listKey = _threadVM.listKey;
+  }
+
+  Widget _buildRemovedThreadItem(Thread item, Animation<double> animation) {
+    return ThreadSettingListViewItem(
+      animation: animation,
+      thread: item,
+      onPressed: () {},
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,19 +133,7 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
   Future<void> _deleteThread(Thread thread, int index) async {
     // TODO: Clean
     final threadVM = context.read<ThreadViewModel>();
-
-    final deletedThread = await threadVM.deleteThread(thread.id!);
-    if (deletedThread != null) {
-      _listKey.currentState?.removeItem(
-        index,
-        (context, animation) => ThreadSettingListViewItem(
-          animation: animation,
-          thread: deletedThread,
-          onPressed: () {},
-        ),
-      );
-    }
-
+    await threadVM.deleteThread(thread.id!);
     if (threadVM.currentThreadId == thread.id!) {
       threadVM.setCurrentThreadId(null, notify: true);
     }
@@ -136,11 +141,9 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     final messageVM = context.read<MessageViewModel>();
     messageVM.initMessages();
     await messageVM.readMessagesChunk(threadVM.currentThreadId);
-    // TODO: have to rebuild MessageListView
 
     final starredVM = context.read<StarredMessageViewModel>();
     starredVM.initMessages();
     await starredVM.searchStarredThreadChunk();
-    // TODO: have to rebuild StarredMessageListView
   }
 }

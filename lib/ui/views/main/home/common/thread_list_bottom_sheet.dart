@@ -19,7 +19,7 @@ class ThreadListBottomSheet extends StatefulWidget {
 
 class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
   late final ThreadViewModel _threadVM;
-  late Future<List<Thread>> _getThreadListFuture;
+  late Future<List<Thread>> _readThreadListFuture;
 
   final double _threadItemHeight = 50.0;
   final _bottomSheetPadding = const EdgeInsets.symmetric(horizontal: 20.0);
@@ -28,13 +28,13 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _getThreadListFuture = _threadVM.readThreadList();
+    _readThreadListFuture = _threadVM.readThreadList();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _getThreadListFuture,
+      future: _readThreadListFuture,
       builder: _threadListBuilder,
     );
   }

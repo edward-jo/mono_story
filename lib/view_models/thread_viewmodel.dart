@@ -6,15 +6,53 @@ import 'package:mono_story/services/app_database/app_database_service.dart';
 import 'package:mono_story/services/service_locator.dart';
 
 class ThreadViewModel extends ChangeNotifier {
-  final AppDatabaseService _dbService = serviceLocator<AppDatabaseService>();
-  List<Thread> _threads = [];
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+
+  late Widget Function(
+    Thread,
+    Animation<double>,
+  ) removedItemBuilder;
+
   int? currentThreadId;
+
+  final AppDatabaseService _dbService = serviceLocator<AppDatabaseService>();
+  final List<Thread> _threads = [];
 
   List<Thread> get threads => _threads;
 
   Thread? get currentThreadData {
     if (currentThreadId == null) return null;
     return findThreadData(id: currentThreadId);
+  }
+
+  void initMessages() {
+    clearAllItem();
+  }
+
+  void clearAllItem() {
+    while (_threads.isNotEmpty) {
+      removeItem(_threads.length - 1);
+    }
+  }
+
+  void insertItem(int index, Thread message) {
+    _threads.insert(index, message);
+    AnimatedListState? listCurrentState = listKey.currentState;
+    listCurrentState?.insertItem(index);
+  }
+
+  void insertAllItem(int index, List<Thread> newList) {
+    for (int i = 0; i < newList.length; i++) {
+      insertItem(index + i, newList[i]);
+    }
+  }
+
+  void removeItem(int index) {
+    Thread removedItem = _threads.removeAt(index);
+    AnimatedListState? listCurrentState = listKey.currentState;
+    listCurrentState?.removeItem(index, (context, animation) {
+      return removedItemBuilder(removedItem, animation);
+    });
   }
 
   void setCurrentThreadId(int? id, {bool notify = false}) {
@@ -29,14 +67,14 @@ class ThreadViewModel extends ChangeNotifier {
     for (Thread t in threads) {
       developer.log('${t.id}: ${t.name}');
     }
-    _threads.clear();
-    _threads = threads;
+    clearAllItem();
+    insertAllItem(0, threads);
     return threads;
   }
 
   Future<Thread> createThread(String name) async {
     Thread t = await _dbService.createThread(Thread(name: name));
-    _threads.add(t);
+    insertItem(_threads.length - 1, t);
     notifyListeners();
     return t;
   }
@@ -63,16 +101,15 @@ class ThreadViewModel extends ChangeNotifier {
     try {
       final index = _threads.indexWhere((e) => e.id == id);
       final thread = _threads[index];
+
       int affectedCount = await _dbService.deleteThread(thread.id!);
       if (affectedCount != 1) {
         developer.log('deleteThread:', error: 'Failed to delete thread');
         return null;
       }
 
-      _threads.removeAt(index);
-
+      removeItem(index);
       if (notify) notifyListeners();
-
       return thread;
     } catch (e) {
       developer.log(
