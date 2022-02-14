@@ -143,7 +143,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
             },
           ),
           // -- LOADING INDICATOR --
-          if (index == list.length - 1 && _messageVM.hasNext)
+          if (index == list.length - 1 && _starredVM.hasNext)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 5.0),
               child: PlatformIndicator(),
