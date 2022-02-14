@@ -145,29 +145,10 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       return;
     }
 
-    developer.log('Save messasge( $message )');
-    int? insertedIndex = await _messageVM.save(
-      Message(
-        id: null,
-        message: message,
-        threadId: _threadData?.id,
-        createdTime: DateTime.now().toUtc(),
-        starred: 0,
-      ),
-      insertAfterSaving: (_threadVM.currentThreadId == _threadData?.id),
-      notify: false,
-    );
-
-    if (insertedIndex != null) {
-      _listKey.currentState?.insertItem(
-        insertedIndex,
-        duration: const Duration(milliseconds: 500),
-      );
-    }
-
     final result = NewMessageScreenResult(
       isSaved: true,
       savedMessageThreadId: _threadData?.id,
+      message: message,
     );
 
     Navigator.of(context).pop(result);
@@ -235,6 +216,10 @@ class NewMessageScreenArgument {
 class NewMessageScreenResult {
   final int? savedMessageThreadId;
   final bool isSaved;
-  const NewMessageScreenResult(
-      {this.savedMessageThreadId, required this.isSaved});
+  final String message;
+  const NewMessageScreenResult({
+    this.savedMessageThreadId,
+    required this.isSaved,
+    required this.message,
+  });
 }

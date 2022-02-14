@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
+import 'package:mono_story/models/message.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/message_listview.dart';
 import 'package:mono_story/ui/views/main/home/message_search_delegate.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late ThreadViewModel _threadVM;
+  late MessageViewModel _messageVM;
   final dynamic _listKey = Platform.isIOS
       ? GlobalKey<SliverAnimatedListState>()
       : GlobalKey<AnimatedListState>();
@@ -29,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
+    _messageVM = context.read<MessageViewModel>();
   }
 
   @override
@@ -118,12 +122,36 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _pushNewMessageScreen(BuildContext context) async {
-    await Navigator.of(context).pushNamed(
+    var ret = await Navigator.of(context).pushNamed(
       NewMessageScreen.routeName,
       arguments: NewMessageScreenArgument(
         _threadVM.currentThreadId,
         _listKey,
       ),
     );
+
+    ret = ret as NewMessageScreenResult?;
+
+    if (ret == null) return;
+
+    int? insertedIndex = await _messageVM.save(
+      Message(
+        id: null,
+        message: ret.message,
+        threadId: ret.savedMessageThreadId,
+        createdTime: DateTime.now().toUtc(),
+        starred: 0,
+      ),
+      insertAfterSaving: (_threadVM.currentThreadId == null ||
+          _threadVM.currentThreadId == ret.savedMessageThreadId),
+      notify: false,
+    );
+
+    if (insertedIndex != null) {
+      _listKey.currentState?.insertItem(
+        insertedIndex,
+        duration: const Duration(milliseconds: 500),
+      );
+    }
   }
 }
