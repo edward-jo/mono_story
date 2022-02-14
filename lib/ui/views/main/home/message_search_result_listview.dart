@@ -43,9 +43,8 @@ class _MessageSearchResultListViewState
     _starredVM = context.read<StarredMessageViewModel>();
     _searchedVM.initMessages();
     _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
-    _listKey = Platform.isIOS
-        ? GlobalKey<SliverAnimatedListState>()
-        : GlobalKey<AnimatedListState>();
+    _searchedVM.removedItemBuilder = _buildRemovedSearchedItem;
+    _listKey = _searchedVM.listKey;
     _scrollController.addListener(_scrollListener);
   }
 
@@ -112,7 +111,7 @@ class _MessageSearchResultListViewState
             child: PlatformRefreshIndicator(
               listKey: _listKey,
               controller: _scrollController,
-              itemCount: searchResult.length + 1,
+              itemCount: searchResult.length,
               itemBuilder: (_, i, animation) {
                 return _buildSearchedListViewItem(i, animation, searchResult);
               },
@@ -129,31 +128,8 @@ class _MessageSearchResultListViewState
     Animation<double> animation,
     List<Message> list,
   ) {
-    // -- MESSAGE LIST ITEM --
-    if (index < list.length) {
-      return _buildSearchedItem(list[index], index, animation);
-    }
+    final item = list[index];
 
-    // -- LOADING INDICATOR --
-    if (_searchedVM.hasNext) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 5.0),
-        child: PlatformIndicator(),
-      );
-    }
-
-    // -- END MESSAGE --
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text('nothing more to load!',
-            style: Theme.of(context).textTheme.caption),
-      ),
-    );
-  }
-
-  Widget _buildSearchedItem(
-      Message item, int index, Animation<double> animation) {
     return SizeTransition(
       sizeFactor: animation,
       child: Column(
@@ -170,29 +146,37 @@ class _MessageSearchResultListViewState
               if (ret != null && ret) {
                 final message = await _searchedVM.deleteMessage(item.id!);
                 if (message != null) {
-                  _listKey.currentState?.removeItem(
-                    index,
-                    (context, animation) => _buildRemovedSearchedItem(
-                      message,
-                      index,
-                      animation,
-                    ),
-                  );
-                  // Remove item from Message/Starred Messages
                   _messageVM.deleteMessageFromList(item.id!, notify: true);
                   _starredVM.deleteMessageFromList(item.id!, notify: true);
                 }
               }
             },
           ),
+          // -- LOADING INDICATOR --
+          if (index == list.length - 1 && _searchedVM.hasNext)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 5.0),
+              child: PlatformIndicator(),
+            )
+          // -- END MESSAGE --
+          else if (index == list.length - 1)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'nothing more to load!',
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
   Widget _buildRemovedSearchedItem(
-    Message item,
     int index,
+    Message item,
     Animation<double> animation,
   ) {
     return SizeTransition(
@@ -219,13 +203,7 @@ class _MessageSearchResultListViewState
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
       if (_searchedVM.canLoadMessagesChunk()) {
-        int length = _searchedVM.messages.length;
-        int count = await _searchedVM.searchThreadChunk(widget.query);
-        if (count > 0) {
-          for (int i = 0; i < count; i++) {
-            _listKey.currentState?.insertItem(length + i);
-          }
-        }
+        await _searchedVM.searchThreadChunk(widget.query);
       }
     }
   }

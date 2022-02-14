@@ -14,7 +14,7 @@ class StarredMessageViewModel extends MessageViewModelBase {
         developer.log('Fail:', error: 'Failed to star message');
         return null;
       }
-      messages.removeAt(index);
+      removeItem(index);
       if (notify) notifyListeners();
       return message;
     } catch (e) {

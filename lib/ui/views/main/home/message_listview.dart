@@ -19,11 +19,9 @@ class MessageListView extends StatefulWidget {
   const MessageListView({
     Key? key,
     required this.threadId,
-    required this.listKey,
   }) : super(key: key);
 
   final int? threadId;
-  final Key listKey;
 
   @override
   State<MessageListView> createState() => _MessageListViewState();
@@ -47,9 +45,8 @@ class _MessageListViewState extends State<MessageListView> {
     _scrollController.addListener(_scrollListener);
     _readThreadsFuture = _threadVM.readThreadList();
     _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
-    _listKey = Platform.isIOS
-        ? widget.listKey as GlobalKey<SliverAnimatedListState>
-        : widget.listKey as GlobalKey<AnimatedListState>;
+    _messageVM.removedItemBuilder = _buildRemovedMessageItem;
+    _listKey = _messageVM.listKey;
   }
 
   @override
@@ -117,7 +114,7 @@ class _MessageListViewState extends State<MessageListView> {
             child: PlatformRefreshIndicator(
               listKey: _listKey,
               controller: _scrollController,
-              itemCount: messageList.length + 1,
+              itemCount: messageList.length,
               itemBuilder: (_, i, animation) {
                 return _buildMessageListViewItem(i, animation, messageList);
               },
@@ -134,36 +131,9 @@ class _MessageListViewState extends State<MessageListView> {
     Animation<double> animation,
     List<Message> list,
   ) {
-    // -- MESSAGE LIST ITEM --
-    if (index < list.length) {
-      return _buildMessageItem(list[index], index, animation);
-    }
+    developer.log('itemBuilder($index/${list.length}):');
+    final item = list[index];
 
-    // -- LOADING INDICATOR --
-    if (_messageVM.hasNext) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 5.0),
-        child: PlatformIndicator(),
-      );
-    }
-
-    // -- END MESSAGE --
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          'nothing more to load!',
-          style: Theme.of(context).textTheme.caption,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMessageItem(
-    Message item,
-    int index,
-    Animation<double> animation,
-  ) {
     return SizeTransition(
       sizeFactor: animation,
       child: Column(
@@ -178,29 +148,37 @@ class _MessageListViewState extends State<MessageListView> {
               if (ret != null && ret) {
                 final message = await _messageVM.deleteMessage(item.id!);
                 if (message != null) {
-                  // Animate removed item
-                  _listKey.currentState?.removeItem(
-                    index,
-                    (context, animation) => _buildRemovedMessageItem(
-                      message,
-                      index,
-                      animation,
-                    ),
-                  );
                   // Remove item from Starred Messages
                   _starredVM.deleteMessageFromList(item.id!, notify: true);
                 }
               }
             },
           ),
+          // -- LOADING INDICATOR --
+          if (index == list.length - 1 && _messageVM.hasNext)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 5.0),
+              child: PlatformIndicator(),
+            )
+          // -- END MESSAGE --
+          else if (index == list.length - 1)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'nothing more to load!',
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
   Widget _buildRemovedMessageItem(
-    Message item,
     int index,
+    Message item,
     Animation<double> animation,
   ) {
     return SizeTransition(
@@ -222,13 +200,7 @@ class _MessageListViewState extends State<MessageListView> {
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
       if (_messageVM.canLoadMessagesChunk()) {
-        int length = _messageVM.messages.length;
-        int count = await _messageVM.readMessagesChunk(widget.threadId);
-        if (count > 0) {
-          for (int i = 0; i < count; i++) {
-            _listKey.currentState?.insertItem(length + i);
-          }
-        }
+        await _messageVM.readMessagesChunk(widget.threadId);
       }
     }
   }
@@ -258,28 +230,5 @@ class _MessageListViewState extends State<MessageListView> {
     _messageVM.initMessages();
     _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
     setState(() {});
-
-    // // Remove all messages
-    // while (list.isNotEmpty) {
-    //   var message = list.removeAt(list.length - 1);
-    //   _listKey.currentState?.removeItem(
-    //     0,
-    //     (context, animation) => Container(),
-    //     // (context, animation) => _buildRemovedItem(message, 0, animation),
-    //   );
-    // }
-    // // Remove footer
-    // _listKey.currentState?.removeItem(0, (context, animation) => Container());
-
-    // // Start over reading
-    // _messageVM.hasNext = true;
-    // int count = await _messageVM.readMessagesChunk(widget.threadId);
-    // if (count > 0) {
-    //   for (int i = 0; i < count; i++) {
-    //     _listKey.currentState?.insertItem(i);
-    //   }
-    //   // Insert footer
-    //   _listKey.currentState?.insertItem(count);
-    // }
   }
 }
