@@ -24,9 +24,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late ThreadViewModel _threadVM;
   late MessageViewModel _messageVM;
-  final dynamic _listKey = Platform.isIOS
-      ? GlobalKey<SliverAnimatedListState>()
-      : GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -63,10 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
-        builder: (_, id, __) => MessageListView(
-          threadId: id,
-          listKey: _listKey,
-        ),
+        builder: (_, id, __) => MessageListView(threadId: id),
       ),
 
       // FLOATING BUTTON
@@ -124,17 +118,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void _pushNewMessageScreen(BuildContext context) async {
     var ret = await Navigator.of(context).pushNamed(
       NewMessageScreen.routeName,
-      arguments: NewMessageScreenArgument(
-        _threadVM.currentThreadId,
-        _listKey,
-      ),
+      arguments: NewMessageScreenArgument(_threadVM.currentThreadId),
     );
 
     ret = ret as NewMessageScreenResult?;
 
     if (ret == null) return;
 
-    int? insertedIndex = await _messageVM.save(
+    await _messageVM.save(
       Message(
         id: null,
         message: ret.message,
@@ -146,12 +137,5 @@ class _HomeScreenState extends State<HomeScreen> {
           _threadVM.currentThreadId == ret.savedMessageThreadId),
       notify: false,
     );
-
-    if (insertedIndex != null) {
-      _listKey.currentState?.insertItem(
-        insertedIndex,
-        duration: const Duration(milliseconds: 500),
-      );
-    }
   }
 }

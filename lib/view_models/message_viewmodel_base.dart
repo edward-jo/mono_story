@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mono_story/models/message.dart';
@@ -7,6 +8,16 @@ import 'package:mono_story/services/app_database/app_database_service.dart';
 import 'package:mono_story/services/service_locator.dart';
 
 abstract class MessageViewModelBase extends ChangeNotifier {
+  final dynamic listKey = Platform.isIOS
+      ? GlobalKey<SliverAnimatedListState>()
+      : GlobalKey<AnimatedListState>();
+
+  late Widget Function(
+    int,
+    Message,
+    Animation<double>,
+  ) removedItemBuilder;
+
   final _dbService = serviceLocator<AppDatabaseService>();
 
   final List<Message> _messages = [];
@@ -19,8 +30,38 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   void initMessages() {
-    _messages.clear();
+    _clearAllItem();
     hasNext = true;
+  }
+
+  void _clearAllItem() {
+    for (int i = 0; i < _messages.length; i++) {
+      _removeItem(i);
+    }
+  }
+
+  void _insertItem(int index, Message message) {
+    _messages.insert(index, message);
+    dynamic listCurrentState = Platform.isIOS
+        ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
+        : (listKey as GlobalKey<AnimatedListState>).currentState;
+    listCurrentState?.insertItem(index);
+  }
+
+  void _insertAllItem(int index, List<Message> newList) {
+    for (int i = 0; i < newList.length; i++) {
+      _insertItem(index + i, newList[i]);
+    }
+  }
+
+  void _removeItem(int index) {
+    Message removedItem = _messages.removeAt(index);
+    dynamic listCurrentState = Platform.isIOS
+        ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
+        : (listKey as GlobalKey<AnimatedListState>).currentState;
+    listCurrentState?.removeItem(index, (context, animation) {
+      return removedItemBuilder(index, removedItem, animation);
+    });
   }
 
   Future<int?> save(
@@ -30,7 +71,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }) async {
     Message msg = await _dbService.createMessage(message);
     if (insertAfterSaving) {
-      _messages.insert(0, msg);
+      _insertItem(0, msg);
       if (notify) notifyListeners();
       return 0;
     }
@@ -71,7 +112,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     // }
 
     hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    _messages.insertAll(_messages.length, stories);
+    _insertAllItem(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
@@ -97,7 +138,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     // }
 
     hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    _messages.insertAll(_messages.length, stories);
+    _insertAllItem(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
@@ -122,7 +163,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     // }
 
     hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    _messages.insertAll(_messages.length, stories);
+    _insertAllItem(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
@@ -138,7 +179,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
         developer.log('deleteMessage:', error: 'Failed to delete message');
         return null;
       }
-      _messages.removeAt(index);
+      _removeItem(index);
       if (notify) notifyListeners();
       return message;
     } catch (e) {
@@ -154,7 +195,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     try {
       final index = messages.indexWhere((e) => e.id == id);
       if (index < 0) return;
-      messages.removeAt(index);
+      _removeItem(index);
       if (notify) notifyListeners();
     } catch (e) {
       developer.log(
