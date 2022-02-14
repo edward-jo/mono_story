@@ -11,17 +11,16 @@ abstract class MessageViewModelBase extends ChangeNotifier {
 
   final List<Message> _messages = [];
   final int _messageChunkLimit = 15;
-  bool _hasNext = true;
   bool _isLoading = false;
+  bool hasNext = true;
 
   AppDatabaseService get dbService => _dbService;
   List<Message> get messages => _messages;
   bool get isLoading => _isLoading;
-  bool get hasNext => _hasNext;
 
   void initMessages() {
     _messages.clear();
-    _hasNext = true;
+    hasNext = true;
   }
 
   Future<int?> save(
@@ -44,7 +43,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       return false;
     }
 
-    if (!_hasNext) {
+    if (!hasNext) {
       developer.log('No next stories');
       return false;
     }
@@ -52,7 +51,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> readMessagesChunk(int? threadId) async {
+  Future<int> readMessagesChunk(int? threadId) async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -71,12 +70,12 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     //   developer.log('id( ${m.id}: ' + m.toJson().toString());
     // }
 
-    _hasNext = (stories.length < _messageChunkLimit) ? false : true;
+    hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
 
-    return true;
+    return stories.length;
   }
 
   Future<bool> searchThreadChunk(String query) async {
@@ -97,7 +96,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     //   developer.log('id( ${m.id}: ' + m.toJson().toString());
     // }
 
-    _hasNext = (stories.length < _messageChunkLimit) ? false : true;
+    hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
     _isLoading = false;
     notifyListeners();
@@ -122,7 +121,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     //   developer.log('id( ${m.id}: ' + m.toJson().toString());
     // }
 
-    _hasNext = (stories.length < _messageChunkLimit) ? false : true;
+    hasNext = (stories.length < _messageChunkLimit) ? false : true;
     _messages.insertAll(_messages.length, stories);
     _isLoading = false;
     notifyListeners();

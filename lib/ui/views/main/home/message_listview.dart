@@ -32,6 +32,7 @@ class MessageListView extends StatefulWidget {
 class _MessageListViewState extends State<MessageListView> {
   late ThreadViewModel _threadVM;
   late MessageViewModel _messageVM;
+  late StarredMessageViewModel _starredVM;
   late Future<void> _readMessagesFuture;
   late Future<void> _readThreadsFuture;
   final _scrollController = ScrollController();
@@ -42,6 +43,7 @@ class _MessageListViewState extends State<MessageListView> {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
     _messageVM = context.read<MessageViewModel>();
+    _starredVM = context.read<StarredMessageViewModel>();
     _scrollController.addListener(_scrollListener);
     _readThreadsFuture = _threadVM.readThreadList();
     _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
@@ -89,8 +91,8 @@ class _MessageListViewState extends State<MessageListView> {
 
         // Check snapshots
         var snapshot0 = snapshot.data[0] as List<Thread>?;
-        var snapshot1 = snapshot.data[1] as bool;
-        if (snapshot0 == null || !snapshot1) {
+        var snapshot1 = snapshot.data[1] as int;
+        if (snapshot0 == null || snapshot1 < 0) {
           return const StyledBuilderErrorWidget(
             message: ErrorMessages.messageReadingFailure,
           );
@@ -98,6 +100,8 @@ class _MessageListViewState extends State<MessageListView> {
 
         List<Message> messageList;
         messageList = context.watch<MessageViewModel>().messages;
+
+        developer.log('--- aaa ${messageList.length} ---');
 
         // -- MESSAGE LIST --
         return Column(
@@ -108,12 +112,11 @@ class _MessageListViewState extends State<MessageListView> {
                 child: PlatformRefreshIndicator(
                   listKey: _listKey,
                   controller: _scrollController,
-                  onRefresh: () async {
-                    _messageVM.initMessages();
-                    await _messageVM.readMessagesChunk(widget.threadId);
-                  },
-                  itemCount: messageList.isEmpty ? 0 : messageList.length + 1,
+                  onRefresh: () => _refresh(messageList),
+                  itemCount: messageList.length + 1,
                   itemBuilder: (_, i, animation) {
+                    developer.log('--- aaa $i/${messageList.length} ---');
+
                     // -- MESSAGE LIST ITEM --
                     if (i < messageList.length) {
                       return _buildItem(messageList[i], i, animation);
@@ -155,20 +158,22 @@ class _MessageListViewState extends State<MessageListView> {
           if (index != 0) const Divider(thickness: 0.5),
           MessageListViewItem(
             message: item,
-            onStar: () async {
-              await _starMessage(item.id!);
-            },
+            onStar: () async => await _starMessage(item.id!),
             onDelete: () async {
-              final message = await _showDeleteMessageAlertDialog(item.id!);
-              if (message != null) {
-                _listKey.currentState?.removeItem(
-                  index,
-                  (context, animation) => _buildRemovedItem(
-                    message,
+              // Show alert dialog to confirm again
+              bool? ret = await _showDeleteMessageAlertDialog(item.id!);
+              if (ret != null && ret) {
+                final message = await _messageVM.deleteMessage(item.id!);
+                if (message != null) {
+                  // Animate removed item
+                  _listKey.currentState?.removeItem(
                     index,
-                    animation,
-                  ),
-                );
+                    (context, animation) =>
+                        _buildRemovedItem(message, index, animation),
+                  );
+                  // Remove item from Starred Messages
+                  _starredVM.deleteMessageFromList(item.id!, notify: true);
+                }
               }
             },
           ),
@@ -201,7 +206,13 @@ class _MessageListViewState extends State<MessageListView> {
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
       if (_messageVM.canLoadMessagesChunk()) {
-        await _messageVM.readMessagesChunk(widget.threadId);
+        int length = _messageVM.messages.length;
+        int count = await _messageVM.readMessagesChunk(widget.threadId);
+        if (count > 0) {
+          for (int i = 0; i < count; i++) {
+            _listKey.currentState?.insertItem(length + i);
+          }
+        }
       }
     }
   }
@@ -213,22 +224,42 @@ class _MessageListViewState extends State<MessageListView> {
     /// ListView to see the updated list.
   }
 
-  Future<Message?> _showDeleteMessageAlertDialog(int? id) async {
+  Future<bool?> _showDeleteMessageAlertDialog<bool>(int? id) async {
     return await MonoAlertDialog.showAlertConfirmDialog(
       context: context,
       title: 'Delete Story',
       content: 'Are you sure you want to delete this Story?',
       cancelActionName: 'Cancel',
-      onCancelPressed: () => Navigator.of(context).pop(),
+      onCancelPressed: () => Navigator.of(context).pop(false),
       destructiveActionName: 'Delete',
       onDestructivePressed: () async {
-        final message = await _messageVM.deleteMessage(id!);
-        context.read<StarredMessageViewModel>().deleteMessageFromList(
-              id,
-              notify: true,
-            );
-        Navigator.of(context).pop(message);
+        Navigator.of(context).pop(true);
       },
     );
+  }
+
+  Future<void> _refresh(List<Message> list) async {
+    // Remove all messages
+    while (list.isNotEmpty) {
+      var message = list.removeAt(list.length - 1);
+      _listKey.currentState?.removeItem(
+        0,
+        (context, animation) => Container(),
+        // (context, animation) => _buildRemovedItem(message, 0, animation),
+      );
+    }
+    // Remove footer
+    _listKey.currentState?.removeItem(0, (context, animation) => Container());
+
+    // Start over reading
+    _messageVM.hasNext = true;
+    int count = await _messageVM.readMessagesChunk(widget.threadId);
+    if (count > 0) {
+      for (int i = 0; i < count; i++) {
+        _listKey.currentState?.insertItem(i);
+      }
+      // Insert footer
+      _listKey.currentState?.insertItem(count);
+    }
   }
 }

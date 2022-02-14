@@ -100,7 +100,6 @@ class ThreadViewModel extends ChangeNotifier {
           .toList()
           .first;
     } catch (e) {
-      developer.log('Cannot find out thread data');
       return null;
     }
   }
