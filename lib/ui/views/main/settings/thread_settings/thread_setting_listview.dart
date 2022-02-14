@@ -40,11 +40,14 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
                 await _showRenameThreadBottomSheet(threadList[index]);
                 break;
               case ThreadSettingMenus.delete:
-                await _showDeleteThreadAlertDialog(
+                bool? ret = await _showDeleteThreadAlertDialog(
                   threadList[index],
                   index,
                   animation,
                 );
+                if (ret != null && ret) {
+                  await _deleteThread(threadList[index], index);
+                }
                 break;
               default:
                 return;
@@ -92,12 +95,12 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     await starredVM.searchStarredThreadChunk();
   }
 
-  Future<void> _showDeleteThreadAlertDialog(
+  Future<bool?> _showDeleteThreadAlertDialog(
     Thread thread,
     int index,
     Animation<double> animation,
   ) async {
-    bool? ret = await MonoAlertDialog.showAlertConfirmDialog<bool>(
+    return await MonoAlertDialog.showAlertConfirmDialog<bool>(
       context: context,
       title: 'Delete Thread',
       content: 'Are you sure you want to delete this Thread?',
@@ -108,7 +111,6 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
         Navigator.of(context).pop(true);
       },
     );
-    if (ret != null && ret) await _deleteThread(thread, index);
   }
 
   Future<void> _deleteThread(Thread thread, int index) async {
@@ -116,18 +118,6 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     final threadVM = context.read<ThreadViewModel>();
 
     final deletedThread = await threadVM.deleteThread(thread.id!);
-    if (threadVM.currentThreadId == thread.id!) {
-      threadVM.setCurrentThreadId(null);
-    }
-
-    final messageVM = context.read<MessageViewModel>();
-    messageVM.initMessages();
-    await messageVM.readMessagesChunk(threadVM.currentThreadId);
-
-    final starredVM = context.read<StarredMessageViewModel>();
-    starredVM.initMessages();
-    await starredVM.searchStarredThreadChunk();
-
     if (deletedThread != null) {
       _listKey.currentState?.removeItem(
         index,
@@ -138,5 +128,17 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
         ),
       );
     }
+
+    if (threadVM.currentThreadId == thread.id!) {
+      threadVM.setCurrentThreadId(null, notify: true);
+    }
+
+    final messageVM = context.read<MessageViewModel>();
+    messageVM.initMessages();
+    await messageVM.readMessagesChunk(threadVM.currentThreadId);
+
+    final starredVM = context.read<StarredMessageViewModel>();
+    starredVM.initMessages();
+    await starredVM.searchStarredThreadChunk();
   }
 }
