@@ -20,8 +20,9 @@ class ThreadListBottomSheet extends StatefulWidget {
 class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
   late final ThreadViewModel _threadVM;
   late Future<List<Thread>> _readThreadListFuture;
+  late final _textTheme;
 
-  final double _threadItemHeight = 50.0;
+  final double _threadItemHeight = 45.0;
   final _bottomSheetPadding = const EdgeInsets.symmetric(horizontal: 20.0);
 
   @override
@@ -29,6 +30,12 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
     _readThreadListFuture = _threadVM.readThreadList();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _textTheme = Theme.of(context).textTheme;
   }
 
   @override
@@ -63,38 +70,50 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
       padding: _bottomSheetPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // -- BOTTOM SHEET HEAD --
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
 
-          // -- SEE ALL BUTTON --
-          Container(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              child: const Text('See all'),
-              onPressed: () => _seeAll(context),
+          // -- TITLE --
+          Text(
+            'Threads',
+            style: _textTheme.bodyText1?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
           ),
 
           // -- THREAD NAME LIST --
-          Expanded(
-            child: SizedBox(
-              child: MediaQuery.removePadding(
-                context: context,
-                child: Scrollbar(
-                  isAlwaysShown: true,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: threadList.length,
-                    itemBuilder: (ctx, i) =>
-                        _threadItemBuilder(ctx, i, threadList),
+          (threadList.isEmpty)
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Center(
+                    child: Text(
+                      'You don\'t have any threads yet',
+                      style: _textTheme.bodyText1,
+                    ),
+                  ),
+                )
+              : Flexible(
+                  child: SizedBox(
+                    child: MediaQuery.removePadding(
+                      context: context,
+                      child: Scrollbar(
+                        isAlwaysShown: true,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: threadList.length,
+                          itemBuilder: (ctx, i) =>
+                              _threadItemBuilder(ctx, i, threadList),
+                        ),
+                      ),
+                      removeTop: true,
+                      removeBottom: true,
+                    ),
                   ),
                 ),
-                removeTop: true,
-                removeBottom: true,
-              ),
-            ),
-          ),
+
+          const SizedBox(height: 10),
 
           // -- CREATE NEW THREAD BUTTON --
           MonoElevatedButton(
@@ -102,8 +121,11 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
             onPressed: () => _newThread(context),
           ),
 
-          // --
-          const SizedBox(height: 20),
+          // -- SEE ALL BUTTON --
+          TextButton(
+            child: const Text('See all'),
+            onPressed: () => _seeAll(context),
+          ),
         ],
       ),
     );
@@ -133,10 +155,10 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
         SizedBox(
           height: _threadItemHeight,
           child: ListTile(
-            leading: Icon(MonoIcons.thread_icon),
+            leading: Icon(MonoIcons.thread_icon, size: 20.0),
             title: Text(
               list[i].name,
-              style: Theme.of(context).textTheme.bodyText2,
+              style: _textTheme.bodyText2,
               overflow: TextOverflow.fade,
               softWrap: false,
             ),
