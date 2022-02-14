@@ -78,7 +78,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return stories.length;
   }
 
-  Future<bool> searchThreadChunk(String query) async {
+  Future<int> searchThreadChunk(String query) async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -101,7 +101,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
 
-    return true;
+    return stories.length;
   }
 
   Future<int> searchStarredThreadChunk() async {

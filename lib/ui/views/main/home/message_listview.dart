@@ -248,7 +248,7 @@ class _MessageListViewState extends State<MessageListView> {
       cancelActionName: 'Cancel',
       onCancelPressed: () => Navigator.of(context).pop(false),
       destructiveActionName: 'Delete',
-      onDestructivePressed: () async {
+      onDestructivePressed: () {
         Navigator.of(context).pop(true);
       },
     );
