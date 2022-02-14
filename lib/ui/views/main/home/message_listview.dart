@@ -75,82 +75,99 @@ class _MessageListViewState extends State<MessageListView> {
         _readThreadsFuture,
         _readMessagesFuture,
       ]),
-      builder: (context, snapshot) {
-        // -- INDICATOR --
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(
-            child: PlatformIndicator(),
-          );
-        }
-        // -- ERROR MESSAGE --
-        if (snapshot.hasError || !snapshot.hasData) {
-          return StyledBuilderErrorWidget(
-            message: snapshot.error.toString(),
-          );
-        }
-
-        // Check snapshots
-        var snapshot0 = snapshot.data[0] as List<Thread>?;
-        var snapshot1 = snapshot.data[1] as int;
-        if (snapshot0 == null || snapshot1 < 0) {
-          return const StyledBuilderErrorWidget(
-            message: ErrorMessages.messageReadingFailure,
-          );
-        }
-
-        List<Message> messageList;
-        messageList = context.watch<MessageViewModel>().messages;
-
-        developer.log('--- aaa ${messageList.length} ---');
-
-        // -- MESSAGE LIST --
-        return Column(
-          children: [
-            const SizedBox(height: 10.0),
-            Expanded(
-              child: SizedBox(
-                child: PlatformRefreshIndicator(
-                  listKey: _listKey,
-                  controller: _scrollController,
-                  onRefresh: () => _refresh(messageList),
-                  itemCount: messageList.length + 1,
-                  itemBuilder: (_, i, animation) {
-                    developer.log('--- aaa $i/${messageList.length} ---');
-
-                    // -- MESSAGE LIST ITEM --
-                    if (i < messageList.length) {
-                      return _buildItem(messageList[i], i, animation);
-                    }
-
-                    // -- LOADING INDICATOR --
-                    if (_messageVM.hasNext) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5.0),
-                        child: PlatformIndicator(),
-                      );
-                    }
-
-                    // -- END MESSAGE --
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'nothing more to load!',
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+      builder: _messageListViewBuilder,
     );
   }
 
-  Widget _buildItem(Message item, int index, Animation<double> animation) {
+  Widget _messageListViewBuilder(
+    BuildContext context,
+    AsyncSnapshot<dynamic> snapshot,
+  ) {
+    // -- INDICATOR --
+    if (snapshot.connectionState != ConnectionState.done) {
+      return const Center(
+        child: PlatformIndicator(),
+      );
+    }
+    // -- ERROR MESSAGE --
+    if (snapshot.hasError || !snapshot.hasData) {
+      return StyledBuilderErrorWidget(
+        message: snapshot.error.toString(),
+      );
+    }
+
+    // Check snapshots
+    var snapshot0 = snapshot.data[0] as List<Thread>?;
+    var snapshot1 = snapshot.data[1] as int;
+    if (snapshot0 == null || snapshot1 < 0) {
+      return const StyledBuilderErrorWidget(
+        message: ErrorMessages.messageReadingFailure,
+      );
+    }
+
+    List<Message> messageList;
+    messageList = context.watch<MessageViewModel>().messages;
+
+    developer.log('--- aaa ${messageList.length} ---');
+
+    // -- MESSAGE LIST --
+    return Column(
+      children: [
+        const SizedBox(height: 10.0),
+        Expanded(
+          child: SizedBox(
+            child: PlatformRefreshIndicator(
+              listKey: _listKey,
+              controller: _scrollController,
+              itemCount: messageList.length + 1,
+              itemBuilder: (_, i, animation) {
+                return _buildMessageListViewItem(i, animation, messageList);
+              },
+              onRefresh: () => _refresh(messageList),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMessageListViewItem(
+    int index,
+    Animation<double> animation,
+    List<Message> list,
+  ) {
+    developer.log('--- aaa $index/${list.length} ---');
+
+    // -- MESSAGE LIST ITEM --
+    if (index < list.length) {
+      return _buildMessageItem(list[index], index, animation);
+    }
+
+    // -- LOADING INDICATOR --
+    if (_messageVM.hasNext) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 5.0),
+        child: PlatformIndicator(),
+      );
+    }
+
+    // -- END MESSAGE --
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          'nothing more to load!',
+          style: Theme.of(context).textTheme.caption,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageItem(
+    Message item,
+    int index,
+    Animation<double> animation,
+  ) {
     return SizeTransition(
       sizeFactor: animation,
       child: Column(
@@ -169,7 +186,7 @@ class _MessageListViewState extends State<MessageListView> {
                   _listKey.currentState?.removeItem(
                     index,
                     (context, animation) =>
-                        _buildRemovedItem(message, index, animation),
+                        _buildRemovedMessageItem(message, index, animation),
                   );
                   // Remove item from Starred Messages
                   _starredVM.deleteMessageFromList(item.id!, notify: true);
@@ -182,7 +199,7 @@ class _MessageListViewState extends State<MessageListView> {
     );
   }
 
-  Widget _buildRemovedItem(
+  Widget _buildRemovedMessageItem(
     Message item,
     int index,
     Animation<double> animation,
@@ -239,27 +256,31 @@ class _MessageListViewState extends State<MessageListView> {
   }
 
   Future<void> _refresh(List<Message> list) async {
-    // Remove all messages
-    while (list.isNotEmpty) {
-      var message = list.removeAt(list.length - 1);
-      _listKey.currentState?.removeItem(
-        0,
-        (context, animation) => Container(),
-        // (context, animation) => _buildRemovedItem(message, 0, animation),
-      );
-    }
-    // Remove footer
-    _listKey.currentState?.removeItem(0, (context, animation) => Container());
+    _messageVM.initMessages();
+    _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
+    setState(() {});
 
-    // Start over reading
-    _messageVM.hasNext = true;
-    int count = await _messageVM.readMessagesChunk(widget.threadId);
-    if (count > 0) {
-      for (int i = 0; i < count; i++) {
-        _listKey.currentState?.insertItem(i);
-      }
-      // Insert footer
-      _listKey.currentState?.insertItem(count);
-    }
+    // // Remove all messages
+    // while (list.isNotEmpty) {
+    //   var message = list.removeAt(list.length - 1);
+    //   _listKey.currentState?.removeItem(
+    //     0,
+    //     (context, animation) => Container(),
+    //     // (context, animation) => _buildRemovedItem(message, 0, animation),
+    //   );
+    // }
+    // // Remove footer
+    // _listKey.currentState?.removeItem(0, (context, animation) => Container());
+
+    // // Start over reading
+    // _messageVM.hasNext = true;
+    // int count = await _messageVM.readMessagesChunk(widget.threadId);
+    // if (count > 0) {
+    //   for (int i = 0; i < count; i++) {
+    //     _listKey.currentState?.insertItem(i);
+    //   }
+    //   // Insert footer
+    //   _listKey.currentState?.insertItem(count);
+    // }
   }
 }
