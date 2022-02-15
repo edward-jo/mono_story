@@ -19,9 +19,11 @@ class MessageListView extends StatefulWidget {
   const MessageListView({
     Key? key,
     required this.threadId,
+    required this.scrollController,
   }) : super(key: key);
 
   final int? threadId;
+  final ScrollController scrollController;
 
   @override
   State<MessageListView> createState() => _MessageListViewState();
@@ -33,7 +35,7 @@ class _MessageListViewState extends State<MessageListView> {
   late StarredMessageViewModel _starredVM;
   late Future<void> _readMessagesFuture;
   late Future<void> _readThreadsFuture;
-  final _scrollController = ScrollController();
+  late final ScrollController _scrollController;
   late final dynamic _listKey;
 
   @override
@@ -42,9 +44,13 @@ class _MessageListViewState extends State<MessageListView> {
     _threadVM = context.read<ThreadViewModel>();
     _messageVM = context.read<MessageViewModel>();
     _starredVM = context.read<StarredMessageViewModel>();
+
+    _scrollController = widget.scrollController;
     _scrollController.addListener(_scrollListener);
+
     _readThreadsFuture = _threadVM.readThreadList();
     _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
+
     _messageVM.removedItemBuilder = _buildRemovedMessageItem;
     _listKey = _messageVM.listKey;
   }
@@ -57,12 +63,6 @@ class _MessageListViewState extends State<MessageListView> {
       _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
       return;
     }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 
   @override

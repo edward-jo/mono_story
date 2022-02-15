@@ -5,10 +5,18 @@ class StarredScreen extends StatefulWidget {
   const StarredScreen({Key? key}) : super(key: key);
 
   @override
-  _StarredScreenState createState() => _StarredScreenState();
+  StarredScreenState createState() => StarredScreenState();
 }
 
-class _StarredScreenState extends State<StarredScreen> {
+class StarredScreenState extends State<StarredScreen> {
+  final scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +24,17 @@ class _StarredScreenState extends State<StarredScreen> {
         automaticallyImplyLeading: false,
         title: const Text('Starred Story'),
       ),
-      body: const StarredMessageListView(),
+      body: StarredMessageListView(
+        scrollController: scrollController,
+      ),
+    );
+  }
+
+  void scrollToTop() {
+    scrollController.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeIn,
     );
   }
 }
