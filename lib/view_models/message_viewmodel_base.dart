@@ -170,7 +170,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return stories.length;
   }
 
-  Future<Message?> readMessage(int id, {bool notify = false}) async {
+  Future<Message?> insertMessage(int id, {bool notify = false}) async {
     try {
       Message message = await _dbService.readMessage(id);
       if (_messages.isEmpty) {
