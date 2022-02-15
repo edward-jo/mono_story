@@ -50,13 +50,8 @@ class MessageListViewItem extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 1.0),
-      padding: const EdgeInsets.only(
-        left: 15.0,
-        top: 5.0,
-        bottom: 5.0,
-        right: 10.0,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

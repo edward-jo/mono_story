@@ -139,7 +139,7 @@ class _MessageListViewState extends State<MessageListView> {
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          if (index != 0) const MonoDivider(),
+          if (index != 0) const MonoDivider(thickness: 7.0),
           MessageListViewItem(
             message: item,
             onStar: () async => await _starMessage(item.id!),
