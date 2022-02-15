@@ -106,6 +106,15 @@ class _MessageListViewState extends State<MessageListView> {
     List<Message> messageList;
     messageList = context.watch<MessageViewModel>().messages;
 
+    if (messageList.isEmpty) {
+      return Center(
+        child: Text(
+          'You don\'t have any stories yet',
+          style: Theme.of(context).textTheme.headline6,
+        ),
+      );
+    }
+
     // -- MESSAGE LIST --
     return Column(
       children: [
