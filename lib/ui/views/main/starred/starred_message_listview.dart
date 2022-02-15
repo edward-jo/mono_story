@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
+import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
+import 'package:mono_story/ui/views/main/starred/starred_message_listviewitem.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:provider/src/provider.dart';
@@ -124,8 +126,22 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          if (index != 0) const Divider(thickness: 0.5),
-          MessageListViewItem(
+          if (index == 0)
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Text(
+                'STARRED',
+                style: Theme.of(context).textTheme.caption?.copyWith(
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
+              ),
+            ),
+
+          const MonoDivider(),
+
+          StarredMessageListViewItem(
             message: item,
             onStar: () async {
               await _starMessage(item.id!);
@@ -171,7 +187,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          if (index != 0) const Divider(thickness: 0.5),
+          if (index != 0) const MonoDivider(),
           MessageListViewItem(message: item, onStar: () {}, onDelete: () {}),
         ],
       ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
+import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
@@ -134,7 +135,7 @@ class _MessageSearchResultListViewState
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          if (index != 0) const Divider(thickness: 0.5),
+          if (index != 0) const MonoDivider(),
           MessageListViewItem(
             emphasis: widget.query,
             message: item,
@@ -183,7 +184,7 @@ class _MessageSearchResultListViewState
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          if (index != 0) const Divider(thickness: 0.5),
+          if (index != 0) const MonoDivider(),
           MessageListViewItem(
             emphasis: widget.query,
             message: item,
