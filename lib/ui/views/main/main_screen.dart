@@ -15,13 +15,15 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
+  static final _homeScreenKey = GlobalKey<HomeScreenState>();
+  static final _starredScreenKey = GlobalKey<StarredScreenState>();
   static final List<Widget> _widgetOptions = <Widget>[
-    const HomeScreen(),
-    const StarredScreen(),
+    HomeScreen(key: _homeScreenKey),
+    StarredScreen(key: _starredScreenKey),
     const SettingsScreen(),
   ];
+
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +37,20 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         items: mainBottomNavBarItems(),
-        onTap: (index) => setState(() {
-          _selectedIndex = index;
-        }),
+        onTap: (index) {
+          if (_selectedIndex == index) {
+            switch (index) {
+              case 0:
+                _homeScreenKey.currentState?.scrollToTop();
+                return;
+              case 1:
+                _starredScreenKey.currentState?.scrollToTop();
+                return;
+            }
+            return;
+          }
+          setState(() => _selectedIndex = index);
+        },
       ),
     );
   }

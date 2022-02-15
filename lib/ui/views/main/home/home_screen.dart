@@ -18,18 +18,26 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   late ThreadViewModel _threadVM;
   late MessageViewModel _messageVM;
+
+  final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
     _messageVM = context.read<MessageViewModel>();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,7 +68,10 @@ class _HomeScreenState extends State<HomeScreen> {
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
-        builder: (_, id, __) => MessageListView(threadId: id),
+        builder: (_, id, __) => MessageListView(
+          threadId: id,
+          scrollController: scrollController,
+        ),
       ),
 
       // FLOATING BUTTON
@@ -140,6 +151,14 @@ class _HomeScreenState extends State<HomeScreen> {
       insertAfterSaving: (_threadVM.currentThreadId == null ||
           _threadVM.currentThreadId == ret.savedMessageThreadId),
       notify: false,
+    );
+  }
+
+  void scrollToTop() {
+    scrollController.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeIn,
     );
   }
 }

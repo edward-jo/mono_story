@@ -107,7 +107,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                 child: TextField(
                   autofocus: true,
                   maxLines: null,
-                  maxLength: 1024,
+                  maxLength: storyMaxLength,
                   keyboardType: TextInputType.text,
                   controller: _newMessageController,
                   onSubmitted: (_) => _save(context),

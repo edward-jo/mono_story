@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
+import 'package:mono_story/ui/common/mono_divider.dart';
 
 class ThreadSettingBottomSheet extends StatelessWidget {
   const ThreadSettingBottomSheet({Key? key, required this.threadName})
@@ -35,7 +36,7 @@ class ThreadSettingBottomSheet extends StatelessWidget {
             ),
           ),
 
-          const Divider(thickness: 0.5),
+          const MonoDivider(),
 
           // RENAME
           _ThreadListTile(
@@ -43,7 +44,7 @@ class ThreadSettingBottomSheet extends StatelessWidget {
             onTap: () => Navigator.of(context).pop(ThreadSettingMenus.rename),
           ),
 
-          const Divider(thickness: 0.5),
+          const MonoDivider(),
 
           // DELETE
           _ThreadListTile(

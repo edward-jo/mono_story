@@ -130,6 +130,8 @@ const double bottomSheetRadius = 15.0;
 
 const int threadNameMaxCharLength = 30;
 
+const int storyMaxLength = 512;
+
 class MonoIcons {
   static IconData thread_icon =
       Platform.isIOS ? CupertinoIcons.tag : Icons.label;
