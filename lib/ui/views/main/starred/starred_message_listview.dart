@@ -128,9 +128,11 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
           if (index == 0)
             Container(
               alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10.0,
-                vertical: 10.0,
+              padding: const EdgeInsets.only(
+                left: 20.0,
+                right: 20.0,
+                top: 10.0,
+                bottom: 0.0,
               ),
               child: Text(
                 'STARRED',
