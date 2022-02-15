@@ -14,6 +14,6 @@ class MonoDivider extends Divider {
           thickness: thickness ?? 0.1,
           indent: indent,
           endIndent: endIndent,
-          color: color ?? Colors.black,
+          color: color ?? const Color(0xFFEEEEEE),
         );
 }
