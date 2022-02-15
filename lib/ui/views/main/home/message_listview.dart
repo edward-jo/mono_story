@@ -217,6 +217,7 @@ class _MessageListViewState extends State<MessageListView> {
 
   Future<void> _starMessage(int? id) async {
     await _messageVM.starMessage(id!);
+    await _starredVM.readMessage(id, notify: true);
 
     /// No need to update message/starred listview, user should pull down the
     /// ListView to see the updated list.

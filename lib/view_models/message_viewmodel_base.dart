@@ -170,6 +170,39 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return stories.length;
   }
 
+  Future<Message?> readMessage(int id, {bool notify = false}) async {
+    try {
+      Message message = await _dbService.readMessage(id);
+      if (_messages.isEmpty) {
+        insertItem(0, message);
+      } else {
+        int index = _messages.indexWhere((e) => e.id == id);
+        if (index < 0) {
+          // List does not have this message, find index to insert it.
+          index = _messages.indexWhere((e) {
+            return message.createdTime.isBefore(e.createdTime);
+          });
+          if (index < 0) {
+            insertItem(0, message);
+          } else {
+            insertItem(index, message);
+          }
+        } else {
+          // List has this message. update item in the list without updating animated list state.
+          _messages[index] = message;
+        }
+      }
+      if (notify) notifyListeners();
+      return message;
+    } catch (e) {
+      developer.log(
+        'readMessage:',
+        error: 'Failed to read message with id($id) error( ${e.toString()})',
+      );
+      return null;
+    }
+  }
+
   Future<Message?> deleteMessage(int id, {bool notify = false}) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
