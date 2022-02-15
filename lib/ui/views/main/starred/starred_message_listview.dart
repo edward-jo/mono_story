@@ -88,9 +88,15 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
     if (starredList.isEmpty) {
       return Center(
-        child: Text(
-          'No starred stories found',
-          style: Theme.of(context).textTheme.headline6,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'No starred stories found',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            TextButton(onPressed: _refresh, child: const Text('Refresh'))
+          ],
         ),
       );
     }
@@ -106,7 +112,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
               itemBuilder: (_, i, animation) {
                 return _buildStarredListViewItem(i, animation, starredList);
               },
-              onRefresh: () => _refresh(starredList),
+              onRefresh: _refresh,
             ),
           ),
         ),
@@ -151,7 +157,10 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
             onDelete: () async {
               bool? ret = await _showDeleteStarredMessageAlertDialog(item.id!);
               if (ret != null && ret) {
-                final message = await _starredVM.deleteMessage(item.id!);
+                final message = await _starredVM.deleteMessage(
+                  item.id!,
+                  notify: true,
+                );
                 if (message != null) {
                   _messageVM.deleteMessageFromList(item.id!, notify: true);
                 }
@@ -213,7 +222,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   }
 
   Future<Message?> _starMessage(int? id) async {
-    return await _starredVM.starMessage(id!);
+    return await _starredVM.starMessage(id!, notify: true);
   }
 
   Future<bool?> _showDeleteStarredMessageAlertDialog(int? id) async {
@@ -230,7 +239,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     );
   }
 
-  Future<void> _refresh(List<Message> list) async {
+  Future<void> _refresh() async {
     _starredVM.initMessages();
     _starredMessagesFuture = _starredVM.searchStarredThreadChunk();
     setState(() {});
