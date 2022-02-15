@@ -48,6 +48,14 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     listCurrentState?.insertItem(index);
   }
 
+  void addItem(Message message) {
+    _messages.add(message);
+    dynamic listCurrentState = Platform.isIOS
+        ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
+        : (listKey as GlobalKey<AnimatedListState>).currentState;
+    listCurrentState?.insertItem(messages.length - 1);
+  }
+
   void insertAllItem(int index, List<Message> newList) {
     for (int i = 0; i < newList.length; i++) {
       insertItem(index + i, newList[i]);
@@ -170,6 +178,30 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return stories.length;
   }
 
+  bool contains(int id) {
+    return (messages.indexWhere((e) => e.id == id) < 0) ? false : true;
+  }
+
+  Future<Message?> updateMessage(int id, {bool notify = false}) async {
+    int index = _messages.indexWhere((e) => e.id == id);
+    if (index < 0) {
+      return null;
+    }
+
+    try {
+      Message message = await _dbService.readMessage(id);
+      // Since the list already has this message, should not update animated list state
+      _messages[index] = message;
+      if (notify) notifyListeners();
+    } catch (e) {
+      developer.log(
+        'readMessage:',
+        error: 'Failed to read message with id($id) error( ${e.toString()})',
+      );
+      return null;
+    }
+  }
+
   Future<Message?> insertMessage(int id, {bool notify = false}) async {
     try {
       Message message = await _dbService.readMessage(id);
@@ -180,10 +212,10 @@ abstract class MessageViewModelBase extends ChangeNotifier {
         if (index < 0) {
           // List does not have this message, find index to insert it.
           index = _messages.indexWhere((e) {
-            return message.createdTime.isBefore(e.createdTime);
+            return message.createdTime.isAfter(e.createdTime);
           });
           if (index < 0) {
-            insertItem(0, message);
+            addItem(message);
           } else {
             insertItem(index, message);
           }

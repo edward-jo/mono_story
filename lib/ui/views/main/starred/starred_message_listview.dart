@@ -153,6 +153,9 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
             message: item,
             onStar: () async {
               await _starMessage(item.id!);
+              if (_messageVM.contains(item.id!)) {
+                await _messageVM.updateMessage(item.id!, notify: true);
+              }
             },
             onDelete: () async {
               bool? ret = await _showDeleteStarredMessageAlertDialog(item.id!);
