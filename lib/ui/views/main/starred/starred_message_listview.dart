@@ -97,7 +97,6 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
     return Column(
       children: [
-        const SizedBox(height: 10.0),
         Expanded(
           child: SizedBox(
             child: PlatformRefreshIndicator(
@@ -129,7 +128,10 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
           if (index == 0)
             Container(
               alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 10.0,
+              ),
               child: Text(
                 'STARRED',
                 style: Theme.of(context).textTheme.caption?.copyWith(
@@ -138,8 +140,6 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
                     ),
               ),
             ),
-
-          const MonoDivider(),
 
           StarredMessageListViewItem(
             message: item,
@@ -187,8 +187,11 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          if (index != 0) const MonoDivider(),
-          MessageListViewItem(message: item, onStar: () {}, onDelete: () {}),
+          StarredMessageListViewItem(
+            message: item,
+            onStar: () {},
+            onDelete: () {},
+          ),
         ],
       ),
     );

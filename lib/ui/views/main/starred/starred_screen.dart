@@ -24,8 +24,11 @@ class StarredScreenState extends State<StarredScreen> {
         automaticallyImplyLeading: false,
         title: const Text('Starred Story'),
       ),
-      body: StarredMessageListView(
-        scrollController: scrollController,
+      body: Container(
+        color: Colors.grey.shade200,
+        child: StarredMessageListView(
+          scrollController: scrollController,
+        ),
       ),
     );
   }
