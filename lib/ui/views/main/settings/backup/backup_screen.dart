@@ -60,7 +60,7 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   void _backupNow() async {
-    final dialog = MonoAlertDialog.showAlertDialogForProgress<bool>(
+    final dialog = MonoAlertDialog.showProgressAlertDialog<bool>(
         context: context,
         title: const Text('Backing up'),
         content: _BackupNowProgress(

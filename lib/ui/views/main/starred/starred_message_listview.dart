@@ -225,7 +225,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   }
 
   Future<bool?> _showDeleteStarredMessageAlertDialog(int? id) async {
-    return await MonoAlertDialog.showAlertConfirmDialog<bool>(
+    return await MonoAlertDialog.showConfirmAlertDialog<bool>(
       context: context,
       title: const Text('Delete Story'),
       content: const Text('Are you sure you want to delete this Story?'),

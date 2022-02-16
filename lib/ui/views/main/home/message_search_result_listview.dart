@@ -230,7 +230,7 @@ class _MessageSearchResultListViewState
   }
 
   Future<bool?> _showDeleteMessageAlertDialog(int? id) async {
-    return await MonoAlertDialog.showAlertConfirmDialog<bool>(
+    return await MonoAlertDialog.showConfirmAlertDialog<bool>(
       context: context,
       title: const Text('Delete Story'),
       content: const Text('Are you sure you want to delete this Story?'),

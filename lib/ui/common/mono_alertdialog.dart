@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MonoAlertDialog {
-  static void showAlertNotifyDialog({
+  static void showNotifyAlertDialog({
     required BuildContext context,
     required String title,
     required String content,
@@ -12,7 +12,7 @@ class MonoAlertDialog {
     required void Function()? onPressed,
   }) {}
 
-  static Future<T?> showAlertDialogForProgress<T>({
+  static Future<T?> showProgressAlertDialog<T>({
     required BuildContext context,
     required Widget title,
     required Widget content,
@@ -55,7 +55,7 @@ class MonoAlertDialog {
     );
   }
 
-  static Future<T?> showAlertConfirmDialog<T>({
+  static Future<T?> showConfirmAlertDialog<T>({
     required BuildContext context,
     required Widget title,
     required Widget content,
