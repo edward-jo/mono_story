@@ -140,15 +140,35 @@ class _MessageSearchResultListViewState
             emphasis: widget.query,
             message: item,
             onStar: () async {
-              await _starMessage(item.id!);
+              Message? message = await _searchedVM.starMessage(item.id!);
+              // When setting off the starred, if this story exists in the
+              // StarredMessage list, then DELETE the story from the list. If
+              // the story exists in Message list, then UPDATE its status.
+              // If not exist, that means the story is not loaded yet, so do
+              // nothing.
+              if (message?.starred == 0) {
+                if (_starredVM.contains(item.id!)) {
+                  _starredVM.deleteMessageFromList(item.id!, notify: true);
+                }
+                if (_messageVM.contains(item.id!)) {
+                  _messageVM.updateMessage(item.id!, notify: true);
+                }
+              }
             },
             onDelete: () async {
               bool? ret = await _showDeleteMessageAlertDialog(item.id!);
               if (ret != null && ret) {
                 final message = await _searchedVM.deleteMessage(item.id!);
                 if (message != null) {
-                  _messageVM.deleteMessageFromList(item.id!, notify: true);
-                  _starredVM.deleteMessageFromList(item.id!, notify: true);
+                  // Story is already deleted, so just delete the story from
+                  // Message list and StarredMessage list if exists. If not
+                  // exists, do nothing.
+                  if (_messageVM.contains(item.id!)) {
+                    _messageVM.deleteMessageFromList(item.id!, notify: true);
+                  }
+                  if (_starredVM.contains(item.id!)) {
+                    _starredVM.deleteMessageFromList(item.id!, notify: true);
+                  }
                 }
               }
             },
@@ -207,13 +227,6 @@ class _MessageSearchResultListViewState
         await _searchedVM.searchThreadChunk(widget.query);
       }
     }
-  }
-
-  Future<void> _starMessage(int? id) async {
-    await _searchedVM.starMessage(id!);
-
-    /// No need to update message/starred listview, user should pull down the
-    /// ListView to see the updated list.
   }
 
   Future<bool?> _showDeleteMessageAlertDialog(int? id) async {

@@ -151,15 +151,29 @@ class _MessageListViewState extends State<MessageListView> {
           if (index != 0) const MonoDivider(thickness: 7.0),
           MessageListViewItem(
             message: item,
-            onStar: () async => await _starMessage(item.id!),
+            onStar: () async {
+              Message? message = await _messageVM.starMessage(item.id!);
+              // When setting off the starred, if this story exists in the
+              // StarredMessage ListView, then delete the story from that list.
+              // If not exist(not loaded yet from DB), do nothing.
+              if (message?.starred == 0) {
+                if (_starredVM.contains(item.id!)) {
+                  _starredVM.deleteMessageFromList(item.id!, notify: true);
+                }
+              }
+              // When setting on the starred, do nothing. User should refresh
+              // the StarredMessage ListView.
+            },
             onDelete: () async {
               // Show alert dialog to confirm again
               bool? ret = await _showDeleteMessageAlertDialog(item.id!);
               if (ret != null && ret) {
                 final message = await _messageVM.deleteMessage(item.id!);
                 if (message != null) {
-                  // Remove item from Starred Messages
-                  _starredVM.deleteMessageFromList(item.id!, notify: true);
+                  // Remove item from Starred Messages if exists.
+                  if (_starredVM.contains(item.id!)) {
+                    _starredVM.deleteMessageFromList(item.id!, notify: true);
+                  }
                 }
               }
             },
@@ -213,14 +227,6 @@ class _MessageListViewState extends State<MessageListView> {
         await _messageVM.readMessagesChunk(widget.threadId);
       }
     }
-  }
-
-  Future<void> _starMessage(int? id) async {
-    await _messageVM.starMessage(id!);
-    await _starredVM.insertMessage(id, notify: true);
-
-    /// No need to update message/starred listview, user should pull down the
-    /// ListView to see the updated list.
   }
 
   Future<bool?> _showDeleteMessageAlertDialog(int? id) async {

@@ -152,7 +152,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
           StarredMessageListViewItem(
             message: item,
             onStar: () async {
-              await _starMessage(item.id!);
+              await _starredVM.starMessage(item.id!, notify: true);
               if (_messageVM.contains(item.id!)) {
                 await _messageVM.updateMessage(item.id!, notify: true);
               }
@@ -164,7 +164,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
                   item.id!,
                   notify: true,
                 );
-                if (message != null) {
+                if (message != null && _messageVM.contains(item.id!)) {
                   _messageVM.deleteMessageFromList(item.id!, notify: true);
                 }
               }
@@ -222,10 +222,6 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
         await _starredVM.searchStarredThreadChunk();
       }
     }
-  }
-
-  Future<Message?> _starMessage(int? id) async {
-    return await _starredVM.starMessage(id!, notify: true);
   }
 
   Future<bool?> _showDeleteStarredMessageAlertDialog(int? id) async {

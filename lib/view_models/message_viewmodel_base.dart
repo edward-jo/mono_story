@@ -257,21 +257,16 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }
 
   void deleteMessageFromList(int id, {bool notify = false}) {
-    try {
-      final index = messages.indexWhere((e) => e.id == id);
-      if (index < 0) return;
-      removeItem(index);
-      if (notify) notifyListeners();
-    } catch (e) {
-      developer.log(
-        'Error:',
-        error: 'Failed to delete message with id($id) error( ${e.toString()})',
-      );
-      return;
-    }
+    final index = messages.indexWhere((e) => e.id == id);
+    if (index < 0) return;
+
+    removeItem(index);
+
+    if (notify) notifyListeners();
+    return;
   }
 
-  Future<void> starMessage(int id) async {
+  Future<Message?> starMessage(int id) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
       final message = Message.fromJson(_messages[index].toJson());
@@ -279,16 +274,17 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       int affectedCount = await _dbService.updateMessage(message);
       if (affectedCount != 1) {
         developer.log('Fail:', error: 'Failed to star message');
-        return;
+        return null;
       }
       _messages[index] = message;
       notifyListeners();
+      return message;
     } catch (e) {
       developer.log(
         'Error:',
         error: 'Failed to star message with id($id) error( ${e.toString()})',
       );
-      return;
+      return null;
     }
   }
 }
