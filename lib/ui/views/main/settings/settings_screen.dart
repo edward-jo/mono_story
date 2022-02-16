@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
-import 'package:mono_story/ui/views/main/settings/about_screen.dart';
+import 'package:mono_story/ui/views/main/settings/about/about_screen.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
