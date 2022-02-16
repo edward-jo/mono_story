@@ -12,10 +12,53 @@ class MonoAlertDialog {
     required void Function()? onPressed,
   }) {}
 
+  static Future<T?> showAlertDialogForProgress<T>({
+    required BuildContext context,
+    required Widget title,
+    required Widget content,
+    required String cancelActionName,
+    required void Function() onCancelPressed,
+  }) async {
+    if (Platform.isIOS) {
+      return showCupertinoDialog<T>(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: title,
+            content: content,
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: Text(cancelActionName),
+                onPressed: onCancelPressed,
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    return showDialog<T>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: title,
+          content: content,
+          actions: <Widget>[
+            TextButton(
+              child: Text(cancelActionName),
+              onPressed: onCancelPressed,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   static Future<T?> showAlertConfirmDialog<T>({
     required BuildContext context,
-    required String title,
-    required String content,
+    required Widget title,
+    required Widget content,
     required String cancelActionName,
     required void Function() onCancelPressed,
     required String destructiveActionName,
@@ -26,8 +69,8 @@ class MonoAlertDialog {
           context: context,
           builder: (context) {
             return CupertinoAlertDialog(
-              title: Text(title),
-              content: Text(content),
+              title: title,
+              content: content,
               actions: <CupertinoDialogAction>[
                 CupertinoDialogAction(
                   isDefaultAction: true,
@@ -48,8 +91,8 @@ class MonoAlertDialog {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: title,
+          content: content,
           actions: <Widget>[
             TextButton(
               child: Text(cancelActionName),

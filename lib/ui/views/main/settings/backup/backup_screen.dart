@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
+import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_switch.dart';
-import 'package:mono_story/ui/common/platform_widget_base.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class BackupScreen extends StatefulWidget {
 class _BackupScreenState extends State<BackupScreen> {
   bool _useCellularData = false;
   bool _isBackingUp = false;
+  final _backupNowProgressKey = GlobalKey<_BackupNowProgressState>();
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class _BackupScreenState extends State<BackupScreen> {
           ),
 
           //
-          const MonoDivider(height: 10, color: Colors.black),
+          const MonoDivider(height: 0, color: Colors.black),
 
           // BACK UP / CANCEL BACK UP
           _isBackingUp
@@ -50,13 +52,75 @@ class _BackupScreenState extends State<BackupScreen> {
                 )
               : _BackUpNowWidget(
                   wifiRequired: !_useCellularData,
-                  onTap: () => setState(() {
-                    _isBackingUp = true;
-                  }),
+                  onTap: _backupNow,
                 ),
         ],
       )),
     );
+  }
+
+  void _backupNow() async {
+    final dialog = MonoAlertDialog.showAlertDialogForProgress<bool>(
+        context: context,
+        title: const Text('Backing up'),
+        content: _BackupNowProgress(
+          key: _backupNowProgressKey,
+          message: 'Start backup',
+        ),
+        cancelActionName: 'Cancel',
+        onCancelPressed: () {
+          Navigator.of(context).pop(true);
+          setState(() => _isBackingUp = false);
+        });
+
+    setState(() => _isBackingUp = true);
+
+    await _backupFuture();
+
+    setState(() => _isBackingUp = false);
+    Navigator.of(context).pop(true);
+  }
+
+  Future<void> _backupFuture() async {
+    for (int i = 0; i < 5; i++) {
+      await Future.delayed(const Duration(seconds: 1));
+      _backupNowProgressKey.currentState?.update('${i * 10} %!');
+    }
+  }
+}
+
+class _BackupNowProgress extends StatefulWidget {
+  const _BackupNowProgress({Key? key, required this.message}) : super(key: key);
+
+  final String message;
+
+  @override
+  _BackupNowProgressState createState() => _BackupNowProgressState();
+}
+
+class _BackupNowProgressState extends State<_BackupNowProgress> {
+  late String _message;
+
+  @override
+  void initState() {
+    super.initState();
+    _message = widget.message;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(_message),
+        const SizedBox(height: 10),
+        const PlatformIndicator(),
+      ],
+    );
+  }
+
+  void update(String message) {
+    setState(() => _message = message);
   }
 }
 
@@ -126,14 +190,21 @@ class _CancelBackupWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(
-        'Cancel Backup',
-        style: Theme.of(context).textTheme.bodyText1?.copyWith(
-              color: Colors.blue,
-            ),
-      ),
-      onTap: onTap,
+    return Column(
+      children: <Widget>[
+        // CANCEL BACKUP
+        ListTile(
+          title: Text(
+            'Cancel Backup',
+            style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                  color: Colors.blue,
+                ),
+          ),
+          onTap: onTap,
+        ),
+
+        // PROGRESS INDICATOR
+      ],
     );
   }
 }
