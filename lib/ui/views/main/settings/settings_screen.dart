@@ -40,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 cupertino: Icon(CupertinoIcons.cloud_upload),
                 material: Icon(Icons.cloud_upload),
               ),
-              title: const Text('Back up'),
+              title: const Text('iCloud Backup'),
               trailing: Icon(MonoIcons.chevron_forward, size: 20.0),
               onTap: () => Navigator.of(context).pushNamed(
                 BackupScreen.routeName,
@@ -53,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 cupertino: Icon(CupertinoIcons.cloud_download),
                 material: Icon(Icons.cloud_download),
               ),
-              title: const Text('Restore'),
+              title: const Text('Restore from iCloud Backup'),
               onTap: () {},
             ),
 
