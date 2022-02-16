@@ -34,7 +34,26 @@ class _BackupScreenState extends State<BackupScreen> {
               },
             ),
           ),
-          const Text('Backup Screen'),
+          const SizedBox(height: 20),
+          ListTile(
+            title: Text(
+              'Back Up Now',
+              style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                    color: Colors.blue,
+                  ),
+            ),
+            subtitle: Container(
+              padding: const EdgeInsets.only(top: 10),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Last successful backup: yesterday 2:00 PM',
+                style: Theme.of(context).textTheme.caption?.copyWith(
+                      fontSize: 12,
+                    ),
+              ),
+            ),
+            onTap: () {},
+          ),
         ],
       )),
     );
