@@ -48,6 +48,14 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     listCurrentState?.insertItem(index);
   }
 
+  void addItem(Message message) {
+    _messages.add(message);
+    dynamic listCurrentState = Platform.isIOS
+        ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
+        : (listKey as GlobalKey<AnimatedListState>).currentState;
+    listCurrentState?.insertItem(messages.length - 1);
+  }
+
   void insertAllItem(int index, List<Message> newList) {
     for (int i = 0; i < newList.length; i++) {
       insertItem(index + i, newList[i]);
@@ -170,6 +178,63 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return stories.length;
   }
 
+  bool contains(int id) {
+    return (messages.indexWhere((e) => e.id == id) < 0) ? false : true;
+  }
+
+  Future<Message?> updateMessage(int id, {bool notify = false}) async {
+    int index = _messages.indexWhere((e) => e.id == id);
+    if (index < 0) {
+      return null;
+    }
+
+    try {
+      Message message = await _dbService.readMessage(id);
+      // Since the list already has this message, should not update animated list state
+      _messages[index] = message;
+      if (notify) notifyListeners();
+    } catch (e) {
+      developer.log(
+        'readMessage:',
+        error: 'Failed to read message with id($id) error( ${e.toString()})',
+      );
+      return null;
+    }
+  }
+
+  Future<Message?> insertMessage(int id, {bool notify = false}) async {
+    try {
+      Message message = await _dbService.readMessage(id);
+      if (_messages.isEmpty) {
+        insertItem(0, message);
+      } else {
+        int index = _messages.indexWhere((e) => e.id == id);
+        if (index < 0) {
+          // List does not have this message, find index to insert it.
+          index = _messages.indexWhere((e) {
+            return message.createdTime.isAfter(e.createdTime);
+          });
+          if (index < 0) {
+            addItem(message);
+          } else {
+            insertItem(index, message);
+          }
+        } else {
+          // List has this message. update item in the list without updating animated list state.
+          _messages[index] = message;
+        }
+      }
+      if (notify) notifyListeners();
+      return message;
+    } catch (e) {
+      developer.log(
+        'readMessage:',
+        error: 'Failed to read message with id($id) error( ${e.toString()})',
+      );
+      return null;
+    }
+  }
+
   Future<Message?> deleteMessage(int id, {bool notify = false}) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
@@ -192,21 +257,16 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }
 
   void deleteMessageFromList(int id, {bool notify = false}) {
-    try {
-      final index = messages.indexWhere((e) => e.id == id);
-      if (index < 0) return;
-      removeItem(index);
-      if (notify) notifyListeners();
-    } catch (e) {
-      developer.log(
-        'Error:',
-        error: 'Failed to delete message with id($id) error( ${e.toString()})',
-      );
-      return;
-    }
+    final index = messages.indexWhere((e) => e.id == id);
+    if (index < 0) return;
+
+    removeItem(index);
+
+    if (notify) notifyListeners();
+    return;
   }
 
-  Future<void> starMessage(int id) async {
+  Future<Message?> starMessage(int id) async {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
       final message = Message.fromJson(_messages[index].toJson());
@@ -214,16 +274,17 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       int affectedCount = await _dbService.updateMessage(message);
       if (affectedCount != 1) {
         developer.log('Fail:', error: 'Failed to star message');
-        return;
+        return null;
       }
       _messages[index] = message;
       notifyListeners();
+      return message;
     } catch (e) {
       developer.log(
         'Error:',
         error: 'Failed to star message with id($id) error( ${e.toString()})',
       );
-      return;
+      return null;
     }
   }
 }

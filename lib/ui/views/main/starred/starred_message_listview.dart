@@ -88,16 +88,21 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
     if (starredList.isEmpty) {
       return Center(
-        child: Text(
-          'No starred stories found',
-          style: Theme.of(context).textTheme.headline6,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'No starred stories found',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            TextButton(onPressed: _refresh, child: const Text('Refresh'))
+          ],
         ),
       );
     }
 
     return Column(
       children: [
-        const SizedBox(height: 10.0),
         Expanded(
           child: SizedBox(
             child: PlatformRefreshIndicator(
@@ -107,7 +112,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
               itemBuilder: (_, i, animation) {
                 return _buildStarredListViewItem(i, animation, starredList);
               },
-              onRefresh: () => _refresh(starredList),
+              onRefresh: _refresh,
             ),
           ),
         ),
@@ -129,7 +134,12 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
           if (index == 0)
             Container(
               alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.only(
+                left: 20.0,
+                right: 20.0,
+                top: 10.0,
+                bottom: 0.0,
+              ),
               child: Text(
                 'STARRED',
                 style: Theme.of(context).textTheme.caption?.copyWith(
@@ -139,18 +149,22 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
               ),
             ),
 
-          const MonoDivider(),
-
           StarredMessageListViewItem(
             message: item,
             onStar: () async {
-              await _starMessage(item.id!);
+              await _starredVM.starMessage(item.id!, notify: true);
+              if (_messageVM.contains(item.id!)) {
+                await _messageVM.updateMessage(item.id!, notify: true);
+              }
             },
             onDelete: () async {
               bool? ret = await _showDeleteStarredMessageAlertDialog(item.id!);
               if (ret != null && ret) {
-                final message = await _starredVM.deleteMessage(item.id!);
-                if (message != null) {
+                final message = await _starredVM.deleteMessage(
+                  item.id!,
+                  notify: true,
+                );
+                if (message != null && _messageVM.contains(item.id!)) {
                   _messageVM.deleteMessageFromList(item.id!, notify: true);
                 }
               }
@@ -187,8 +201,11 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          if (index != 0) const MonoDivider(),
-          MessageListViewItem(message: item, onStar: () {}, onDelete: () {}),
+          StarredMessageListViewItem(
+            message: item,
+            onStar: () {},
+            onDelete: () {},
+          ),
         ],
       ),
     );
@@ -207,10 +224,6 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     }
   }
 
-  Future<Message?> _starMessage(int? id) async {
-    return await _starredVM.starMessage(id!);
-  }
-
   Future<bool?> _showDeleteStarredMessageAlertDialog(int? id) async {
     return await MonoAlertDialog.showAlertConfirmDialog<bool>(
       context: context,
@@ -225,7 +238,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     );
   }
 
-  Future<void> _refresh(List<Message> list) async {
+  Future<void> _refresh() async {
     _starredVM.initMessages();
     _starredMessagesFuture = _starredVM.searchStarredThreadChunk();
     setState(() {});

@@ -155,6 +155,8 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void scrollToTop() {
+    if (_messageVM.messages.isEmpty) return;
+
     scrollController.animateTo(
       0.0,
       duration: const Duration(milliseconds: 500),

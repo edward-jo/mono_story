@@ -50,12 +50,11 @@ class StarredMessageListViewItem extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 1.0),
-      padding: const EdgeInsets.only(
-        left: 15.0,
-        top: 5.0,
-        bottom: 5.0,
-        right: 10.0,
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

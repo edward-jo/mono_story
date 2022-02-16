@@ -54,7 +54,11 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
             );
             switch (ret) {
               case ThreadSettingMenus.rename:
-                await _showRenameThreadBottomSheet(threadList[index]);
+                String? newName = await _showRenameThreadBottomSheet(
+                  threadList[index],
+                );
+                if (newName == null) return;
+                await _renameThread(threadList[index], newName);
                 break;
               case ThreadSettingMenus.delete:
                 bool? ret = await _showDeleteThreadAlertDialog(
@@ -90,15 +94,15 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     );
   }
 
-  Future<void> _showRenameThreadBottomSheet(Thread thread) async {
-    String? newName = await showModalBottomSheet<String>(
+  Future<String?> _showRenameThreadBottomSheet(Thread thread) async {
+    return await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       builder: (_) => RenameBottomSheet(threadName: thread.name),
     );
+  }
 
-    if (newName == null) return;
-
+  Future<void> _renameThread(Thread thread, String newName) async {
     // TODO: Clean
     final threadVM = context.read<ThreadViewModel>();
     await threadVM.renameThread(thread.id!, newName);
