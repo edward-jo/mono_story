@@ -1,5 +1,8 @@
 abstract class IcloudStorageService {
   Future<IcloudStorageService> init();
+
+  Future<List<String>> listFiles();
+
   Future<void> uploadFile(
     String srcFilePath,
     String destFileName,
