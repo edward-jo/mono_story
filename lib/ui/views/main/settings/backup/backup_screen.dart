@@ -29,7 +29,7 @@ class _BackupScreenState extends State<BackupScreen> {
 
   late final MessageViewModel _messageVM;
 
-  late Future<String?> _getLastBackupInfoFuture;
+  late Future<_BackupInfo> _getLastBackupInfoFuture;
   StreamSubscription? _backupProgressSub, _restoreProgressSub;
 
   bool _useCellularData = false;
@@ -78,7 +78,7 @@ class _BackupScreenState extends State<BackupScreen> {
           //
           // BACK UP LISTTILE and INFO
           //
-          FutureBuilder(
+          FutureBuilder<_BackupInfo>(
             future: _getLastBackupInfoFuture,
             builder: (context, snapshot) {
               // INDICATOR
@@ -97,17 +97,12 @@ class _BackupScreenState extends State<BackupScreen> {
                   message: snapshot.error.toString(),
                 );
               }
-              // MESSAGE FOR EMPTY LIST
-              if (snapshot.data == null) {
-                return const StyledBuilderErrorWidget(
-                  message: 'No Backup found',
-                );
-              }
+
               // LASTEST BACKUP INFO
-              final lastDate = snapshot.data as String?;
+              final lastBackupInfo = snapshot.data as _BackupInfo;
 
               return _BackUpNowListTile(
-                backupDateTime: lastDate,
+                backupDateTime: lastBackupInfo.backupDate,
                 wifiRequired: !_useCellularData,
                 onTap: _backupNow,
               );
@@ -118,9 +113,9 @@ class _BackupScreenState extends State<BackupScreen> {
     );
   }
 
-  Future<String?> _getLastBackupInfo() async {
+  Future<_BackupInfo> _getLastBackupInfo() async {
     final backupList = await _messageVM.listBackupFiles();
-    if (backupList.isEmpty) return null;
+    if (backupList.isEmpty) return const _BackupInfo(backupDate: null);
 
     final availableList = backupList
         .where(
@@ -128,7 +123,8 @@ class _BackupScreenState extends State<BackupScreen> {
         )
         .toList();
 
-    if (availableList.isEmpty) return null;
+    if (availableList.isEmpty) return const _BackupInfo(backupDate: null);
+    ;
 
     availableList.sort((a, b) => a.compareTo(b));
     availableList.forEach(developer.log);
@@ -148,10 +144,13 @@ class _BackupScreenState extends State<BackupScreen> {
     }
 
     try {
-      return genFormattedLocalTime(DateTime.parse(lastBackupDateStr));
+      final formatted = genFormattedLocalTime(
+        DateTime.parse(lastBackupDateStr),
+      );
+      return _BackupInfo(backupDate: formatted);
     } catch (e) {
       developer.log('_getLastBackupInfo', error: e.toString());
-      return null;
+      return const _BackupInfo(backupDate: null);
     }
   }
 
@@ -222,6 +221,15 @@ class _BackupScreenState extends State<BackupScreen> {
     }
   }
 }
+
+//------------------------------------------------------------------------------
+// _BackupNowProgress
+//------------------------------------------------------------------------------
+class _BackupInfo {
+  const _BackupInfo({required this.backupDate});
+  final String? backupDate;
+}
+
 //------------------------------------------------------------------------------
 // _BackupNowProgress
 //------------------------------------------------------------------------------
@@ -320,11 +328,12 @@ class _BackUpNowListTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // MESSAGE: LAST SUCCESSFUL BACKUP TIME
-              if (backupDateTime != null)
-                Text(
-                  'Last successful backup: $backupDateTime',
-                  style: subtitleStyle,
-                ),
+              Text(
+                (backupDateTime != null)
+                    ? 'Last successful backup: $backupDateTime'
+                    : 'You don\'t have any backup yet',
+                style: subtitleStyle,
+              ),
 
               const SizedBox(height: 10),
 
