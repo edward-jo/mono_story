@@ -12,6 +12,10 @@ class MessageViewModel extends MessageViewModelBase {
     return await _iStorageService.listFiles();
   }
 
+  Future<void> deleteBackupFile(String fileName) async {
+    return await _iStorageService.deleteFile(fileName);
+  }
+
   Future<void> uploadMessages(
     void Function(Stream<double>) onProgress,
   ) async {

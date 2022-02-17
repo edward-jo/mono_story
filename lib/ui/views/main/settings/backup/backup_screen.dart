@@ -120,15 +120,16 @@ class _BackupScreenState extends State<BackupScreen> {
 
   Future<String?> _getLastBackupInfo() async {
     final backupList = await _messageVM.listBackupFiles();
-    if (backupList.isEmpty) {
-      return null;
-    }
+    if (backupList.isEmpty) return null;
 
     final availableList = backupList
         .where(
           (e) => e.startsWith(appDatabaseBackupFileNamePrefix),
         )
         .toList();
+
+    if (availableList.isEmpty) return null;
+
     availableList.sort((a, b) => a.compareTo(b));
     availableList.forEach(developer.log);
 
@@ -139,11 +140,25 @@ class _BackupScreenState extends State<BackupScreen> {
 
     developer.log('>>> Last backup: $lastFilename');
 
+    if (availableList.length > 3) {
+      // Delete unnecessary backup files
+      await _deleteBackupFiles(
+        availableList.sublist(0, availableList.length - 3),
+      );
+    }
+
     try {
       return genFormattedLocalTime(DateTime.parse(lastBackupDateStr));
     } catch (e) {
       developer.log('_getLastBackupInfo', error: e.toString());
       return null;
+    }
+  }
+
+  Future<void> _deleteBackupFiles(List<String> fileNames) async {
+    for (String f in fileNames) {
+      developer.log('Delete old backup file( $f )');
+      await _messageVM.deleteBackupFile(f);
     }
   }
 
