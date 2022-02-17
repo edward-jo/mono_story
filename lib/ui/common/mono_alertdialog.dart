@@ -4,55 +4,62 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MonoAlertDialog {
-  static void showNotifyAlertDialog({
-    required BuildContext context,
-    required String title,
-    required String content,
-    required String actionName,
-    required void Function()? onPressed,
-  }) {}
-
-  static Future<T?> showProgressAlertDialog<T>({
+  /// To show the progress, use StatefulWidget as content and update progress
+  /// status via GlobalKey<T extends StatefulWidget>.
+  static Future<T?> showNotifyAlertDialog<T>({
     required BuildContext context,
     required Widget title,
     required Widget content,
-    required String cancelActionName,
-    required void Function() onCancelPressed,
+    String? cancelActionName,
+    void Function()? onCancelPressed,
   }) async {
+    assert(!((cancelActionName == null) ^ (onCancelPressed == null)));
+
     if (Platform.isIOS) {
+      final actions = <CupertinoDialogAction>[];
+      if (cancelActionName != null && onCancelPressed != null) {
+        actions.add(
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: Text(cancelActionName),
+            onPressed: onCancelPressed,
+          ),
+        );
+      }
+
       return showCupertinoDialog<T>(
         context: context,
         builder: (context) {
           return CupertinoAlertDialog(
             title: title,
             content: content,
-            actions: <CupertinoDialogAction>[
-              CupertinoDialogAction(
-                isDefaultAction: true,
-                child: Text(cancelActionName),
-                onPressed: onCancelPressed,
-              ),
-            ],
+            actions: actions,
+          );
+        },
+      );
+    } else {
+      List<Widget>? actions;
+      if (cancelActionName != null && onCancelPressed != null) {
+        actions = <Widget>[
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: Text(cancelActionName),
+            onPressed: onCancelPressed,
+          ),
+        ];
+      }
+
+      return showDialog<T>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: title,
+            content: content,
+            actions: actions,
           );
         },
       );
     }
-
-    return showDialog<T>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: title,
-          content: content,
-          actions: <Widget>[
-            TextButton(
-              child: Text(cancelActionName),
-              onPressed: onCancelPressed,
-            ),
-          ],
-        );
-      },
-    );
   }
 
   static Future<T?> showConfirmAlertDialog<T>({

@@ -60,18 +60,14 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   void _backupNow() async {
-    final dialog = MonoAlertDialog.showProgressAlertDialog<bool>(
-        context: context,
-        title: const Text('Backing up'),
-        content: _BackupNowProgress(
-          key: _backupNowProgressKey,
-          message: 'Start backup',
-        ),
-        cancelActionName: 'Cancel',
-        onCancelPressed: () {
-          Navigator.of(context).pop(true);
-          setState(() => _isBackingUp = false);
-        });
+    final dialog = MonoAlertDialog.showNotifyAlertDialog<bool>(
+      context: context,
+      title: const Text('Backing up'),
+      content: _BackupNowProgress(
+        key: _backupNowProgressKey,
+        message: 'Start backup',
+      ),
+    );
 
     setState(() => _isBackingUp = true);
 
