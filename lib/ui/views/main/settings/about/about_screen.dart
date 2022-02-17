@@ -7,7 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 class AboutScreen extends StatelessWidget {
   const AboutScreen({Key? key}) : super(key: key);
 
-  static const String routeName = '/settings/about';
+  static const String routeName = '/about';
 
   @override
   Widget build(BuildContext context) {

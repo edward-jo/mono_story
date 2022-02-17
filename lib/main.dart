@@ -8,7 +8,8 @@ import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/theme/themes.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/main_screen.dart';
-import 'package:mono_story/ui/views/main/settings/about_screen.dart';
+import 'package:mono_story/ui/views/main/settings/about/about_screen.dart';
+import 'package:mono_story/ui/views/main/settings/backup/backup_screen.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
 import 'package:mono_story/view_models/searched_message_viewmodel.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
@@ -107,6 +108,11 @@ class StartMyApp extends StatelessWidget {
             return MaterialPageRoute(
               settings: settings,
               builder: (context) => const AboutScreen(),
+            );
+          case BackupScreen.routeName:
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (context) => const BackupScreen(),
             );
         }
       },
