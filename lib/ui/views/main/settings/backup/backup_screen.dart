@@ -4,6 +4,9 @@ import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_switch.dart';
+import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
+import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({Key? key}) : super(key: key);
@@ -15,9 +18,21 @@ class BackupScreen extends StatefulWidget {
 }
 
 class _BackupScreenState extends State<BackupScreen> {
+  final _backupNowProgressKey = GlobalKey<_BackupNowProgressState>();
+
+  late final MessageViewModel _messageVM;
+
+  late Future<List<String>> _readBackupList;
+
   bool _useCellularData = false;
   bool _isBackingUp = false;
-  final _backupNowProgressKey = GlobalKey<_BackupNowProgressState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _messageVM = context.read<MessageViewModel>();
+    _readBackupList = _messageVM.listBackupFiles();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +58,39 @@ class _BackupScreenState extends State<BackupScreen> {
           //
           const MonoDivider(height: 0, color: Colors.black),
 
-          // BACK UP / CANCEL BACK UP
+          // BACKUP FILE LIST (FUTURE)
+          FutureBuilder(
+            future: _readBackupList,
+            builder: (context, snapshot) {
+              // INDICATOR
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(
+                  child: PlatformIndicator(),
+                );
+              }
+              // MESSAGE FOR ERROR
+              if (snapshot.hasError || !snapshot.hasData) {
+                return StyledBuilderErrorWidget(
+                  message: snapshot.error.toString(),
+                );
+              }
+              // MESSAGE FOR EMPTY LIST
+              if ((snapshot.data as List<String>).isEmpty) {
+                return const StyledBuilderErrorWidget(
+                  message: 'No Backup found',
+                );
+              }
+              // BACKUP FILE LIST
+              final list = snapshot.data as List<String>;
+              return ListView(
+                children: <Widget>[
+                  ...list.map((e) => Text(e)).toList(),
+                ],
+              );
+            },
+          ),
+
+          // BACK UP / CANCEL BACK UP LISTTILES
           _isBackingUp
               ? _CancelBackupWidget(
                   onTap: () => setState(() {
@@ -60,7 +107,7 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   void _backupNow() async {
-    final dialog = MonoAlertDialog.showNotifyAlertDialog<bool>(
+    Future<bool?>? dialog = MonoAlertDialog.showNotifyAlertDialog<bool>(
       context: context,
       title: const Text('Backing up'),
       content: _BackupNowProgress(
@@ -74,6 +121,8 @@ class _BackupScreenState extends State<BackupScreen> {
     await _backupFuture();
 
     setState(() => _isBackingUp = false);
+    dialog.toString();
+    dialog = null;
     Navigator.of(context).pop(true);
   }
 

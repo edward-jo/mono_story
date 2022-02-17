@@ -10,6 +10,10 @@ import 'package:mono_story/view_models/message_viewmodel_base.dart';
 class MessageViewModel extends MessageViewModelBase {
   final _iStorageService = serviceLocator<IcloudStorageService>();
 
+  Future<List<String>> listBackupFiles() async {
+    return await _iStorageService.listFiles();
+  }
+
   Future<void> uploadMessages(
     void Function(Stream<double>) onProgress,
   ) async {
