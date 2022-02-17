@@ -132,10 +132,12 @@ class _BackupScreenState extends State<BackupScreen> {
     availableList.sort((a, b) => a.compareTo(b));
     availableList.forEach(developer.log);
 
-    final lastFilename = backupList.last;
+    final lastFilename = availableList.last;
     final lastBackupDateStr = lastFilename.substring(
       appDatabaseBackupFileNamePrefix.length,
     );
+
+    developer.log('>>> Last backup: $lastFilename');
 
     try {
       return genFormattedLocalTime(DateTime.parse(lastBackupDateStr));
