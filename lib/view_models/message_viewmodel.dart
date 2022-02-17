@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
 import 'package:mono_story/services/service_locator.dart';
@@ -18,9 +16,12 @@ class MessageViewModel extends MessageViewModelBase {
     void Function(Stream<double>) onProgress,
   ) async {
     final path = await dbService.getAppDatabaseFilePath();
+    String backupFileName = appDatabaseBackupFileName;
+    backupFileName += '.';
+    backupFileName += DateTime.now().toUtc().toIso8601String();
     await _iStorageService.uploadFile(
       path,
-      appDatabaseBackupFileName,
+      backupFileName,
       onProgress,
     );
   }
