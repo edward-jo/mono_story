@@ -17,6 +17,18 @@ class IcloudStorageServiceImpl extends IcloudStorageService {
   }
 
   @override
+  Future<List<String>> listFiles() async {
+    return await _istorage.listFiles();
+  }
+
+  @override
+  Future<void> deleteFile(String fileName) async {
+    return await _istorage
+        .delete(fileName)
+        .catchError(_catchIcloudStorageException);
+  }
+
+  @override
   Future<void> downloadFile(
     String srcFileName,
     String destFilePath,

@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
 import 'package:mono_story/services/service_locator.dart';
@@ -10,13 +8,23 @@ import 'package:mono_story/view_models/message_viewmodel_base.dart';
 class MessageViewModel extends MessageViewModelBase {
   final _iStorageService = serviceLocator<IcloudStorageService>();
 
+  Future<List<String>> listBackupFiles() async {
+    return await _iStorageService.listFiles();
+  }
+
+  Future<void> deleteBackupFile(String fileName) async {
+    return await _iStorageService.deleteFile(fileName);
+  }
+
   Future<void> uploadMessages(
     void Function(Stream<double>) onProgress,
   ) async {
     final path = await dbService.getAppDatabaseFilePath();
+    String backupFileName = appDatabaseBackupFileNamePrefix;
+    backupFileName += DateTime.now().toUtc().toIso8601String();
     await _iStorageService.uploadFile(
       path,
-      appDatabaseBackupFileName,
+      backupFileName,
       onProgress,
     );
   }
@@ -30,7 +38,7 @@ class MessageViewModel extends MessageViewModelBase {
     await dbService.deleteAppDatabase();
 
     await _iStorageService.downloadFile(
-      appDatabaseBackupFileName,
+      appDatabaseBackupFileNamePrefix,
       path,
       onProgress,
     );

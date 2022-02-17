@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 List<String> splitStringWithPattern(String target, RegExp pattern) {
   assert(pattern.pattern.isNotEmpty, 'Search pattern should have a value');
   String source = pattern.pattern;
@@ -17,4 +19,16 @@ List<String> splitStringWithPattern(String target, RegExp pattern) {
     }
   }
   return list;
+}
+
+String genFormattedLocalTime(DateTime utc) {
+  final current = DateTime.now();
+  final local = utc.toLocal();
+
+  String time = DateFormat.jm().format(local);
+  String date = (local.year == current.year)
+      ? DateFormat.MMMMd().format(local)
+      : DateFormat.yMMMMd().format(local);
+
+  return '$time, $date';
 }
