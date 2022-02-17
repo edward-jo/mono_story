@@ -3,11 +3,14 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:mono_story/constants.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_switch.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
+import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +28,7 @@ class _BackupScreenState extends State<BackupScreen> {
 
   late final MessageViewModel _messageVM;
 
-  late Future<List<String>> _readBackupList;
+  late Future<String?> _getLastBackupInfoFuture;
   StreamSubscription? _backupProgressSub, _restoreProgressSub;
 
   bool _useCellularData = false;
@@ -35,7 +38,7 @@ class _BackupScreenState extends State<BackupScreen> {
   void initState() {
     super.initState();
     _messageVM = context.read<MessageViewModel>();
-    _readBackupList = _messageVM.listBackupFiles();
+    _getLastBackupInfoFuture = _getLastBackupInfo();
   }
 
   @override
@@ -71,26 +74,20 @@ class _BackupScreenState extends State<BackupScreen> {
           //
           const MonoDivider(height: 0, color: Colors.black),
 
-          // BACK UP / CANCEL BACK UP LISTTILES
-          _isBackingUp
-              ? _CancelBackupListTile(
-                  onTap: () => setState(() {
-                    _isBackingUp = false;
-                  }),
-                )
-              : _BackUpNowListTile(
-                  wifiRequired: !_useCellularData,
-                  onTap: _backupNow,
-                ),
-
-          // BACKUP FILE LIST (FUTURE)
+          //
+          // BACK UP LISTTILE and INFO
+          //
           FutureBuilder(
-            future: _readBackupList,
+            future: _getLastBackupInfoFuture,
             builder: (context, snapshot) {
               // INDICATOR
               if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(
-                  child: PlatformIndicator(),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const <Widget>[
+                    ListTile(leading: PlatformIndicator()),
+                    MonoDivider(height: 1, color: Colors.black),
+                  ],
                 );
               }
               // MESSAGE FOR ERROR
@@ -100,28 +97,51 @@ class _BackupScreenState extends State<BackupScreen> {
                 );
               }
               // MESSAGE FOR EMPTY LIST
-              if ((snapshot.data as List<String>).isEmpty) {
+              if (snapshot.data == null) {
                 return const StyledBuilderErrorWidget(
                   message: 'No Backup found',
                 );
               }
-              // BACKUP FILE LIST
-              final list = snapshot.data as List<String>;
-              return Flexible(
-                child: SizedBox(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: <Widget>[
-                      ...list.map((e) => Text(e)).toList(),
-                    ],
-                  ),
-                ),
+              // LASTEST BACKUP INFO
+              final lastDate = snapshot.data as String?;
+
+              return _BackUpNowListTile(
+                backupDateTime: lastDate,
+                wifiRequired: !_useCellularData,
+                onTap: _backupNow,
               );
             },
           ),
         ],
       ),
     );
+  }
+
+  Future<String?> _getLastBackupInfo() async {
+    final backupList = await _messageVM.listBackupFiles();
+    if (backupList.isEmpty) {
+      return null;
+    }
+
+    final availableList = backupList
+        .where(
+          (e) => e.startsWith(appDatabaseBackupFileNamePrefix),
+        )
+        .toList();
+    availableList.sort((a, b) => a.compareTo(b));
+    availableList.forEach(developer.log);
+
+    final lastFilename = backupList.last;
+    final lastBackupDateStr = lastFilename.substring(
+      appDatabaseBackupFileNamePrefix.length,
+    );
+
+    try {
+      return genFormattedLocalTime(DateTime.parse(lastBackupDateStr));
+    } catch (e) {
+      developer.log('_getLastBackupInfo', error: e.toString());
+      return null;
+    }
   }
 
   void _backupNow() async {
@@ -165,7 +185,10 @@ class _BackupScreenState extends State<BackupScreen> {
               'Completed',
             );
             await Future.delayed(const Duration(seconds: 1));
-            setState(() => _isBackingUp = false);
+            setState(() {
+              _getLastBackupInfoFuture = _getLastBackupInfo();
+              _isBackingUp = false;
+            });
             dialog = null;
             Navigator.of(context).pop(true);
           },
@@ -226,10 +249,12 @@ class _BackupNowProgressState extends State<_BackupNowProgress> {
 class _BackUpNowListTile extends StatelessWidget {
   const _BackUpNowListTile({
     Key? key,
+    required this.backupDateTime,
     required this.wifiRequired,
     required this.onTap,
   }) : super(key: key);
 
+  final String? backupDateTime;
   final bool wifiRequired;
   final void Function() onTap;
 
@@ -252,7 +277,7 @@ class _BackUpNowListTile extends StatelessWidget {
         ),
 
         //
-        const MonoDivider(height: 10, color: Colors.black),
+        const MonoDivider(height: 1, color: Colors.black),
 
         // SUBTITLES
         Container(
@@ -261,19 +286,21 @@ class _BackUpNowListTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              // MESSAGE: LAST SUCCESSFUL BACKUP TIME
+              if (backupDateTime != null)
+                Text(
+                  'Last successful backup: $backupDateTime',
+                  style: subtitleStyle,
+                ),
+
+              const SizedBox(height: 10),
+
               // MESSAGE: WIFI REQUIRED
               if (wifiRequired)
                 Text(
                   'You must be connected to Wi-Fi network to start a backup.',
                   style: subtitleStyle,
                 ),
-              const SizedBox(height: 10),
-
-              // MESSAGE: LAST SUCCESSFUL BACKUP TIME
-              Text(
-                'Last successful backup: yesterday 2:00 PM',
-                style: subtitleStyle,
-              ),
             ],
           ),
         )

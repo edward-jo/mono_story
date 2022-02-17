@@ -16,8 +16,7 @@ class MessageViewModel extends MessageViewModelBase {
     void Function(Stream<double>) onProgress,
   ) async {
     final path = await dbService.getAppDatabaseFilePath();
-    String backupFileName = appDatabaseBackupFileName;
-    backupFileName += '.';
+    String backupFileName = appDatabaseBackupFileNamePrefix;
     backupFileName += DateTime.now().toUtc().toIso8601String();
     await _iStorageService.uploadFile(
       path,
@@ -35,7 +34,7 @@ class MessageViewModel extends MessageViewModelBase {
     await dbService.deleteAppDatabase();
 
     await _iStorageService.downloadFile(
-      appDatabaseBackupFileName,
+      appDatabaseBackupFileNamePrefix,
       path,
       onProgress,
     );
