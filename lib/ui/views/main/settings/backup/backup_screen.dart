@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -144,7 +145,7 @@ class _BackupScreenState extends State<BackupScreen> {
     }
   }
 
-  void _backupNow() async {
+  Future<void> _backupNow() async {
     Future<bool?>? dialog = MonoAlertDialog.showNotifyAlertDialog<bool>(
       context: context,
       title: const Text('Backing up'),
@@ -256,7 +257,7 @@ class _BackUpNowListTile extends StatelessWidget {
 
   final String? backupDateTime;
   final bool wifiRequired;
-  final void Function() onTap;
+  final Future<void> Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +274,22 @@ class _BackUpNowListTile extends StatelessWidget {
         // BACK UP NOW
         ListTile(
           title: Text('Back Up Now', style: titleStyle),
-          onTap: onTap,
+          onTap: () async {
+            if (wifiRequired) {
+              var result = await Connectivity().checkConnectivity();
+              if (result != ConnectivityResult.wifi) {
+                await MonoAlertDialog.showNotifyAlertDialog(
+                  context: context,
+                  title: const Text('Not Connected to Wi-Fi'),
+                  content: const Text('You are not connected to Wi-Fi'),
+                  cancelActionName: 'Close',
+                  onCancelPressed: () => Navigator.of(context).pop(),
+                );
+                return;
+              }
+            }
+            await onTap();
+          },
         ),
 
         //
