@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer' as developer;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
@@ -23,6 +26,7 @@ class _BackupScreenState extends State<BackupScreen> {
   late final MessageViewModel _messageVM;
 
   late Future<List<String>> _readBackupList;
+  StreamSubscription? _backupProgressSub, _restoreProgressSub;
 
   bool _useCellularData = false;
   bool _isBackingUp = false;
@@ -35,14 +39,23 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   @override
+  void dispose() {
+    if (_isBackingUp && _backupProgressSub != null) {
+      _backupProgressSub!.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
         title: const Text('Back up'),
       ),
-      body: Center(
-          child: Column(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // USE CELLULAR DATA
           ListTile(
@@ -57,6 +70,18 @@ class _BackupScreenState extends State<BackupScreen> {
 
           //
           const MonoDivider(height: 0, color: Colors.black),
+
+          // BACK UP / CANCEL BACK UP LISTTILES
+          _isBackingUp
+              ? _CancelBackupListTile(
+                  onTap: () => setState(() {
+                    _isBackingUp = false;
+                  }),
+                )
+              : _BackUpNowListTile(
+                  wifiRequired: !_useCellularData,
+                  onTap: _backupNow,
+                ),
 
           // BACKUP FILE LIST (FUTURE)
           FutureBuilder(
@@ -82,27 +107,20 @@ class _BackupScreenState extends State<BackupScreen> {
               }
               // BACKUP FILE LIST
               final list = snapshot.data as List<String>;
-              return ListView(
-                children: <Widget>[
-                  ...list.map((e) => Text(e)).toList(),
-                ],
+              return Flexible(
+                child: SizedBox(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: <Widget>[
+                      ...list.map((e) => Text(e)).toList(),
+                    ],
+                  ),
+                ),
               );
             },
           ),
-
-          // BACK UP / CANCEL BACK UP LISTTILES
-          _isBackingUp
-              ? _CancelBackupWidget(
-                  onTap: () => setState(() {
-                    _isBackingUp = false;
-                  }),
-                )
-              : _BackUpNowWidget(
-                  wifiRequired: !_useCellularData,
-                  onTap: _backupNow,
-                ),
         ],
-      )),
+      ),
     );
   }
 
@@ -118,21 +136,54 @@ class _BackupScreenState extends State<BackupScreen> {
 
     setState(() => _isBackingUp = true);
 
-    await _backupFuture();
-
-    setState(() => _isBackingUp = false);
-    dialog.toString();
-    dialog = null;
-    Navigator.of(context).pop(true);
-  }
-
-  Future<void> _backupFuture() async {
-    for (int i = 0; i < 5; i++) {
-      await Future.delayed(const Duration(seconds: 1));
-      _backupNowProgressKey.currentState?.update('${i * 10} %!');
+    //
+    // Start backup
+    //
+    try {
+      await _messageVM.uploadMessages((stream) {
+        _backupProgressSub = stream.listen(
+          (progress) {
+            // First progress is 100.0. Looks like it is bug of the package. So
+            // show the remainder of modulo.
+            progress %= 100;
+            developer.log('Upload progress: $progress');
+            _backupNowProgressKey.currentState?.update('${progress.ceil()}%');
+          },
+          onError: (error) {
+            developer.log('Upload error: ${error.toString()}');
+            _backupNowProgressKey.currentState?.update(
+              'Failed to back up: $error',
+            );
+            setState(() => _isBackingUp = false);
+            dialog.toString();
+            dialog = null;
+            Navigator.of(context).pop(true);
+          },
+          onDone: () async {
+            developer.log('Upload completed');
+            _backupNowProgressKey.currentState?.update(
+              'Completed',
+            );
+            await Future.delayed(const Duration(seconds: 1));
+            setState(() => _isBackingUp = false);
+            dialog = null;
+            Navigator.of(context).pop(true);
+          },
+          cancelOnError: true,
+        );
+      });
+    } catch (e) {
+      developer.log('_backupNow', error: e.toString());
+      _backupProgressSub!.cancel();
+      setState(() => _isBackingUp = false);
+      dialog = null;
+      Navigator.of(context).pop(true);
     }
   }
 }
+//------------------------------------------------------------------------------
+// _BackupNowProgress
+//------------------------------------------------------------------------------
 
 class _BackupNowProgress extends StatefulWidget {
   const _BackupNowProgress({Key? key, required this.message}) : super(key: key);
@@ -168,9 +219,12 @@ class _BackupNowProgressState extends State<_BackupNowProgress> {
     setState(() => _message = message);
   }
 }
+//------------------------------------------------------------------------------
+// _BackUpNowListTile
+//------------------------------------------------------------------------------
 
-class _BackUpNowWidget extends StatelessWidget {
-  const _BackUpNowWidget({
+class _BackUpNowListTile extends StatelessWidget {
+  const _BackUpNowListTile({
     Key? key,
     required this.wifiRequired,
     required this.onTap,
@@ -227,9 +281,13 @@ class _BackUpNowWidget extends StatelessWidget {
     );
   }
 }
+//------------------------------------------------------------------------------
+// _CancelBackupWidget
+//------------------------------------------------------------------------------
 
-class _CancelBackupWidget extends StatelessWidget {
-  const _CancelBackupWidget({Key? key, required this.onTap}) : super(key: key);
+class _CancelBackupListTile extends StatelessWidget {
+  const _CancelBackupListTile({Key? key, required this.onTap})
+      : super(key: key);
 
   final void Function() onTap;
 
