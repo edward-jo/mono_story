@@ -16,6 +16,10 @@ class MessageViewModel extends MessageViewModelBase {
     return await _iStorageService.deleteFile(fileName);
   }
 
+  void initMessageDatabase() async {
+    await dbService.init();
+  }
+
   Future<void> uploadMessages(
     void Function(Stream<double>) onProgress,
   ) async {
@@ -30,6 +34,7 @@ class MessageViewModel extends MessageViewModelBase {
   }
 
   Future<void> downloadMessages(
+    String fileName,
     void Function(Stream<double>) onProgress,
   ) async {
     final path = await dbService.getAppDatabaseFilePath();
@@ -37,20 +42,17 @@ class MessageViewModel extends MessageViewModelBase {
     await dbService.closeAppDatabase();
     await dbService.deleteAppDatabase();
 
-    await _iStorageService.downloadFile(
-      appDatabaseBackupFileNamePrefix,
-      path,
-      onProgress,
-    );
+    await _iStorageService.downloadFile(fileName, path, onProgress);
 
-    messages.clear();
+    initMessages();
     notifyListeners();
   }
 
   Future<void> deleteMessages() async {
     await dbService.closeAppDatabase();
     await dbService.deleteAppDatabase();
-    messages.clear();
+
+    initMessages();
     notifyListeners();
   }
 }

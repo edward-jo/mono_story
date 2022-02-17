@@ -34,27 +34,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            // BACK UP
+            // BACK UP & RESTORE
             ListTile(
               leading: const PlatformWidget(
                 cupertino: Icon(CupertinoIcons.cloud_upload),
                 material: Icon(Icons.cloud_upload),
               ),
-              title: const Text('iCloud Backup'),
+              title: const Text('iCloud Backup / Restore'),
               trailing: Icon(MonoIcons.chevron_forward, size: 20.0),
               onTap: () => Navigator.of(context).pushNamed(
                 BackupScreen.routeName,
               ),
-            ),
-
-            // RESTORE
-            ListTile(
-              leading: const PlatformWidget(
-                cupertino: Icon(CupertinoIcons.cloud_download),
-                material: Icon(Icons.cloud_download),
-              ),
-              title: const Text('Restore from iCloud Backup'),
-              onTap: () {},
             ),
 
             // ABOUT
