@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
@@ -249,9 +250,11 @@ class _BackupScreenState extends State<BackupScreen> {
 
     bool? ret = await MonoAlertDialog.showConfirmAlertDialog<bool>(
       context: context,
-      title: const Text('Restore from iCloud Backup'),
-      content: const Text(
-        'Your all stories in device will be removed. Do you want to restore?',
+      title: const Text('Delete all your stories?'),
+      content: Text(
+        (Platform.isIOS
+            ? 'Restoring will delete all stories present on you iPhone and restore stories from iCloud backup.'
+            : 'Restoring will delete all stories present on you phone and restore stories from Google drive backup.'),
       ),
       cancelActionName: 'Cancel',
       onCancelPressed: () => Navigator.of(context).pop(false),
