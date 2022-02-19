@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/thread.dart';
-import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/mono_dynaimic_alertdialog.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/rename_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_bottom_sheet.dart';
