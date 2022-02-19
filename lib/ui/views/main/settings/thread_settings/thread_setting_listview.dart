@@ -121,13 +121,13 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     int index,
     Animation<double> animation,
   ) async {
-    return await MonoAlertDialog.showConfirmAlertDialog<bool>(
+    return await MonoAlertDialog().show<bool>(
       context: context,
       title: const Text('Delete Thread'),
       content: const Text('Are you sure you want to delete this Thread?'),
-      cancelActionName: 'Cancel',
+      cancel: const Text('Cancel'),
       onCancelPressed: () => Navigator.of(context).pop(false),
-      destructiveActionName: 'Delete',
+      destructive: const Text('Delete'),
       onDestructivePressed: () async {
         Navigator.of(context).pop(true);
       },

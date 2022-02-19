@@ -3,26 +3,99 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+class _AlertDialogChildWidget extends StatefulWidget {
+  const _AlertDialogChildWidget({Key? key, required this.child})
+      : super(key: key);
+  final Widget child;
+
+  @override
+  _AlertDialogChildWidgetState createState() => _AlertDialogChildWidgetState();
+}
+
+class _AlertDialogChildWidgetState extends State<_AlertDialogChildWidget> {
+  late Widget _child;
+
+  @override
+  void initState() {
+    super.initState();
+    _child = widget.child;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _child;
+  }
+
+  void update(Widget child) {
+    setState(() => _child = child);
+  }
+}
+
 class MonoAlertDialog {
-  /// To show the progress, use StatefulWidget as content and update progress
-  /// status via GlobalKey<T extends StatefulWidget>.
-  static Future<T?> showNotifyAlertDialog<T>({
+  final _titleKey = GlobalKey<_AlertDialogChildWidgetState>();
+  final _contentKey = GlobalKey<_AlertDialogChildWidgetState>();
+  final _cancelKey = GlobalKey<_AlertDialogChildWidgetState>();
+  final _destructiveKey = GlobalKey<_AlertDialogChildWidgetState>();
+
+  void Function()? _onCancelPressed;
+  void Function()? _onDestructivePressed;
+
+  void update({
+    Widget? title,
+    Widget? content,
+    Widget? cancel,
+    Widget? destructive,
+    void Function()? onCancelPressed,
+    void Function()? onDestructivePressed,
+  }) {
+    assert(!((cancel == null) ^ (onCancelPressed == null)));
+    assert(!((destructive == null) ^ (onDestructivePressed == null)));
+
+    if (title != null) _titleKey.currentState?.update(title);
+    if (content != null) _contentKey.currentState?.update(content);
+    if (cancel != null) _cancelKey.currentState?.update(cancel);
+    if (destructive != null) _destructiveKey.currentState?.update(destructive);
+    if (onCancelPressed != null) _onCancelPressed = onCancelPressed;
+    if (onDestructivePressed != null) {
+      _onDestructivePressed = onDestructivePressed;
+    }
+  }
+
+  Future<T?> show<T>({
     required BuildContext context,
     required Widget title,
     required Widget content,
-    String? cancelActionName,
+    Widget? cancel,
     void Function()? onCancelPressed,
+    Widget? destructive,
+    void Function()? onDestructivePressed,
   }) async {
-    assert(!((cancelActionName == null) ^ (onCancelPressed == null)));
+    assert(!((cancel == null) ^ (onCancelPressed == null)));
+    assert(!((destructive == null) ^ (onDestructivePressed == null)));
+
+    _onCancelPressed = onCancelPressed;
+    _onDestructivePressed = onDestructivePressed;
 
     if (Platform.isIOS) {
       final actions = <CupertinoDialogAction>[];
-      if (cancelActionName != null && onCancelPressed != null) {
+      if (cancel != null && onCancelPressed != null) {
         actions.add(
           CupertinoDialogAction(
             isDefaultAction: true,
-            child: Text(cancelActionName),
-            onPressed: onCancelPressed,
+            child: _AlertDialogChildWidget(key: _cancelKey, child: cancel),
+            onPressed: () => _onCancelPressed!(),
+          ),
+        );
+      }
+      if (destructive != null && onDestructivePressed != null) {
+        actions.add(
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            child: _AlertDialogChildWidget(
+              key: _destructiveKey,
+              child: destructive,
+            ),
+            onPressed: () => _onDestructivePressed!(),
           ),
         );
       }
@@ -31,87 +104,44 @@ class MonoAlertDialog {
         context: context,
         builder: (context) {
           return CupertinoAlertDialog(
-            title: title,
-            content: content,
+            title: _AlertDialogChildWidget(key: _titleKey, child: title),
+            content: _AlertDialogChildWidget(key: _contentKey, child: content),
             actions: actions,
           );
         },
       );
     } else {
-      List<Widget>? actions;
-      if (cancelActionName != null && onCancelPressed != null) {
-        actions = <Widget>[
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            child: Text(cancelActionName),
-            onPressed: onCancelPressed,
+      final actions = <Widget>[];
+      if (cancel != null && onCancelPressed != null) {
+        actions.add(
+          GestureDetector(
+            child: _AlertDialogChildWidget(key: _cancelKey, child: cancel),
+            onTap: onCancelPressed,
           ),
-        ];
+        );
+      }
+      if (destructive != null && onDestructivePressed != null) {
+        actions.add(
+          GestureDetector(
+            child: _AlertDialogChildWidget(
+              key: _destructiveKey,
+              child: destructive,
+            ),
+            onTap: onDestructivePressed,
+          ),
+        );
       }
 
       return showDialog<T>(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: title,
-            content: content,
+            title: _AlertDialogChildWidget(key: _titleKey, child: title),
+            content: _AlertDialogChildWidget(key: _contentKey, child: content),
             actions: actions,
           );
         },
       );
     }
-  }
-
-  static Future<T?> showConfirmAlertDialog<T>({
-    required BuildContext context,
-    required Widget title,
-    required Widget content,
-    required String cancelActionName,
-    required void Function() onCancelPressed,
-    required String destructiveActionName,
-    required void Function() onDestructivePressed,
-  }) {
-    if (Platform.isIOS) {
-      return showCupertinoDialog<T>(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: title,
-              content: content,
-              actions: <CupertinoDialogAction>[
-                CupertinoDialogAction(
-                  isDefaultAction: true,
-                  child: Text(cancelActionName),
-                  onPressed: onCancelPressed,
-                ),
-                CupertinoDialogAction(
-                  isDestructiveAction: true,
-                  child: Text(destructiveActionName),
-                  onPressed: onDestructivePressed,
-                ),
-              ],
-            );
-          });
-    }
-
-    return showDialog<T>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: title,
-          content: content,
-          actions: <Widget>[
-            TextButton(
-              child: Text(cancelActionName),
-              onPressed: onCancelPressed,
-            ),
-            TextButton(
-              child: Text(destructiveActionName),
-              onPressed: onDestructivePressed,
-            ),
-          ],
-        );
-      },
-    );
   }
 }
