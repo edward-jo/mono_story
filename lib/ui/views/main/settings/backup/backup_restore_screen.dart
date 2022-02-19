@@ -81,8 +81,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
           ),
 
           //
-          // const MonoDivider(height: 0, color: Colors.black),
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
 
           //
           // BACK UP & STORE LISTTILE
