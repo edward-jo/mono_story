@@ -3,10 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_elevatedbutton.dart';
-import 'package:mono_story/ui/common/platform_alert_dialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
