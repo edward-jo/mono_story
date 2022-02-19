@@ -31,7 +31,7 @@ class _AlertDialogChildWidgetState extends State<_AlertDialogChildWidget> {
   }
 }
 
-class MonoDynamicAlertDialog {
+class MonoAlertDialog {
   final _titleKey = GlobalKey<_AlertDialogChildWidgetState>();
   final _contentKey = GlobalKey<_AlertDialogChildWidgetState>();
   final _cancelKey = GlobalKey<_AlertDialogChildWidgetState>();
@@ -61,7 +61,7 @@ class MonoDynamicAlertDialog {
     }
   }
 
-  Future<T?> showNotifyAlertDialog<T>({
+  Future<T?> show<T>({
     required BuildContext context,
     required Widget title,
     required Widget content,

@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
-import 'package:mono_story/ui/common/mono_dynaimic_alertdialog.dart';
+import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_switch.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
@@ -185,8 +185,8 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   Future<void> _backup() async {
-    final dialog = MonoDynamicAlertDialog();
-    dialog.showNotifyAlertDialog(
+    final dialog = MonoAlertDialog();
+    dialog.show(
       context: context,
       title: const Text('Backing up'),
       content: const Text('Start backup'),
@@ -253,7 +253,7 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _restore(String? fileName) async {
     if (fileName == null) return;
 
-    bool? ret = await MonoDynamicAlertDialog().showNotifyAlertDialog<bool>(
+    bool? ret = await MonoAlertDialog().show<bool>(
       context: context,
       title: const Text('Delete all your stories?'),
       content: Text(
@@ -270,8 +270,8 @@ class _BackupScreenState extends State<BackupScreen> {
     if (ret == null || !ret) return;
 
     // Show progress dialog
-    final dialog = MonoDynamicAlertDialog();
-    dialog.showNotifyAlertDialog(
+    final dialog = MonoAlertDialog();
+    dialog.show(
       context: context,
       title: const Text('Restore'),
       content: const Text('Start restore'),
@@ -457,7 +457,7 @@ class _BackUpNowListTile extends StatelessWidget {
             if (wifiRequired) {
               var result = await Connectivity().checkConnectivity();
               if (result != ConnectivityResult.wifi) {
-                await MonoDynamicAlertDialog().showNotifyAlertDialog(
+                await MonoAlertDialog().show(
                   context: context,
                   title: const Text('Not Connected to Wi-Fi'),
                   content: const Text('You are not connected to Wi-Fi'),
@@ -531,7 +531,7 @@ class _RestoreListTile extends StatelessWidget {
             if (wifiRequired) {
               var result = await Connectivity().checkConnectivity();
               if (result != ConnectivityResult.wifi) {
-                await MonoDynamicAlertDialog().showNotifyAlertDialog(
+                await MonoAlertDialog().show(
                   context: context,
                   title: const Text('Not Connected to Wi-Fi'),
                   content: const Text('You are not connected to Wi-Fi'),
