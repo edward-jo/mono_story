@@ -17,19 +17,16 @@ import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class BackupScreen extends StatefulWidget {
-  const BackupScreen({Key? key}) : super(key: key);
+class BackupRestoreScreen extends StatefulWidget {
+  const BackupRestoreScreen({Key? key}) : super(key: key);
 
-  static const routeName = '/backup';
+  static const routeName = '/backup_restore';
 
   @override
-  _BackupScreenState createState() => _BackupScreenState();
+  _BackupRestoreScreenState createState() => _BackupRestoreScreenState();
 }
 
-class _BackupScreenState extends State<BackupScreen> {
-  final _backupProgressKey = GlobalKey<_ProgressContentState>();
-  final _restoreProgressKey = GlobalKey<_ProgressContentState>();
-
+class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   late final MessageViewModel _messageVM;
 
   late Future<_BackupInfo> _getLastBackupInfoFuture;
@@ -62,7 +59,11 @@ class _BackupScreenState extends State<BackupScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        title: const Text('Back up'),
+        title: Text(
+          Platform.isIOS
+              ? 'iCloud Back up / Restore'
+              : 'Google Drive Back up /Restore',
+        ),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,

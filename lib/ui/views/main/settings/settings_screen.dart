@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
 import 'package:mono_story/ui/views/main/settings/about/about_screen.dart';
-import 'package:mono_story/ui/views/main/settings/backup/backup_screen.dart';
+import 'package:mono_story/ui/views/main/settings/backup/backup_restore_screen.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -40,10 +42,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 cupertino: Icon(CupertinoIcons.cloud_upload),
                 material: Icon(Icons.cloud_upload),
               ),
-              title: const Text('iCloud Backup / Restore'),
+              title: Text(
+                Platform.isIOS
+                    ? 'iCloud Back up / Restore'
+                    : 'Google Drive Back up /Restore',
+              ),
               trailing: Icon(MonoIcons.chevron_forward, size: 20.0),
               onTap: () => Navigator.of(context).pushNamed(
-                BackupScreen.routeName,
+                BackupRestoreScreen.routeName,
               ),
             ),
 
