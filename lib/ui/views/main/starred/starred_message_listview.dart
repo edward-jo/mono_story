@@ -5,6 +5,7 @@ import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
+import 'package:mono_story/ui/common/mono_dynaimic_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
@@ -225,13 +226,13 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   }
 
   Future<bool?> _showDeleteStarredMessageAlertDialog(int? id) async {
-    return await MonoAlertDialog.showConfirmAlertDialog<bool>(
+    return await MonoDynamicAlertDialog().showNotifyAlertDialog<bool>(
       context: context,
       title: const Text('Delete Story'),
       content: const Text('Are you sure you want to delete this Story?'),
-      cancelActionName: 'Cancel',
+      cancel: const Text('Cancel'),
       onCancelPressed: () => Navigator.of(context).pop(false),
-      destructiveActionName: 'Delete',
+      destructive: const Text('Delete'),
       onDestructivePressed: () async {
         Navigator.of(context).pop(true);
       },

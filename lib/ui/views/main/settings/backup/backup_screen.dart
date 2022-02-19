@@ -254,7 +254,7 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _restore(String? fileName) async {
     if (fileName == null) return;
 
-    bool? ret = await MonoAlertDialog.showConfirmAlertDialog<bool>(
+    bool? ret = await MonoDynamicAlertDialog().showNotifyAlertDialog<bool>(
       context: context,
       title: const Text('Delete all your stories?'),
       content: Text(
@@ -262,9 +262,9 @@ class _BackupScreenState extends State<BackupScreen> {
             ? 'Restoring will delete all stories present on you iPhone and restore stories from iCloud backup.'
             : 'Restoring will delete all stories present on you phone and restore stories from Google drive backup.'),
       ),
-      cancelActionName: 'Cancel',
+      cancel: const Text('Cancel'),
       onCancelPressed: () => Navigator.of(context).pop(false),
-      destructiveActionName: 'Restore',
+      destructive: const Text('Restore'),
       onDestructivePressed: () => Navigator.of(context).pop(true),
     );
 
@@ -458,11 +458,11 @@ class _BackUpNowListTile extends StatelessWidget {
             if (wifiRequired) {
               var result = await Connectivity().checkConnectivity();
               if (result != ConnectivityResult.wifi) {
-                await MonoAlertDialog.showNotifyAlertDialog(
+                await MonoDynamicAlertDialog().showNotifyAlertDialog(
                   context: context,
                   title: const Text('Not Connected to Wi-Fi'),
                   content: const Text('You are not connected to Wi-Fi'),
-                  cancelActionName: 'Close',
+                  cancel: const Text('Close'),
                   onCancelPressed: () => Navigator.of(context).pop(),
                 );
                 return;
@@ -532,11 +532,11 @@ class _RestoreListTile extends StatelessWidget {
             if (wifiRequired) {
               var result = await Connectivity().checkConnectivity();
               if (result != ConnectivityResult.wifi) {
-                await MonoAlertDialog.showNotifyAlertDialog(
+                await MonoDynamicAlertDialog().showNotifyAlertDialog(
                   context: context,
                   title: const Text('Not Connected to Wi-Fi'),
                   content: const Text('You are not connected to Wi-Fi'),
-                  cancelActionName: 'Close',
+                  cancel: const Text('Close'),
                   onCancelPressed: () => Navigator.of(context).pop(),
                 );
                 return;

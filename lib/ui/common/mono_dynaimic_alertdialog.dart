@@ -90,7 +90,7 @@ class MonoDynamicAlertDialog {
       if (destructive != null && onDestructivePressed != null) {
         actions.add(
           CupertinoDialogAction(
-            isDefaultAction: true,
+            isDestructiveAction: true,
             child: _AlertDialogChildWidget(
               key: _destructiveKey,
               child: destructive,

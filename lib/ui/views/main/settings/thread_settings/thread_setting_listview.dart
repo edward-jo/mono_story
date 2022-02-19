@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
+import 'package:mono_story/ui/common/mono_dynaimic_alertdialog.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/rename_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_listviewitem.dart';
@@ -121,13 +122,13 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     int index,
     Animation<double> animation,
   ) async {
-    return await MonoAlertDialog.showConfirmAlertDialog<bool>(
+    return await MonoDynamicAlertDialog().showNotifyAlertDialog<bool>(
       context: context,
       title: const Text('Delete Thread'),
       content: const Text('Are you sure you want to delete this Thread?'),
-      cancelActionName: 'Cancel',
+      cancel: const Text('Cancel'),
       onCancelPressed: () => Navigator.of(context).pop(false),
-      destructiveActionName: 'Delete',
+      destructive: const Text('Delete'),
       onDestructivePressed: () async {
         Navigator.of(context).pop(true);
       },
