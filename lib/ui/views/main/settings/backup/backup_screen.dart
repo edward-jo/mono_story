@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
+import 'package:mono_story/ui/common/mono_dynaimic_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_switch.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class BackupScreen extends StatefulWidget {
@@ -25,7 +28,8 @@ class BackupScreen extends StatefulWidget {
 }
 
 class _BackupScreenState extends State<BackupScreen> {
-  final _backupNowProgressKey = GlobalKey<_BackupNowProgressState>();
+  final _backupProgressKey = GlobalKey<_ProgressContentState>();
+  final _restoreProgressKey = GlobalKey<_ProgressContentState>();
 
   late final MessageViewModel _messageVM;
 
@@ -34,6 +38,7 @@ class _BackupScreenState extends State<BackupScreen> {
 
   bool _useCellularData = false;
   bool _isBackingUp = false;
+  bool _isRestoring = false;
 
   @override
   void initState() {
@@ -46,6 +51,9 @@ class _BackupScreenState extends State<BackupScreen> {
   void dispose() {
     if (_isBackingUp && _backupProgressSub != null) {
       _backupProgressSub!.cancel();
+    }
+    if (_isRestoring && _restoreProgressSub != null) {
+      _restoreProgressSub!.cancel();
     }
     super.dispose();
   }
@@ -73,10 +81,11 @@ class _BackupScreenState extends State<BackupScreen> {
           ),
 
           //
-          const MonoDivider(height: 0, color: Colors.black),
+          // const MonoDivider(height: 0, color: Colors.black),
+          const SizedBox(height: 20),
 
           //
-          // BACK UP LISTTILE and INFO
+          // BACK UP & STORE LISTTILE
           //
           FutureBuilder<_BackupInfo>(
             future: _getLastBackupInfoFuture,
@@ -98,13 +107,28 @@ class _BackupScreenState extends State<BackupScreen> {
                 );
               }
 
-              // LASTEST BACKUP INFO
+              // last backup info
               final lastBackupInfo = snapshot.data as _BackupInfo;
 
-              return _BackUpNowListTile(
-                backupDateTime: lastBackupInfo.backupDate,
-                wifiRequired: !_useCellularData,
-                onTap: _backupNow,
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  // BACKUP
+                  _BackUpNowListTile(
+                    backupDateTime: lastBackupInfo.backupDate,
+                    wifiRequired: !_useCellularData,
+                    onTap: _backup,
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // RESTORE
+                  _RestoreListTile(
+                    backupDateTime: lastBackupInfo.backupDate,
+                    wifiRequired: !_useCellularData,
+                    onTap: () => _restore(lastBackupInfo.backupFileName),
+                  ),
+                ],
               );
             },
           ),
@@ -115,7 +139,7 @@ class _BackupScreenState extends State<BackupScreen> {
 
   Future<_BackupInfo> _getLastBackupInfo() async {
     final backupList = await _messageVM.listBackupFiles();
-    if (backupList.isEmpty) return const _BackupInfo(backupDate: null);
+    if (backupList.isEmpty) return const _BackupInfo();
 
     final availableList = backupList
         .where(
@@ -123,7 +147,7 @@ class _BackupScreenState extends State<BackupScreen> {
         )
         .toList();
 
-    if (availableList.isEmpty) return const _BackupInfo(backupDate: null);
+    if (availableList.isEmpty) return const _BackupInfo();
     ;
 
     availableList.sort((a, b) => a.compareTo(b));
@@ -147,10 +171,10 @@ class _BackupScreenState extends State<BackupScreen> {
       final formatted = genFormattedLocalTime(
         DateTime.parse(lastBackupDateStr),
       );
-      return _BackupInfo(backupDate: formatted);
+      return _BackupInfo(backupDate: formatted, backupFileName: lastFilename);
     } catch (e) {
       developer.log('_getLastBackupInfo', error: e.toString());
-      return const _BackupInfo(backupDate: null);
+      return const _BackupInfo();
     }
   }
 
@@ -161,14 +185,14 @@ class _BackupScreenState extends State<BackupScreen> {
     }
   }
 
-  Future<void> _backupNow() async {
-    Future<bool?>? dialog = MonoAlertDialog.showNotifyAlertDialog<bool>(
+  Future<void> _backup() async {
+    final dialog = MonoDynamicAlertDialog();
+    dialog.showNotifyAlertDialog(
       context: context,
       title: const Text('Backing up'),
-      content: _BackupNowProgress(
-        key: _backupNowProgressKey,
-        message: 'Start backup',
-      ),
+      content: const Text('Start backup'),
+      cancel: const PlatformIndicator(),
+      onCancelPressed: () {},
     );
 
     setState(() => _isBackingUp = true);
@@ -177,6 +201,7 @@ class _BackupScreenState extends State<BackupScreen> {
     // Start backup
     //
     try {
+      developer.log('Start backup');
       await _messageVM.uploadMessages((stream) {
         _backupProgressSub = stream.listen(
           (progress) {
@@ -184,66 +209,173 @@ class _BackupScreenState extends State<BackupScreen> {
             // show the remainder of modulo.
             progress %= 100;
             developer.log('Upload progress: $progress');
-            _backupNowProgressKey.currentState?.update('${progress.ceil()}%');
+            dialog.update(
+              content: Text('${progress.ceil()}%'),
+            );
           },
           onError: (error) {
             developer.log('Upload error: ${error.toString()}');
-            _backupNowProgressKey.currentState?.update(
-              'Failed to back up: $error',
+            dialog.update(
+              content: Text('Failed to back up: $error'),
+              onCancelPressed: () => Navigator.of(context).pop(),
+              cancel: const Text('Close'),
             );
             setState(() => _isBackingUp = false);
-            dialog.toString();
-            dialog = null;
-            Navigator.of(context).pop(true);
           },
           onDone: () async {
             developer.log('Upload completed');
-            _backupNowProgressKey.currentState?.update(
-              'Completed',
-            );
-            await Future.delayed(const Duration(seconds: 1));
+
             setState(() {
               _getLastBackupInfoFuture = _getLastBackupInfo();
               _isBackingUp = false;
             });
-            dialog = null;
-            Navigator.of(context).pop(true);
+
+            dialog.update(
+              content: const Text('Completed'),
+              cancel: const Text('Close'),
+              onCancelPressed: () => Navigator.of(context).pop(),
+            );
           },
           cancelOnError: true,
         );
       });
     } catch (e) {
-      developer.log('_backupNow', error: e.toString());
+      developer.log('_backup', error: e.toString());
+      dialog.update(
+        content: Text(e.toString()),
+        cancel: const Text('Close'),
+        onCancelPressed: () => Navigator.of(context).pop(),
+      );
       _backupProgressSub!.cancel();
       setState(() => _isBackingUp = false);
-      dialog = null;
-      Navigator.of(context).pop(true);
+    }
+  }
+
+  Future<void> _restore(String? fileName) async {
+    if (fileName == null) return;
+
+    bool? ret = await MonoAlertDialog.showConfirmAlertDialog<bool>(
+      context: context,
+      title: const Text('Delete all your stories?'),
+      content: Text(
+        (Platform.isIOS
+            ? 'Restoring will delete all stories present on you iPhone and restore stories from iCloud backup.'
+            : 'Restoring will delete all stories present on you phone and restore stories from Google drive backup.'),
+      ),
+      cancelActionName: 'Cancel',
+      onCancelPressed: () => Navigator.of(context).pop(false),
+      destructiveActionName: 'Restore',
+      onDestructivePressed: () => Navigator.of(context).pop(true),
+    );
+
+    if (ret == null || !ret) return;
+
+    // Show progress dialog
+    final dialog = MonoDynamicAlertDialog();
+    dialog.showNotifyAlertDialog(
+      context: context,
+      title: const Text('Restore'),
+      content: const Text('Start restore'),
+      cancel: const PlatformIndicator(),
+      onCancelPressed: () {},
+    );
+
+    setState(() => _isRestoring = true);
+
+    //
+    // Start restore
+    //
+    try {
+      developer.log('Start downloading $fileName');
+      await _messageVM.downloadMessages(fileName, (stream) {
+        _restoreProgressSub = stream.listen(
+          (progress) {
+            // First progress is 100.0. Looks like it is bug of the package. So
+            // show the remainder of modulo.
+            progress %= 100;
+            developer.log('Upload progress: $progress');
+            dialog.update(
+              content: Text('${progress.ceil()}%'),
+            );
+          },
+          onError: (error) {
+            developer.log('Dowload error: ${error.toString()}');
+            dialog.update(
+              content: Text('Failed to restore: $error'),
+              onCancelPressed: () => Navigator.of(context).pop(),
+              cancel: const Text('Close'),
+            );
+            setState(() => _isRestoring = false);
+          },
+          onDone: () async {
+            developer.log('Download completed');
+
+            //
+            // Init Home & Starred list
+            //
+            final threadVM = context.read<ThreadViewModel>();
+            threadVM.setCurrentThreadId(null, notify: true);
+
+            final messageVM = context.read<MessageViewModel>();
+            messageVM.initMessageDatabase();
+            messageVM.initMessages();
+            await messageVM.readMessagesChunk(threadVM.currentThreadId);
+
+            final starredVM = context.read<StarredMessageViewModel>();
+            starredVM.initMessages();
+            await starredVM.searchStarredThreadChunk();
+
+            setState(() {
+              _getLastBackupInfoFuture = _getLastBackupInfo();
+              _isRestoring = false;
+            });
+
+            dialog.update(
+              content: const Text('Completed'),
+              cancel: const Text('Close'),
+              onCancelPressed: () => Navigator.of(context).pop(),
+            );
+          },
+          cancelOnError: true,
+        );
+      });
+    } catch (e) {
+      developer.log('_restore', error: e.toString());
+      dialog.update(
+        content: Text(e.toString()),
+        cancel: const Text('Close'),
+        onCancelPressed: () => Navigator.of(context).pop(),
+      );
+      _restoreProgressSub!.cancel();
+      setState(() => _isRestoring = false);
+      Navigator.of(context).pop();
     }
   }
 }
 
 //------------------------------------------------------------------------------
-// _BackupNowProgress
+// _BackupInfo
 //------------------------------------------------------------------------------
 class _BackupInfo {
-  const _BackupInfo({required this.backupDate});
+  const _BackupInfo({this.backupDate, this.backupFileName});
   final String? backupDate;
+  final String? backupFileName;
 }
 
 //------------------------------------------------------------------------------
 // _BackupNowProgress
 //------------------------------------------------------------------------------
 
-class _BackupNowProgress extends StatefulWidget {
-  const _BackupNowProgress({Key? key, required this.message}) : super(key: key);
+class _ProgressContent extends StatefulWidget {
+  const _ProgressContent({Key? key, required this.message}) : super(key: key);
 
   final String message;
 
   @override
-  _BackupNowProgressState createState() => _BackupNowProgressState();
+  _ProgressContentState createState() => _ProgressContentState();
 }
 
-class _BackupNowProgressState extends State<_BackupNowProgress> {
+class _ProgressContentState extends State<_ProgressContent> {
   late String _message;
 
   @override
@@ -298,7 +430,30 @@ class _BackUpNowListTile extends StatelessWidget {
       children: <Widget>[
         // BACK UP NOW
         ListTile(
+          isThreeLine: true,
           title: Text('Back Up Now', style: titleStyle),
+          subtitle: Container(
+            alignment: Alignment.topLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // MESSAGE: LAST SUCCESSFUL BACKUP TIME
+                Text(
+                  (backupDateTime != null)
+                      ? 'Last successful backup: $backupDateTime'
+                      : 'You don\'t have any backup yet.',
+                  style: subtitleStyle,
+                ),
+
+                // MESSAGE: WIFI REQUIRED
+                if (wifiRequired)
+                  Text(
+                    'You must be connected to Wi-Fi network to start a backup.',
+                    style: subtitleStyle,
+                  ),
+              ],
+            ),
+          ),
           onTap: () async {
             if (wifiRequired) {
               var result = await Connectivity().checkConnectivity();
@@ -316,66 +471,80 @@ class _BackUpNowListTile extends StatelessWidget {
             await onTap();
           },
         ),
-
-        //
-        const MonoDivider(height: 1, color: Colors.black),
-
-        // SUBTITLES
-        Container(
-          padding: const EdgeInsets.only(left: 20, top: 10),
-          alignment: Alignment.centerLeft,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // MESSAGE: LAST SUCCESSFUL BACKUP TIME
-              Text(
-                (backupDateTime != null)
-                    ? 'Last successful backup: $backupDateTime'
-                    : 'You don\'t have any backup yet',
-                style: subtitleStyle,
-              ),
-
-              const SizedBox(height: 10),
-
-              // MESSAGE: WIFI REQUIRED
-              if (wifiRequired)
-                Text(
-                  'You must be connected to Wi-Fi network to start a backup.',
-                  style: subtitleStyle,
-                ),
-            ],
-          ),
-        )
       ],
     );
   }
 }
 //------------------------------------------------------------------------------
-// _CancelBackupWidget
+// _RestoreListTile
 //------------------------------------------------------------------------------
 
-class _CancelBackupListTile extends StatelessWidget {
-  const _CancelBackupListTile({Key? key, required this.onTap})
-      : super(key: key);
+class _RestoreListTile extends StatelessWidget {
+  const _RestoreListTile({
+    Key? key,
+    required this.backupDateTime,
+    required this.wifiRequired,
+    required this.onTap,
+  }) : super(key: key);
 
-  final void Function() onTap;
+  final String? backupDateTime;
+  final bool wifiRequired;
+  final Future<void> Function() onTap;
 
   @override
   Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.bodyText1?.copyWith(
+          color: Colors.blue,
+        );
+    final subtitleStyle = Theme.of(context).textTheme.caption?.copyWith(
+          fontSize: 13,
+        );
+
     return Column(
       children: <Widget>[
-        // CANCEL BACKUP
+        // RESTORE FROM ICLOUD BACKUP
         ListTile(
-          title: Text(
-            'Cancel Backup',
-            style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                  color: Colors.blue,
+          isThreeLine: true,
+          title: Text('Restore from iCloud Backup', style: titleStyle),
+          subtitle: Container(
+            alignment: Alignment.topLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // MESSAGE: LAST SUCCESSFUL BACKUP TIME
+                Text(
+                  (backupDateTime != null)
+                      ? 'Last successful backup: $backupDateTime'
+                      : 'You don\'t have any backup yet.',
+                  style: subtitleStyle,
                 ),
-          ),
-          onTap: onTap,
-        ),
 
-        // PROGRESS INDICATOR
+                // MESSAGE: WIFI REQUIRED
+                if (wifiRequired)
+                  Text(
+                    'You must be connected to Wi-Fi network to start a backup.',
+                    style: subtitleStyle,
+                  ),
+              ],
+            ),
+          ),
+          onTap: () async {
+            if (wifiRequired) {
+              var result = await Connectivity().checkConnectivity();
+              if (result != ConnectivityResult.wifi) {
+                await MonoAlertDialog.showNotifyAlertDialog(
+                  context: context,
+                  title: const Text('Not Connected to Wi-Fi'),
+                  content: const Text('You are not connected to Wi-Fi'),
+                  cancelActionName: 'Close',
+                  onCancelPressed: () => Navigator.of(context).pop(),
+                );
+                return;
+              }
+            }
+            await onTap();
+          },
+        ),
       ],
     );
   }
