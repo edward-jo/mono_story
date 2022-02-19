@@ -5,10 +5,10 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
+import 'package:mono_story/ui/common/mono_dynaimic_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_switch.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
@@ -186,13 +186,13 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   Future<void> _backup() async {
-    Future<bool?>? dialog = MonoAlertDialog.showNotifyAlertDialog<bool>(
+    final dialog = MonoDynamicAlertDialog();
+    dialog.showNotifyAlertDialog(
       context: context,
       title: const Text('Backing up'),
-      content: _ProgressContent(
-        key: _backupProgressKey,
-        message: 'Start backup',
-      ),
+      content: const Text('Start backup'),
+      cancel: const PlatformIndicator(),
+      onCancelPressed: () {},
     );
 
     setState(() => _isBackingUp = true);
@@ -201,6 +201,7 @@ class _BackupScreenState extends State<BackupScreen> {
     // Start backup
     //
     try {
+      developer.log('Start backup');
       await _messageVM.uploadMessages((stream) {
         _backupProgressSub = stream.listen(
           (progress) {
@@ -208,40 +209,45 @@ class _BackupScreenState extends State<BackupScreen> {
             // show the remainder of modulo.
             progress %= 100;
             developer.log('Upload progress: $progress');
-            _backupProgressKey.currentState?.update('${progress.ceil()}%');
+            dialog.update(
+              content: Text('${progress.ceil()}%'),
+            );
           },
           onError: (error) {
             developer.log('Upload error: ${error.toString()}');
-            _backupProgressKey.currentState?.update(
-              'Failed to back up: $error',
+            dialog.update(
+              content: Text('Failed to back up: $error'),
+              onCancelPressed: () => Navigator.of(context).pop(),
+              cancel: const Text('Close'),
             );
             setState(() => _isBackingUp = false);
-            dialog.toString();
-            dialog = null;
-            Navigator.of(context).pop(true);
           },
           onDone: () async {
             developer.log('Upload completed');
-            _backupProgressKey.currentState?.update(
-              'Completed',
-            );
-            await Future.delayed(const Duration(seconds: 1));
+
             setState(() {
               _getLastBackupInfoFuture = _getLastBackupInfo();
               _isBackingUp = false;
             });
-            dialog = null;
-            Navigator.of(context).pop(true);
+
+            dialog.update(
+              content: const Text('Completed'),
+              cancel: const Text('Close'),
+              onCancelPressed: () => Navigator.of(context).pop(),
+            );
           },
           cancelOnError: true,
         );
       });
     } catch (e) {
-      developer.log('_backupNow', error: e.toString());
+      developer.log('_backup', error: e.toString());
+      dialog.update(
+        content: Text(e.toString()),
+        cancel: const Text('Close'),
+        onCancelPressed: () => Navigator.of(context).pop(),
+      );
       _backupProgressSub!.cancel();
       setState(() => _isBackingUp = false);
-      dialog = null;
-      Navigator.of(context).pop(true);
     }
   }
 
@@ -264,13 +270,14 @@ class _BackupScreenState extends State<BackupScreen> {
 
     if (ret == null || !ret) return;
 
-    Future<bool?>? dialog = MonoAlertDialog.showNotifyAlertDialog<bool>(
+    // Show progress dialog
+    final dialog = MonoDynamicAlertDialog();
+    dialog.showNotifyAlertDialog(
       context: context,
       title: const Text('Restore'),
-      content: _ProgressContent(
-        key: _restoreProgressKey,
-        message: 'Start restore',
-      ),
+      content: const Text('Start restore'),
+      cancel: const PlatformIndicator(),
+      onCancelPressed: () {},
     );
 
     setState(() => _isRestoring = true);
@@ -287,24 +294,21 @@ class _BackupScreenState extends State<BackupScreen> {
             // show the remainder of modulo.
             progress %= 100;
             developer.log('Upload progress: $progress');
-            _restoreProgressKey.currentState?.update('${progress.ceil()}%');
+            dialog.update(
+              content: Text('${progress.ceil()}%'),
+            );
           },
           onError: (error) {
-            developer.log('Upload error: ${error.toString()}');
-            _restoreProgressKey.currentState?.update(
-              'Failed to back up: $error',
+            developer.log('Dowload error: ${error.toString()}');
+            dialog.update(
+              content: Text('Failed to restore: $error'),
+              onCancelPressed: () => Navigator.of(context).pop(),
+              cancel: const Text('Close'),
             );
             setState(() => _isRestoring = false);
-            dialog.toString();
-            dialog = null;
-            Navigator.of(context).pop(true);
           },
           onDone: () async {
-            developer.log('Upload completed');
-            _restoreProgressKey.currentState?.update(
-              'Completed',
-            );
-            await Future.delayed(const Duration(seconds: 1));
+            developer.log('Download completed');
 
             //
             // Init Home & Starred list
@@ -325,18 +329,26 @@ class _BackupScreenState extends State<BackupScreen> {
               _getLastBackupInfoFuture = _getLastBackupInfo();
               _isRestoring = false;
             });
-            dialog = null;
-            Navigator.of(context).pop(true);
+
+            dialog.update(
+              content: const Text('Completed'),
+              cancel: const Text('Close'),
+              onCancelPressed: () => Navigator.of(context).pop(),
+            );
           },
           cancelOnError: true,
         );
       });
     } catch (e) {
       developer.log('_restore', error: e.toString());
+      dialog.update(
+        content: Text(e.toString()),
+        cancel: const Text('Close'),
+        onCancelPressed: () => Navigator.of(context).pop(),
+      );
       _restoreProgressSub!.cancel();
       setState(() => _isRestoring = false);
-      dialog = null;
-      Navigator.of(context).pop(true);
+      Navigator.of(context).pop();
     }
   }
 }
@@ -464,7 +476,7 @@ class _BackUpNowListTile extends StatelessWidget {
   }
 }
 //------------------------------------------------------------------------------
-// _CancelBackupWidget
+// _RestoreListTile
 //------------------------------------------------------------------------------
 
 class _RestoreListTile extends StatelessWidget {
