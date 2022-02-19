@@ -217,23 +217,25 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             developer.log('Upload error: ${error.toString()}');
             dialog.update(
               content: Text('Failed to back up: $error'),
-              onCancelPressed: () => Navigator.of(context).pop(),
               cancel: const Text('Close'),
+              onCancelPressed: () {
+                setState(() => _isBackingUp = false);
+                Navigator.of(context).pop();
+              },
             );
-            setState(() => _isBackingUp = false);
           },
           onDone: () async {
             developer.log('Upload completed');
-
-            setState(() {
-              _getLastBackupInfoFuture = _getLastBackupInfo();
-              _isBackingUp = false;
-            });
-
             dialog.update(
               content: const Text('Completed'),
               cancel: const Text('Close'),
-              onCancelPressed: () => Navigator.of(context).pop(),
+              onCancelPressed: () {
+                setState(() {
+                  _getLastBackupInfoFuture = _getLastBackupInfo();
+                  _isBackingUp = false;
+                });
+                Navigator.of(context).pop();
+              },
             );
           },
           cancelOnError: true,
@@ -244,10 +246,12 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       dialog.update(
         content: Text(e.toString()),
         cancel: const Text('Close'),
-        onCancelPressed: () => Navigator.of(context).pop(),
+        onCancelPressed: () {
+          setState(() => _isBackingUp = false);
+          Navigator.of(context).pop();
+        },
       );
       _backupProgressSub!.cancel();
-      setState(() => _isBackingUp = false);
     }
   }
 
@@ -302,10 +306,12 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             developer.log('Dowload error: ${error.toString()}');
             dialog.update(
               content: Text('Failed to restore: $error'),
-              onCancelPressed: () => Navigator.of(context).pop(),
               cancel: const Text('Close'),
+              onCancelPressed: () {
+                setState(() => _isRestoring = false);
+                Navigator.of(context).pop();
+              },
             );
-            setState(() => _isRestoring = false);
           },
           onDone: () async {
             developer.log('Download completed');
@@ -325,15 +331,16 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             starredVM.initMessages();
             await starredVM.searchStarredThreadChunk();
 
-            setState(() {
-              _getLastBackupInfoFuture = _getLastBackupInfo();
-              _isRestoring = false;
-            });
-
             dialog.update(
               content: const Text('Completed'),
               cancel: const Text('Close'),
-              onCancelPressed: () => Navigator.of(context).pop(),
+              onCancelPressed: () {
+                setState(() {
+                  _getLastBackupInfoFuture = _getLastBackupInfo();
+                  _isRestoring = false;
+                });
+                Navigator.of(context).pop();
+              },
             );
           },
           cancelOnError: true,
@@ -344,11 +351,12 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       dialog.update(
         content: Text(e.toString()),
         cancel: const Text('Close'),
-        onCancelPressed: () => Navigator.of(context).pop(),
+        onCancelPressed: () {
+          setState(() => _isRestoring = false);
+          Navigator.of(context).pop();
+        },
       );
       _restoreProgressSub!.cancel();
-      setState(() => _isRestoring = false);
-      Navigator.of(context).pop();
     }
   }
 }
