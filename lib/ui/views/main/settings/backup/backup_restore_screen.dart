@@ -295,8 +295,10 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
     // Start restore
     //
     try {
-      developer.log('Start downloading $fileName');
-      await _messageVM.downloadMessages(fileName, (stream) {
+      final restoreFilePath = await _messageVM.getRestoreFilePath();
+      developer.log('Start downloading $fileName to $restoreFilePath');
+
+      await _messageVM.downloadMessages(fileName, restoreFilePath, (stream) {
         _restoreProgressSub = stream.listen(
           (progress) {
             // First progress is 100.0. Looks like it is bug of the package. So
@@ -328,6 +330,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             threadVM.setCurrentThreadId(null, notify: true);
 
             final messageVM = context.read<MessageViewModel>();
+            await messageVM.applyRestoreMessages();
             await messageVM.initMessageDatabase();
             messageVM.initMessages();
             await messageVM.readMessagesChunk(threadVM.currentThreadId);
@@ -353,6 +356,8 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       });
     } catch (e) {
       developer.log('_restore', error: e.toString());
+      // In case that downloadMessages throws error, dialog update below does not work.
+      await Future.delayed(const Duration(seconds: 1)); // TODO: refactor
       dialog.update(
         content: Text(e.toString()),
         cancel: const Text('Close'),
@@ -361,7 +366,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
           Navigator.of(context).pop();
         },
       );
-      _restoreProgressSub!.cancel();
+      _restoreProgressSub?.cancel();
     }
   }
 }
