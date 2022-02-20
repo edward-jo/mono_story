@@ -153,7 +153,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return stories.length;
   }
 
-  Future<int> searchStarredThreadChunk() async {
+  Future<int> readStarredMessagesChunk() async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));

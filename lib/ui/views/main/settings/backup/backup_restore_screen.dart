@@ -324,20 +324,23 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             developer.log('Download completed');
 
             //
-            // Init Home & Starred list
+            // Init Thread / Home / Starred list
             //
-            final threadVM = context.read<ThreadViewModel>();
-            threadVM.setCurrentThreadId(null, notify: true);
-
             final messageVM = context.read<MessageViewModel>();
+            final threadVM = context.read<ThreadViewModel>();
+            final starredVM = context.read<StarredMessageViewModel>();
+
             await messageVM.applyRestoreMessages();
             await messageVM.initMessageDatabase();
-            messageVM.initMessages();
-            await messageVM.readMessagesChunk(threadVM.currentThreadId);
 
-            final starredVM = context.read<StarredMessageViewModel>();
+            threadVM.initThreads();
+            messageVM.initMessages();
             starredVM.initMessages();
-            await starredVM.searchStarredThreadChunk();
+            threadVM.setCurrentThreadId(null, notify: true);
+
+            await threadVM.readThreadList();
+            await messageVM.readMessagesChunk(threadVM.currentThreadId);
+            await starredVM.readStarredMessagesChunk();
 
             dialog.update(
               content: const Text('Completed'),

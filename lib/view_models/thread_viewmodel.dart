@@ -25,7 +25,7 @@ class ThreadViewModel extends ChangeNotifier {
     return findThreadData(id: currentThreadId);
   }
 
-  void initMessages() {
+  void initThreads() {
     clearAllItem();
   }
 
