@@ -140,7 +140,9 @@ class _MessageListViewState extends State<MessageListView> {
     Animation<double> animation,
     List<Message> list,
   ) {
-    developer.log('_buildMessageListViewItem( $index/${list.length} )');
+    developer.log(
+      '_buildMessageListViewItem( i: $index, len: ${list.length} )',
+    );
     final item = list[index];
 
     return SizeTransition(
