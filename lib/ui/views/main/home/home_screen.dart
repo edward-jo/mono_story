@@ -140,6 +140,11 @@ class HomeScreenState extends State<HomeScreen> {
 
     if (ret == null) return;
 
+    // XXX: Animation does not work after removing all items. During NewMessage
+    // Screen disappears, Flutter already draws the saved item on the Animated-
+    // List. So, in order to show the animation, need this delay time.
+    await Future.delayed(const Duration(milliseconds: 200));
+
     await _messageVM.save(
       Message(
         id: null,
@@ -150,7 +155,10 @@ class HomeScreenState extends State<HomeScreen> {
       ),
       insertAfterSaving: (_threadVM.currentThreadId == null ||
           _threadVM.currentThreadId == ret.savedMessageThreadId),
-      notify: false,
+      // If list is empty, need to rebuild home screen since AnimatedList was
+      // not created. So if not rebuild, the inserted story will not show on the
+      // screen.
+      notify: _messageVM.messages.isEmpty,
     );
   }
 
