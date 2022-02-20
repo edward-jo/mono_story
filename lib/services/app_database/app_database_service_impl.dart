@@ -36,8 +36,8 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   Future<Message> createMessage(Message message) async {
     final db = _appDb.database;
     Map<String, dynamic> messageJson = message.toJson();
-    final id = await db.insert(messagesTableName, messageJson);
-    messageJson[MessagesTableCols.id] = id;
+    final id = await db.insert(storiesTableNameV2, messageJson);
+    messageJson[StoriesTableCols.id] = id;
 
     return Message.fromJson(messageJson);
   }
@@ -47,8 +47,8 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
 
     return await db.delete(
-      messagesTableName,
-      where: '${MessagesTableCols.id} = ?',
+      storiesTableNameV2,
+      where: '${StoriesTableCols.id} = ?',
       whereArgs: [id],
     );
   }
@@ -57,15 +57,15 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   Future<Message> readMessage(int id) async {
     final db = _appDb.database;
     final messages = await db.query(
-      messagesTableName,
+      storiesTableNameV2,
       columns: [
-        MessagesTableCols.id,
-        MessagesTableCols.message,
-        MessagesTableCols.fkThreadId,
-        MessagesTableCols.createdTime,
-        MessagesTableCols.starred,
+        StoriesTableCols.id,
+        StoriesTableCols.story,
+        StoriesTableCols.fkThreadId,
+        StoriesTableCols.createdTime,
+        StoriesTableCols.starred,
       ],
-      where: '${MessagesTableCols.id} = ?',
+      where: '${StoriesTableCols.id} = ?',
       whereArgs: [id],
     );
 
@@ -78,17 +78,17 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   Future<List<Message>> readThreadMessages(int threadId) async {
     final db = _appDb.database;
     final messages = await db.query(
-      messagesTableName,
+      storiesTableNameV2,
       columns: [
-        MessagesTableCols.id,
-        MessagesTableCols.message,
-        MessagesTableCols.fkThreadId,
-        MessagesTableCols.createdTime,
-        MessagesTableCols.starred,
+        StoriesTableCols.id,
+        StoriesTableCols.story,
+        StoriesTableCols.fkThreadId,
+        StoriesTableCols.createdTime,
+        StoriesTableCols.starred,
       ],
-      where: '${MessagesTableCols.fkThreadId} = ?',
+      where: '${StoriesTableCols.fkThreadId} = ?',
       whereArgs: [threadId],
-      orderBy: '${MessagesTableCols.createdTime} DESC',
+      orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
     return messages.map((e) {
@@ -104,19 +104,19 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   ) async {
     final db = _appDb.database;
     final messages = await db.query(
-      messagesTableName,
+      storiesTableNameV2,
       columns: [
-        MessagesTableCols.id,
-        MessagesTableCols.message,
-        MessagesTableCols.fkThreadId,
-        MessagesTableCols.createdTime,
-        MessagesTableCols.starred,
+        StoriesTableCols.id,
+        StoriesTableCols.story,
+        StoriesTableCols.fkThreadId,
+        StoriesTableCols.createdTime,
+        StoriesTableCols.starred,
       ],
-      where: '${MessagesTableCols.fkThreadId} = ?',
+      where: '${StoriesTableCols.fkThreadId} = ?',
       whereArgs: [threadId],
       offset: offset,
       limit: limit,
-      orderBy: '${MessagesTableCols.createdTime} DESC',
+      orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
     return messages.map((e) {
@@ -128,8 +128,8 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   Future<List<Message>> readAllMessages() async {
     final db = _appDb.database;
     final messages = await db.query(
-      messagesTableName,
-      orderBy: '${MessagesTableCols.createdTime} DESC',
+      storiesTableNameV2,
+      orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
     return messages.map((e) {
@@ -141,10 +141,10 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   Future<List<Message>> readAllMessagesChunk(int? offset, int? limit) async {
     final db = _appDb.database;
     final messages = await db.query(
-      messagesTableName,
+      storiesTableNameV2,
       offset: offset,
       limit: limit,
-      orderBy: '${MessagesTableCols.createdTime} DESC',
+      orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
     return messages.map((e) {
@@ -160,19 +160,19 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   ) async {
     final db = _appDb.database;
     final messages = await db.query(
-      messagesTableName,
+      storiesTableNameV2,
       columns: [
-        MessagesTableCols.id,
-        MessagesTableCols.message,
-        MessagesTableCols.fkThreadId,
-        MessagesTableCols.createdTime,
-        MessagesTableCols.starred,
+        StoriesTableCols.id,
+        StoriesTableCols.story,
+        StoriesTableCols.fkThreadId,
+        StoriesTableCols.createdTime,
+        StoriesTableCols.starred,
       ],
-      where: '${MessagesTableCols.message} LIKE ?',
+      where: '${StoriesTableCols.story} LIKE ?',
       whereArgs: ['%$query%'],
       offset: offset,
       limit: limit,
-      orderBy: '${MessagesTableCols.createdTime} DESC',
+      orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
     return messages.map((e) {
@@ -187,12 +187,12 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   ) async {
     final db = _appDb.database;
     final messages = await db.query(
-      messagesTableName,
-      where: '${MessagesTableCols.starred} = ?',
+      storiesTableNameV2,
+      where: '${StoriesTableCols.starred} = ?',
       whereArgs: [1],
       offset: offset,
       limit: limit,
-      orderBy: '${MessagesTableCols.createdTime} DESC',
+      orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
     return messages.map((e) {
@@ -205,9 +205,9 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
 
     return await db.update(
-      messagesTableName,
+      storiesTableNameV2,
       message.toJson(),
-      where: '${MessagesTableCols.id} = ?',
+      where: '${StoriesTableCols.id} = ?',
       whereArgs: [message.id],
     );
   }
@@ -219,7 +219,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   Future<Thread> createThread(Thread thread) async {
     final db = _appDb.database;
     Map<String, dynamic> threadJson = thread.toJson();
-    final id = await db.insert(threadsTableName, threadJson);
+    final id = await db.insert(threadsTableNameV2, threadJson);
     threadJson[ThreadsTableCols.id] = id;
 
     return Thread.fromJson(threadJson);
@@ -230,7 +230,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
 
     return await db.delete(
-      threadsTableName,
+      threadsTableNameV2,
       where: '${ThreadsTableCols.id} = ?',
       whereArgs: [id],
     );
@@ -240,7 +240,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   Future<List<Thread>> readAllThreads() async {
     final db = _appDb.database;
     final threads = await db.query(
-      threadsTableName,
+      threadsTableNameV2,
       orderBy: '${ThreadsTableCols.name} ASC',
     );
     return threads.map((e) {
@@ -252,7 +252,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   Future<Thread> readThread(int id) async {
     final db = _appDb.database;
     final threads = await db.query(
-      threadsTableName,
+      threadsTableNameV2,
       columns: [
         ThreadsTableCols.id,
         ThreadsTableCols.name,
@@ -271,7 +271,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     final db = _appDb.database;
 
     return await db.update(
-      threadsTableName,
+      threadsTableNameV2,
       thread.toJson(),
       where: '${ThreadsTableCols.id} = ?',
       whereArgs: [thread.id],
