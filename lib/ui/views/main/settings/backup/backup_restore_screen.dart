@@ -13,6 +13,7 @@ import 'package:mono_story/ui/common/platform_switch.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/settings_viewmodel.dart';
 import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -28,11 +29,12 @@ class BackupRestoreScreen extends StatefulWidget {
 
 class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   late final MessageViewModel _messageVM;
+  late final SettingsViewModel _settingsVM;
 
   late Future<_BackupInfo> _getLastBackupInfoFuture;
   StreamSubscription? _backupProgressSub, _restoreProgressSub;
 
-  bool _useCellularData = false;
+  late bool _useCellularData;
   bool _isBackingUp = false;
   bool _isRestoring = false;
 
@@ -40,7 +42,9 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   void initState() {
     super.initState();
     _messageVM = context.read<MessageViewModel>();
+    _settingsVM = context.read<SettingsViewModel>();
     _getLastBackupInfoFuture = _getLastBackupInfo();
+    _useCellularData = _settingsVM.settings.useCellularData ?? false;
   }
 
   @override
@@ -74,8 +78,10 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             title: const Text('Use Cellular Data'),
             trailing: PlatformSwitch(
               value: _useCellularData,
-              onChanged: (value) {
-                setState(() => _useCellularData = value);
+              onChanged: (value) async {
+                if (await _settingsVM.setUseCellularData(value)) {
+                  setState(() => _useCellularData = value);
+                }
               },
             ),
           ),

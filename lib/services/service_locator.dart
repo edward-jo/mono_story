@@ -3,9 +3,10 @@ import 'package:mono_story/services/app_database/app_database_service.dart';
 import 'package:mono_story/services/app_database/app_database_service_impl.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service_impl.dart';
-import 'package:mono_story/view_models/searched_message_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/searched_message_viewmodel.dart';
+import 'package:mono_story/view_models/settings_viewmodel.dart';
+import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 
 GetIt serviceLocator = GetIt.instance;
@@ -19,6 +20,9 @@ void setupServiceLocator() {
     IcloudStorageService service = IcloudStorageServiceImpl();
     return await service.init();
   });
+  //
+  // View Model
+  //
   serviceLocator.registerSingletonWithDependencies<MessageViewModel>(
     () => MessageViewModel(),
     dependsOn: [AppDatabaseService, IcloudStorageService],
@@ -34,5 +38,11 @@ void setupServiceLocator() {
   serviceLocator.registerSingletonWithDependencies<ThreadViewModel>(
     () => ThreadViewModel(),
     dependsOn: [AppDatabaseService],
+  );
+  serviceLocator.registerSingletonAsync<SettingsViewModel>(
+    () async {
+      SettingsViewModel settingsVM = SettingsViewModel();
+      return await settingsVM.init();
+    },
   );
 }

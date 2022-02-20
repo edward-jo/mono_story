@@ -13,6 +13,7 @@ import 'package:mono_story/ui/views/main/settings/backup/backup_restore_screen.d
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
 import 'package:mono_story/view_models/searched_message_viewmodel.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/settings_viewmodel.dart';
 import 'package:mono_story/view_models/starred_message_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -72,6 +73,9 @@ class MyApp extends StatelessWidget {
             ),
             ChangeNotifierProvider.value(
               value: serviceLocator<ThreadViewModel>(),
+            ),
+            ChangeNotifierProvider.value(
+              value: serviceLocator<SettingsViewModel>(),
             )
           ],
           child: const StartMyApp(),
