@@ -74,7 +74,7 @@ class ThreadViewModel extends ChangeNotifier {
 
   Future<Thread> createThread(String name) async {
     Thread t = await _dbService.createThread(Thread(name: name));
-    insertItem(_threads.length - 1, t);
+    insertItem(_threads.length, t);
     notifyListeners();
     return t;
   }
