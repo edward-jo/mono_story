@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:math';
+import 'dart:io';
 
 import 'package:mono_story/constants.dart';
 import 'package:path/path.dart';
@@ -142,6 +143,22 @@ class AppDatabase {
     _database = null;
     developer.log('Deleted database');
     return;
+  }
+
+  Future<void> replaceAppDatabaseWithRestore() async {
+    final restoreFilePath = await getRestoreFilePath();
+    final restoreFile = File(restoreFilePath);
+    var path = restoreFile.path;
+    var lastSeparator = path.lastIndexOf(Platform.pathSeparator);
+    var newPath = path.substring(0, lastSeparator + 1) + appDatabaseFileName;
+    restoreFile.renameSync(newPath);
+    return;
+  }
+
+  Future<String> getRestoreFilePath() async {
+    final databasePath = await getDatabasesPath();
+    final databaseFilePath = join(databasePath, appRestoreDatabaseFileName);
+    return databaseFilePath;
   }
 
   void _createFakeRecords(Database db) async {

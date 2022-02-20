@@ -8,6 +8,7 @@ const String homeScreenTitleImgM = 'assets/images/appbar_title_white.png';
 const String homeScreenTitleImgC = 'assets/images/appbar_title_blue.png';
 
 const String appDatabaseFileName = 'app.db';
+const String appRestoreDatabaseFileName = '_app.db';
 const String appDatabaseBackupFileNamePrefix = 'monostory.db_';
 const int appDatabaseVersion = 2;
 

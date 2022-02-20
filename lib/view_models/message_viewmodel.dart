@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
@@ -20,6 +21,10 @@ class MessageViewModel extends MessageViewModelBase {
     await dbService.init();
   }
 
+  Future<String> getRestoreFilePath() async {
+    return dbService.getAppDatabaseRestoreFilePath();
+  }
+
   Future<void> uploadMessages(
     void Function(Stream<double>) onProgress,
   ) async {
@@ -35,16 +40,20 @@ class MessageViewModel extends MessageViewModelBase {
 
   Future<void> downloadMessages(
     String fileName,
+    String restoreFilePath,
     void Function(Stream<double>) onProgress,
   ) async {
-    final path = await dbService.getAppDatabaseFilePath();
+    await _iStorageService.downloadFile(
+      fileName,
+      restoreFilePath,
+      onProgress,
+    );
+  }
 
+  Future<void> applyRestoreMessages() async {
     await dbService.closeAppDatabase();
     await dbService.deleteAppDatabase();
-
-    await _iStorageService.downloadFile(fileName, path, onProgress);
-
-    initMessages();
+    await dbService.replaceAppDatabase();
   }
 
   Future<void> deleteMessages() async {
