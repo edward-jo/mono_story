@@ -39,6 +39,10 @@ class StoriesTableColsV1 {
   static const String starred = 'starred';
 }
 
+class SettingsKeys {
+  static const String useCellularData = 'use_cellular_data';
+}
+
 class ErrorMessages {
   static const String iCloudConnectionOrPermissionStr =
       'Platform Exception: iCloud container ID is not valid, or user is not signed in for iCloud, or user denied iCloud permission for this app';
