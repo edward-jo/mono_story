@@ -35,7 +35,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     _starredVM = context.read<StarredMessageViewModel>();
     _messageVM = context.read<MessageViewModel>();
     _starredVM.initMessages();
-    _starredMessagesFuture = _starredVM.searchStarredThreadChunk();
+    _starredMessagesFuture = _starredVM.readStarredMessagesChunk();
     _starredVM.removedItemBuilder = _buildRemovedStarredItem;
     _listKey = _starredVM.listKey;
     _scrollController = widget.scrollController;
@@ -46,7 +46,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   void didUpdateWidget(covariant StarredMessageListView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _starredVM.initMessages();
-    _starredMessagesFuture = _starredVM.searchStarredThreadChunk();
+    _starredMessagesFuture = _starredVM.readStarredMessagesChunk();
   }
 
   @override
@@ -215,7 +215,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
       if (_starredVM.canLoadMessagesChunk()) {
-        await _starredVM.searchStarredThreadChunk();
+        await _starredVM.readStarredMessagesChunk();
       }
     }
   }
@@ -236,7 +236,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
   Future<void> _refresh() async {
     _starredVM.initMessages();
-    _starredMessagesFuture = _starredVM.searchStarredThreadChunk();
+    _starredMessagesFuture = _starredVM.readStarredMessagesChunk();
     setState(() {});
   }
 }

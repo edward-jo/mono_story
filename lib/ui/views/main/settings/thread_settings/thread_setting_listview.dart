@@ -113,7 +113,7 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
 
     final starredVM = context.read<StarredMessageViewModel>();
     starredVM.initMessages();
-    await starredVM.searchStarredThreadChunk();
+    await starredVM.readStarredMessagesChunk();
   }
 
   Future<bool?> _showDeleteThreadAlertDialog(
@@ -148,6 +148,6 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
 
     final starredVM = context.read<StarredMessageViewModel>();
     starredVM.initMessages();
-    await starredVM.searchStarredThreadChunk();
+    await starredVM.readStarredMessagesChunk();
   }
 }
