@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/message.dart';
@@ -108,7 +109,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                   autofocus: true,
                   maxLines: null,
                   maxLength: storyMaxLength,
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.multiline,
                   controller: _newMessageController,
                   onSubmitted: (_) => _save(context),
                   onChanged: (value) {
@@ -125,6 +126,15 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                   ),
+                  inputFormatters: <TextInputFormatter>[
+                    _DenyFirstNewLineFormatter(),
+                    FilteringTextInputFormatter(
+                      '\n\n\n',
+                      allow: false,
+                      replacementString: '\n\n',
+                    ),
+                  ],
+                  // inputFormatters: <TextInputFormatter>[_NewLineFormatter()],
                 ),
               ),
             ],
@@ -216,4 +226,14 @@ class NewMessageScreenResult {
     required this.isSaved,
     required this.message,
   });
+}
+
+class _DenyFirstNewLineFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return (newValue.text == '\n') ? oldValue : newValue;
+  }
 }

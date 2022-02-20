@@ -16,7 +16,7 @@ class MessageViewModel extends MessageViewModelBase {
     return await _iStorageService.deleteFile(fileName);
   }
 
-  void initMessageDatabase() async {
+  Future<void> initMessageDatabase() async {
     await dbService.init();
   }
 
@@ -45,7 +45,6 @@ class MessageViewModel extends MessageViewModelBase {
     await _iStorageService.downloadFile(fileName, path, onProgress);
 
     initMessages();
-    notifyListeners();
   }
 
   Future<void> deleteMessages() async {
