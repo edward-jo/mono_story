@@ -5,6 +5,7 @@ import 'package:mono_story/constants.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
 import 'package:mono_story/services/service_locator.dart';
 import 'package:mono_story/view_models/message_viewmodel_base.dart';
+import 'package:path/path.dart';
 
 class MessageViewModel extends MessageViewModelBase {
   final _iStorageService = serviceLocator<IcloudStorageService>();
@@ -14,7 +15,26 @@ class MessageViewModel extends MessageViewModelBase {
   }
 
   Future<void> deleteBackupFile(String fileName) async {
-    return await _iStorageService.deleteFile(fileName);
+    final databasePath = await dbService.getAppDatabasePath();
+
+    await _iStorageService.downloadFile(
+      fileName,
+      join(databasePath, fileName),
+      (stream) {
+        stream.listen(
+          (progress) =>
+              developer.log('--- Download File --- progress: $progress'),
+          onDone: () async {
+            developer.log('--- Download File --- done');
+            await _iStorageService.deleteFile(fileName);
+          },
+          onError: (err) => developer.log('--- Download File --- error: $err'),
+          cancelOnError: true,
+        );
+      },
+    );
+
+    // return await _iStorageService.deleteFile(fileName);
   }
 
   Future<void> initMessageDatabase() async {

@@ -155,6 +155,10 @@ class AppDatabase {
     return;
   }
 
+  Future<String> getAppDatabasePath() async {
+    return getDatabasesPath();
+  }
+
   Future<String> getRestoreFilePath() async {
     final databasePath = await getDatabasesPath();
     final databaseFilePath = join(databasePath, appRestoreDatabaseFileName);
