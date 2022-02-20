@@ -296,7 +296,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             // First progress is 100.0. Looks like it is bug of the package. So
             // show the remainder of modulo.
             progress %= 100;
-            developer.log('Upload progress: $progress');
+            developer.log('Download progress: $progress');
             dialog.update(
               content: Text('${progress.ceil()}%'),
             );
@@ -322,7 +322,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             threadVM.setCurrentThreadId(null, notify: true);
 
             final messageVM = context.read<MessageViewModel>();
-            messageVM.initMessageDatabase();
+            await messageVM.initMessageDatabase();
             messageVM.initMessages();
             await messageVM.readMessagesChunk(threadVM.currentThreadId);
 

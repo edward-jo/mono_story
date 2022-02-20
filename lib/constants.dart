@@ -9,10 +9,12 @@ const String homeScreenTitleImgC = 'assets/images/appbar_title_blue.png';
 
 const String appDatabaseFileName = 'app.db';
 const String appDatabaseBackupFileNamePrefix = 'monostory.db_';
-const int appDatabaseVersion = 1;
+const int appDatabaseVersion = 2;
 
-const String threadsTableName = 'threads';
-const String messagesTableName = 'messages';
+const String threadsTableNameV1 = 'threads';
+const String threadsTableNameV2 = 'threads';
+const String storiesTableNameV1 = 'messages';
+const String storiesTableNameV2 = 'stories';
 
 const String defaultThreadName = 'All';
 
@@ -21,7 +23,15 @@ class ThreadsTableCols {
   static const String name = 'name';
 }
 
-class MessagesTableCols {
+class StoriesTableCols {
+  static const String id = '_id';
+  static const String story = 'story';
+  static const String fkThreadId = 'fk_thread_id';
+  static const String createdTime = 'created_time';
+  static const String starred = 'starred';
+}
+
+class StoriesTableColsV1 {
   static const String id = '_id';
   static const String message = 'message';
   static const String fkThreadId = 'fk_thread_id';

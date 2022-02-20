@@ -5,15 +5,15 @@ part 'message.g.dart';
 
 @JsonSerializable()
 class Message {
-  @JsonKey(name: MessagesTableCols.id)
+  @JsonKey(name: StoriesTableCols.id)
   final int? id;
-  @JsonKey(name: MessagesTableCols.message)
+  @JsonKey(name: StoriesTableCols.story)
   final String message;
-  @JsonKey(name: MessagesTableCols.fkThreadId)
+  @JsonKey(name: StoriesTableCols.fkThreadId)
   final int? threadId;
-  @JsonKey(name: MessagesTableCols.createdTime)
+  @JsonKey(name: StoriesTableCols.createdTime)
   final DateTime createdTime;
-  @JsonKey(name: MessagesTableCols.starred)
+  @JsonKey(name: StoriesTableCols.starred)
   int starred;
 
   Message({
