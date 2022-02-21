@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -21,11 +22,23 @@ import 'package:provider/provider.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Load environment
   await dotenv.load();
+  // Create service locator(get_it)
   setupServiceLocator();
+  // License
+  LicenseRegistry.addLicense(_licenseCollector);
+  // Orientations > Run app
   SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
   ]).then((_) => runApp(const MyApp()));
+}
+
+Stream<LicenseEntry> _licenseCollector() async* {
+  final license = await rootBundle.loadString(
+    'assets/google_fonts/RobotoMono-LICENSE.txt',
+  );
+  yield LicenseEntryWithLineBreaks(['google_fonts'], license);
 }
 
 class MyApp extends StatelessWidget {
