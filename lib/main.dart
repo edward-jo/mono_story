@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mono_story/services/service_locator.dart';
 import 'package:mono_story/ui/common/modal_page_route.dart';
@@ -22,7 +23,9 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
   setupServiceLocator();
-  runApp(const MyApp());
+  SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+    DeviceOrientation.portraitUp,
+  ]).then((_) => runApp(const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
