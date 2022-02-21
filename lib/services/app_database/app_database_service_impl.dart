@@ -29,8 +29,8 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
-  Future<String> getAppDatabasePath() async {
-    return _appDb.getAppDatabasePath();
+  Future<String> getAppDatabaseDirPath() async {
+    return _appDb.getAppDatabaseDirPath();
   }
 
   @override

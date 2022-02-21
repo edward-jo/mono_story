@@ -40,7 +40,7 @@ class MessageViewModel extends MessageViewModelBase {
   }
 
   Future<void> deleteBackupFile(String fileName) async {
-    final databaseDirPath = await dbService.getAppDatabasePath();
+    final databaseDirPath = await dbService.getAppDatabaseDirPath();
     var backupFilePath = join(databaseDirPath, fileName);
 
     // Download a backup file and delete it.
