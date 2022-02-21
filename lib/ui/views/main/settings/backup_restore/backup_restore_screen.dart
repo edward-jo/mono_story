@@ -476,13 +476,23 @@ class _BackUpNowListTile extends StatelessWidget {
             ),
           ),
           onTap: () async {
-            if (wifiRequired) {
-              var result = await Connectivity().checkConnectivity();
-              if (result != ConnectivityResult.wifi) {
+            var result = await Connectivity().checkConnectivity();
+            if (wifiRequired && result != ConnectivityResult.wifi) {
+              await MonoAlertDialog().show(
+                context: context,
+                title: const Text('Not Connected to Wi-Fi'),
+                content: const Text('You are not connected to Wi-Fi'),
+                cancel: const Text('Close'),
+                onCancelPressed: () => Navigator.of(context).pop(),
+              );
+              return;
+            } else {
+              if (result != ConnectivityResult.mobile &&
+                  result != ConnectivityResult.wifi) {
                 await MonoAlertDialog().show(
                   context: context,
-                  title: const Text('Not Connected to Wi-Fi'),
-                  content: const Text('You are not connected to Wi-Fi'),
+                  title: const Text('Not Connected to Internet'),
+                  content: const Text('You are not connected to internet'),
                   cancel: const Text('Close'),
                   onCancelPressed: () => Navigator.of(context).pop(),
                 );
@@ -550,13 +560,23 @@ class _RestoreListTile extends StatelessWidget {
             ),
           ),
           onTap: () async {
-            if (wifiRequired) {
-              var result = await Connectivity().checkConnectivity();
-              if (result != ConnectivityResult.wifi) {
+            var result = await Connectivity().checkConnectivity();
+            if (wifiRequired && result != ConnectivityResult.wifi) {
+              await MonoAlertDialog().show(
+                context: context,
+                title: const Text('Not Connected to Wi-Fi'),
+                content: const Text('You are not connected to Wi-Fi'),
+                cancel: const Text('Close'),
+                onCancelPressed: () => Navigator.of(context).pop(),
+              );
+              return;
+            } else {
+              if (result != ConnectivityResult.mobile &&
+                  result != ConnectivityResult.wifi) {
                 await MonoAlertDialog().show(
                   context: context,
-                  title: const Text('Not Connected to Wi-Fi'),
-                  content: const Text('You are not connected to Wi-Fi'),
+                  title: const Text('Not Connected to Internet'),
+                  content: const Text('You are not connected to internet'),
                   cancel: const Text('Close'),
                   onCancelPressed: () => Navigator.of(context).pop(),
                 );
