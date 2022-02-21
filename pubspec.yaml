@@ -78,6 +78,10 @@ flutter:
     - .env
     - assets/images/appbar_title_white.png
     - assets/images/appbar_title_blue.png
+    # Since these files in google_fonts are listed as assets, there is no need 
+    # to list them in the fonts section of the pubspec.yaml. Should include last
+    # '/' in the path.
+    - assets/google_fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
