@@ -163,7 +163,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       appDatabaseBackupFileNamePrefix.length,
     );
 
-    developer.log('>>> Last backup: $lastFilename');
+    developer.log('Last backup file: $lastFilename');
 
     if (availableList.length > 3) {
       // Delete unnecessary backup files
@@ -185,7 +185,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
 
   Future<void> _deleteBackupFiles(List<String> fileNames) async {
     for (String f in fileNames) {
-      developer.log('Delete old backup file( $f )');
+      developer.log('* Start to delete old backup file( $f )');
       await _messageVM.deleteBackupFile(f);
     }
   }
@@ -476,13 +476,23 @@ class _BackUpNowListTile extends StatelessWidget {
             ),
           ),
           onTap: () async {
-            if (wifiRequired) {
-              var result = await Connectivity().checkConnectivity();
-              if (result != ConnectivityResult.wifi) {
+            var result = await Connectivity().checkConnectivity();
+            if (wifiRequired && result != ConnectivityResult.wifi) {
+              await MonoAlertDialog().show(
+                context: context,
+                title: const Text('Not Connected to Wi-Fi'),
+                content: const Text('You are not connected to Wi-Fi'),
+                cancel: const Text('Close'),
+                onCancelPressed: () => Navigator.of(context).pop(),
+              );
+              return;
+            } else {
+              if (result != ConnectivityResult.mobile &&
+                  result != ConnectivityResult.wifi) {
                 await MonoAlertDialog().show(
                   context: context,
-                  title: const Text('Not Connected to Wi-Fi'),
-                  content: const Text('You are not connected to Wi-Fi'),
+                  title: const Text('Not Connected to Internet'),
+                  content: const Text('You are not connected to internet'),
                   cancel: const Text('Close'),
                   onCancelPressed: () => Navigator.of(context).pop(),
                 );
@@ -550,13 +560,23 @@ class _RestoreListTile extends StatelessWidget {
             ),
           ),
           onTap: () async {
-            if (wifiRequired) {
-              var result = await Connectivity().checkConnectivity();
-              if (result != ConnectivityResult.wifi) {
+            var result = await Connectivity().checkConnectivity();
+            if (wifiRequired && result != ConnectivityResult.wifi) {
+              await MonoAlertDialog().show(
+                context: context,
+                title: const Text('Not Connected to Wi-Fi'),
+                content: const Text('You are not connected to Wi-Fi'),
+                cancel: const Text('Close'),
+                onCancelPressed: () => Navigator.of(context).pop(),
+              );
+              return;
+            } else {
+              if (result != ConnectivityResult.mobile &&
+                  result != ConnectivityResult.wifi) {
                 await MonoAlertDialog().show(
                   context: context,
-                  title: const Text('Not Connected to Wi-Fi'),
-                  content: const Text('You are not connected to Wi-Fi'),
+                  title: const Text('Not Connected to Internet'),
+                  content: const Text('You are not connected to internet'),
                   cancel: const Text('Close'),
                   onCancelPressed: () => Navigator.of(context).pop(),
                 );

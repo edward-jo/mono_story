@@ -6,6 +6,7 @@ abstract class AppDatabaseService {
   Future closeAppDatabase();
   Future deleteAppDatabase();
   Future replaceAppDatabase();
+  Future<String> getAppDatabaseDirPath();
   Future<String> getAppDatabaseFilePath();
   Future<String> getAppDatabaseRestoreFilePath();
   //----------------------------------------------------------------------------

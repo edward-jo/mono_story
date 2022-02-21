@@ -152,7 +152,14 @@ class AppDatabase {
     var lastSeparator = path.lastIndexOf(Platform.pathSeparator);
     var newPath = path.substring(0, lastSeparator + 1) + appDatabaseFileName;
     restoreFile.renameSync(newPath);
+    developer.log(
+      'Renamed restore backup file( $restoreFilePath ) to\n $newPath',
+    );
     return;
+  }
+
+  Future<String> getAppDatabaseDirPath() async {
+    return getDatabasesPath();
   }
 
   Future<String> getRestoreFilePath() async {

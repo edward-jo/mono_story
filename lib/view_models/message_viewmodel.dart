@@ -5,6 +5,7 @@ import 'package:mono_story/constants.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
 import 'package:mono_story/services/service_locator.dart';
 import 'package:mono_story/view_models/message_viewmodel_base.dart';
+import 'package:path/path.dart';
 
 class MessageViewModel extends MessageViewModelBase {
   final _iStorageService = serviceLocator<IcloudStorageService>();
@@ -13,8 +14,41 @@ class MessageViewModel extends MessageViewModelBase {
     return await _iStorageService.listFiles();
   }
 
+  void _subscribeDownloadStream(Stream<double> stream, String fileName) {
+    stream.listen(
+      // onData
+      (event) {
+        developer.log('Downloading a file: $fileName, onData( $event )');
+      },
+      onError: (error) {
+        developer.log(
+          'Failed to download a file: $fileName',
+          error: 'onError: ${error.toString()}',
+        );
+      },
+      onDone: () async {
+        developer.log('Completed downloading a file: $fileName, onDone()');
+        developer.log('Start to delete a file: $fileName');
+        await _iStorageService.deleteFile(fileName).then((value) {
+          developer.log('Deleted a file: $fileName');
+        });
+      },
+      // the subscription is automatically canceled when the first error event
+      // is delivered.
+      cancelOnError: true,
+    );
+  }
+
   Future<void> deleteBackupFile(String fileName) async {
-    return await _iStorageService.deleteFile(fileName);
+    final databaseDirPath = await dbService.getAppDatabaseDirPath();
+    var backupFilePath = join(databaseDirPath, fileName);
+
+    // Download a backup file and delete it.
+    await _iStorageService.downloadFile(
+      fileName,
+      backupFilePath,
+      (stream) => _subscribeDownloadStream(stream, fileName),
+    );
   }
 
   Future<void> initMessageDatabase() async {

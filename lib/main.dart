@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mono_story/services/service_locator.dart';
 import 'package:mono_story/ui/common/modal_page_route.dart';
@@ -9,7 +11,7 @@ import 'package:mono_story/ui/theme/themes.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/main_screen.dart';
 import 'package:mono_story/ui/views/main/settings/about/about_screen.dart';
-import 'package:mono_story/ui/views/main/settings/backup/backup_restore_screen.dart';
+import 'package:mono_story/ui/views/main/settings/backup_restore/backup_restore_screen.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
 import 'package:mono_story/view_models/searched_message_viewmodel.dart';
 import 'package:mono_story/view_models/message_viewmodel.dart';
@@ -20,9 +22,23 @@ import 'package:provider/provider.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Load environment
   await dotenv.load();
+  // Create service locator(get_it)
   setupServiceLocator();
-  runApp(const MyApp());
+  // License
+  LicenseRegistry.addLicense(_licenseCollector);
+  // Orientations > Run app
+  SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+    DeviceOrientation.portraitUp,
+  ]).then((_) => runApp(const MyApp()));
+}
+
+Stream<LicenseEntry> _licenseCollector() async* {
+  final license = await rootBundle.loadString(
+    'assets/google_fonts/RobotoMono-LICENSE.txt',
+  );
+  yield LicenseEntryWithLineBreaks(['google_fonts'], license);
 }
 
 class MyApp extends StatelessWidget {
