@@ -163,7 +163,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       appDatabaseBackupFileNamePrefix.length,
     );
 
-    developer.log('>>> Last backup: $lastFilename');
+    developer.log('Last backup file: $lastFilename');
 
     if (availableList.length > 3) {
       // Delete unnecessary backup files
@@ -185,7 +185,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
 
   Future<void> _deleteBackupFiles(List<String> fileNames) async {
     for (String f in fileNames) {
-      developer.log('Delete old backup file( $f )');
+      developer.log('* Start to delete old backup file( $f )');
       await _messageVM.deleteBackupFile(f);
     }
   }

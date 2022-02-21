@@ -14,27 +14,41 @@ class MessageViewModel extends MessageViewModelBase {
     return await _iStorageService.listFiles();
   }
 
-  Future<void> deleteBackupFile(String fileName) async {
-    final databasePath = await dbService.getAppDatabasePath();
-
-    await _iStorageService.downloadFile(
-      fileName,
-      join(databasePath, fileName),
-      (stream) {
-        stream.listen(
-          (progress) =>
-              developer.log('--- Download File --- progress: $progress'),
-          onDone: () async {
-            developer.log('--- Download File --- done');
-            await _iStorageService.deleteFile(fileName);
-          },
-          onError: (err) => developer.log('--- Download File --- error: $err'),
-          cancelOnError: true,
+  void _subscribeDownloadStream(Stream<double> stream, String fileName) {
+    stream.listen(
+      // onData
+      (event) {
+        developer.log('Downloading a file: $fileName, onData( $event )');
+      },
+      onError: (error) {
+        developer.log(
+          'Failed to download a file: $fileName',
+          error: 'onError: ${error.toString()}',
         );
       },
+      onDone: () async {
+        developer.log('Completed downloading a file: $fileName, onDone()');
+        developer.log('Start to delete a file: $fileName');
+        await _iStorageService.deleteFile(fileName).then((value) {
+          developer.log('Deleted a file: $fileName');
+        });
+      },
+      // the subscription is automatically canceled when the first error event
+      // is delivered.
+      cancelOnError: true,
     );
+  }
 
-    // return await _iStorageService.deleteFile(fileName);
+  Future<void> deleteBackupFile(String fileName) async {
+    final databaseDirPath = await dbService.getAppDatabasePath();
+    var backupFilePath = join(databaseDirPath, fileName);
+
+    // Download a backup file and delete it.
+    await _iStorageService.downloadFile(
+      fileName,
+      backupFilePath,
+      (stream) => _subscribeDownloadStream(stream, fileName),
+    );
   }
 
   Future<void> initMessageDatabase() async {
