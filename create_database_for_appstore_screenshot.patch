@@ -1,0 +1,62 @@
+diff --git a/lib/database/app_database.dart b/lib/database/app_database.dart
+index 7e97279..e94e949 100644
+--- a/lib/database/app_database.dart
++++ b/lib/database/app_database.dart
+@@ -1,8 +1,9 @@
+ import 'dart:developer' as developer;
+-import 'dart:math';
+ import 'dart:io';
+ 
++import 'package:flutter/foundation.dart';
+ import 'package:mono_story/constants.dart';
++import 'package:mono_story/database/fake_records_appstore.dart';
+ import 'package:path/path.dart';
+ import 'package:sqflite/sqflite.dart';
+ 
+@@ -88,6 +89,8 @@ class AppDatabase {
+       await _database!.close();
+       _database = null;
+     }
++    await closeAppDatabase();
++    await deleteAppDatabase();
+     await _openAppDatabase();
+   }
+ 
+@@ -107,6 +110,11 @@ class AppDatabase {
+         _createTableThreadsV2(batch);
+         _createTableStoriesV2(batch);
+         await batch.commit();
++
++        // Fake records
++        if (kDebugMode || kReleaseMode) {
++          createFakeRecordsForAppStore(db);
++        }
+       },
+       onUpgrade: (db, oldVersion, newVersion) async {
+         if (oldVersion == 1) {
+diff --git a/lib/ui/views/main/settings/backup_restore/backup_restore_screen.dart b/lib/ui/views/main/settings/backup_restore/backup_restore_screen.dart
+index 01aca36..a62445e 100644
+--- a/lib/ui/views/main/settings/backup_restore/backup_restore_screen.dart
++++ b/lib/ui/views/main/settings/backup_restore/backup_restore_screen.dart
+@@ -43,7 +43,12 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
+     super.initState();
+     _messageVM = context.read<MessageViewModel>();
+     _settingsVM = context.read<SettingsViewModel>();
+-    _getLastBackupInfoFuture = _getLastBackupInfo();
++    _getLastBackupInfoFuture = Future.delayed(
++      Duration(seconds: 3),
++      () => const _BackupInfo(
++          backupDate: '10:47 AM, February 22', backupFileName: 'app.db'),
++    );
++    // _getLastBackupInfoFuture = _getLastBackupInfo();
+     _useCellularData = _settingsVM.settings.useCellularData ?? false;
+   }
+ 
+@@ -153,7 +158,6 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
+         .toList();
+ 
+     if (availableList.isEmpty) return const _BackupInfo();
+-    ;
+ 
+     availableList.sort((a, b) => a.compareTo(b));
+     availableList.forEach(developer.log);
