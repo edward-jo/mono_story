@@ -97,13 +97,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             builder: (context, snapshot) {
               // INDICATOR
               if (snapshot.connectionState != ConnectionState.done) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const <Widget>[
-                    ListTile(leading: PlatformIndicator()),
-                    MonoDivider(height: 1, color: Colors.black),
-                  ],
-                );
+                return const ListTile(leading: PlatformIndicator());
               }
               // MESSAGE FOR ERROR
               if (snapshot.hasError || !snapshot.hasData) {
@@ -153,7 +147,6 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
         .toList();
 
     if (availableList.isEmpty) return const _BackupInfo();
-    ;
 
     availableList.sort((a, b) => a.compareTo(b));
     availableList.forEach(developer.log);
