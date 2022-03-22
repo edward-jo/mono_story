@@ -41,12 +41,17 @@ class StarredMessageListViewItem extends StatelessWidget {
       }).toList();
 
       // Create RichText
-      messageWidget = RichText(
-        text: TextSpan(children: <TextSpan>[...textSpanWidgetList]),
+      messageWidget = SelectableText.rich(
+        TextSpan(children: <TextSpan>[...textSpanWidgetList]),
+        toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
       );
     } else {
       // Create Text
-      messageWidget = Text(message.message, style: textStyle);
+      messageWidget = SelectableText(
+        message.message,
+        toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
+        style: textStyle,
+      );
     }
 
     return Container(
