@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -43,6 +45,7 @@ class MessageListViewItem extends StatelessWidget {
       // Create RichText
       messageWidget = SelectableText.rich(
         TextSpan(children: <TextSpan>[...textSpanWidgetList]),
+        selectionHeightStyle: BoxHeightStyle.max,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
       );
     } else {
@@ -50,6 +53,7 @@ class MessageListViewItem extends StatelessWidget {
       messageWidget = SelectableText(
         message.message,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
+        selectionHeightStyle: BoxHeightStyle.max,
         style: textStyle,
       );
     }
