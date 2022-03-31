@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,7 +10,12 @@ import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class MessageListViewItem extends StatelessWidget {
+enum _MessageListViewItemMenu {
+  delete,
+  changeThread,
+}
+
+class MessageListViewItem extends StatefulWidget {
   const MessageListViewItem({
     Key? key,
     required this.message,
@@ -24,19 +30,27 @@ class MessageListViewItem extends StatelessWidget {
   final String? emphasis;
 
   @override
+  State<MessageListViewItem> createState() => _MessageListViewItemState();
+}
+
+class _MessageListViewItemState extends State<MessageListViewItem> {
+  @override
   Widget build(BuildContext context) {
     final threadVM = context.read<ThreadViewModel>();
     final threadName =
-        threadVM.findThreadData(id: message.threadId)?.name ?? 'undefined';
+        threadVM.findThreadData(id: widget.message.threadId)?.name ??
+            'undefined';
 
     Widget messageWidget;
     TextStyle? textStyle = Theme.of(context).textTheme.bodyText2;
-    if (emphasis != null && emphasis!.isNotEmpty) {
+    if (widget.emphasis != null && widget.emphasis!.isNotEmpty) {
       // Generate span list
-      final pattern = RegExp(emphasis!, caseSensitive: false, unicode: true);
-      var textSpanList = splitStringWithPattern(message.message, pattern);
+      final pattern =
+          RegExp(widget.emphasis!, caseSensitive: false, unicode: true);
+      var textSpanList =
+          splitStringWithPattern(widget.message.message, pattern);
       var textSpanWidgetList = textSpanList.map((e) {
-        final style = (e.toLowerCase() == emphasis!.toLowerCase())
+        final style = (e.toLowerCase() == widget.emphasis!.toLowerCase())
             ? textStyle?.copyWith(fontWeight: FontWeight.bold)
             : textStyle;
         return TextSpan(text: e, style: style);
@@ -51,7 +65,7 @@ class MessageListViewItem extends StatelessWidget {
     } else {
       // Create Text
       messageWidget = SelectableText(
-        message.message,
+        widget.message.message,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
         selectionHeightStyle: BoxHeightStyle.max,
         style: textStyle,
@@ -80,7 +94,7 @@ class MessageListViewItem extends StatelessWidget {
               // -- CREATED TIME --
               Expanded(
                 child: Text(
-                  genCreatedTimeInfo(message.createdTime),
+                  genCreatedTimeInfo(widget.message.createdTime),
                   overflow: TextOverflow.fade,
                   softWrap: false,
                   style: Theme.of(context)
@@ -92,22 +106,52 @@ class MessageListViewItem extends StatelessWidget {
               Row(
                 children: <Widget>[
                   // -- STARRED --
-                  StarIconButton(starred: message.starred, onPressed: onStar),
+                  StarIconButton(
+                      starred: widget.message.starred,
+                      onPressed: widget.onStar),
 
                   // -- DELETE BUTTON --
                   IconButton(
-                    onPressed: onDelete,
+                    onPressed: widget.onDelete,
                     icon: const Icon(Icons.delete_outline_rounded, size: 20.0),
                   ),
+
+                  // -- POPUP MENU BUTTON --
+                  PopupMenuButton(
+                      onSelected: _popupMenuButtonSelected,
+                      itemBuilder: (context) =>
+                          <PopupMenuItem<_MessageListViewItemMenu>>[
+                            const PopupMenuItem(
+                              child: Text('Delete'),
+                              value: _MessageListViewItemMenu.delete,
+                            ),
+                            const PopupMenuItem(
+                              child: Text('Change Thread'),
+                              value: _MessageListViewItemMenu.changeThread,
+                            ),
+                          ]),
                 ],
               ),
             ],
           ),
           // -- THREAD --
-          if (message.threadId != null) ThreadInfoWidget(label: threadName),
+          if (widget.message.threadId != null)
+            ThreadInfoWidget(label: threadName),
         ],
       ),
     );
+  }
+
+  void _popupMenuButtonSelected(_MessageListViewItemMenu value) {
+    switch (value) {
+      case _MessageListViewItemMenu.delete:
+        widget.onDelete();
+        break;
+      case _MessageListViewItemMenu.changeThread:
+        break;
+      default:
+        throw Exception('Invalid status');
+    }
   }
 
   /// createdTime: UTC time
