@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +24,7 @@ class MessageListViewItem extends StatefulWidget {
     this.emphasis,
   }) : super(key: key);
 
-  final Message message;
+  final Story message;
   final void Function() onStar;
   final void Function() onDelete;
   final String? emphasis;
@@ -47,8 +47,7 @@ class _MessageListViewItemState extends State<MessageListViewItem> {
       // Generate span list
       final pattern =
           RegExp(widget.emphasis!, caseSensitive: false, unicode: true);
-      var textSpanList =
-          splitStringWithPattern(widget.message.message, pattern);
+      var textSpanList = splitStringWithPattern(widget.message.story, pattern);
       var textSpanWidgetList = textSpanList.map((e) {
         final style = (e.toLowerCase() == widget.emphasis!.toLowerCase())
             ? textStyle?.copyWith(fontWeight: FontWeight.bold)
@@ -65,7 +64,7 @@ class _MessageListViewItemState extends State<MessageListViewItem> {
     } else {
       // Create Text
       messageWidget = SelectableText(
-        widget.message.message,
+        widget.message.story,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
         selectionHeightStyle: BoxHeightStyle.max,
         style: textStyle,

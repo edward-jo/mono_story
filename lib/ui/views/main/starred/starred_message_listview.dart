@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
@@ -79,7 +79,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
       );
     }
 
-    List<Message> starredList;
+    List<Story> starredList;
     starredList = context.watch<StarredMessageViewModel>().messages;
 
     if (starredList.isEmpty) {
@@ -119,7 +119,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   Widget _buildStarredListViewItem(
     int index,
     Animation<double> animation,
-    List<Message> list,
+    List<Story> list,
   ) {
     final item = list[index];
 
@@ -190,7 +190,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
   Widget _buildRemovedStarredItem(
     int index,
-    Message item,
+    Story item,
     Animation<double> animation,
   ) {
     return SizeTransition(

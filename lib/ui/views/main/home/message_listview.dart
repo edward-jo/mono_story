@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
@@ -102,7 +102,7 @@ class _MessageListViewState extends State<MessageListView> {
       );
     }
 
-    List<Message> messageList;
+    List<Story> messageList;
     messageList = context.watch<MessageViewModel>().messages;
 
     if (messageList.isEmpty) {
@@ -138,7 +138,7 @@ class _MessageListViewState extends State<MessageListView> {
   Widget _buildMessageListViewItem(
     int index,
     Animation<double> animation,
-    List<Message> list,
+    List<Story> list,
   ) {
     developer.log(
       '_buildMessageListViewItem( i: $index, len: ${list.length} )',
@@ -153,7 +153,7 @@ class _MessageListViewState extends State<MessageListView> {
           MessageListViewItem(
             message: item,
             onStar: () async {
-              Message? message = await _messageVM.starMessage(item.id!);
+              Story? message = await _messageVM.starMessage(item.id!);
               // When setting off the starred, if this story exists in the
               // StarredMessage ListView, then delete the story from that list.
               // If not exist(not loaded yet from DB), do nothing.
@@ -203,7 +203,7 @@ class _MessageListViewState extends State<MessageListView> {
 
   Widget _buildRemovedMessageItem(
     int index,
-    Message item,
+    Story item,
     Animation<double> animation,
   ) {
     return SizeTransition(
@@ -244,7 +244,7 @@ class _MessageListViewState extends State<MessageListView> {
     );
   }
 
-  Future<void> _refresh(List<Message> list) async {
+  Future<void> _refresh(List<Story> list) async {
     _messageVM.initMessages();
     _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
     setState(() {});

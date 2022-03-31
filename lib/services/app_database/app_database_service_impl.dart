@@ -1,6 +1,6 @@
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/database/app_database.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/services/app_database/app_database_service.dart';
 
@@ -48,13 +48,13 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   //----------------------------------------------------------------------------
 
   @override
-  Future<Message> createMessage(Message message) async {
+  Future<Story> createMessage(Story message) async {
     final db = _appDb.database;
     Map<String, dynamic> messageJson = message.toJson();
     final id = await db.insert(storiesTableNameV2, messageJson);
     messageJson[StoriesTableCols.id] = id;
 
-    return Message.fromJson(messageJson);
+    return Story.fromJson(messageJson);
   }
 
   @override
@@ -69,7 +69,7 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
-  Future<Message> readMessage(int id) async {
+  Future<Story> readMessage(int id) async {
     final db = _appDb.database;
     final messages = await db.query(
       storiesTableNameV2,
@@ -86,11 +86,11 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
 
     if (messages.isEmpty) throw Exception('Failed to find message id( $id )');
 
-    return Message.fromJson(messages.first);
+    return Story.fromJson(messages.first);
   }
 
   @override
-  Future<List<Message>> readThreadMessages(int threadId) async {
+  Future<List<Story>> readThreadMessages(int threadId) async {
     final db = _appDb.database;
     final messages = await db.query(
       storiesTableNameV2,
@@ -107,12 +107,12 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     );
 
     return messages.map((e) {
-      return Message.fromJson(e);
+      return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Message>> readThreadMessagesChunk(
+  Future<List<Story>> readThreadMessagesChunk(
     int threadId,
     int? offset,
     int? limit,
@@ -135,12 +135,12 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     );
 
     return messages.map((e) {
-      return Message.fromJson(e);
+      return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Message>> readAllMessages() async {
+  Future<List<Story>> readAllMessages() async {
     final db = _appDb.database;
     final messages = await db.query(
       storiesTableNameV2,
@@ -148,12 +148,12 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     );
 
     return messages.map((e) {
-      return Message.fromJson(e);
+      return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Message>> readAllMessagesChunk(int? offset, int? limit) async {
+  Future<List<Story>> readAllMessagesChunk(int? offset, int? limit) async {
     final db = _appDb.database;
     final messages = await db.query(
       storiesTableNameV2,
@@ -163,12 +163,12 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     );
 
     return messages.map((e) {
-      return Message.fromJson(e);
+      return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Message>> searchAllMessagesChunk(
+  Future<List<Story>> searchAllMessagesChunk(
     int? offset,
     int? limit,
     String query,
@@ -191,12 +191,12 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     );
 
     return messages.map((e) {
-      return Message.fromJson(e);
+      return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Message>> searchAllStarredMessagesChunk(
+  Future<List<Story>> searchAllStarredMessagesChunk(
     int? offset,
     int? limit,
   ) async {
@@ -211,12 +211,12 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     );
 
     return messages.map((e) {
-      return Message.fromJson(e);
+      return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<int> updateMessage(Message message) async {
+  Future<int> updateMessage(Story message) async {
     final db = _appDb.database;
 
     return await db.update(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
@@ -90,7 +90,7 @@ class _MessageSearchResultListViewState
       );
     }
 
-    List<Message> searchResult;
+    List<Story> searchResult;
     searchResult = context.watch<SearchedMessageViewModel>().messages;
 
     if (searchResult.isEmpty) {
@@ -125,7 +125,7 @@ class _MessageSearchResultListViewState
   Widget _buildSearchedListViewItem(
     int index,
     Animation<double> animation,
-    List<Message> list,
+    List<Story> list,
   ) {
     final item = list[index];
 
@@ -138,7 +138,7 @@ class _MessageSearchResultListViewState
             emphasis: widget.query,
             message: item,
             onStar: () async {
-              Message? message = await _searchedVM.starMessage(item.id!);
+              Story? message = await _searchedVM.starMessage(item.id!);
               // When setting off the starred, if this story exists in the
               // StarredMessage list, then DELETE the story from the list. If
               // the story exists in Message list, then UPDATE its status.
@@ -195,7 +195,7 @@ class _MessageSearchResultListViewState
 
   Widget _buildRemovedSearchedItem(
     int index,
-    Message item,
+    Story item,
     Animation<double> animation,
   ) {
     return SizeTransition(
@@ -241,7 +241,7 @@ class _MessageSearchResultListViewState
     );
   }
 
-  Future<void> _refresh(List<Message> list) async {
+  Future<void> _refresh(List<Story> list) async {
     _searchedVM.initMessages();
     _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
     setState(() {});

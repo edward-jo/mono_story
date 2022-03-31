@@ -1,4 +1,4 @@
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/models/thread.dart';
 
 abstract class AppDatabaseService {
@@ -12,30 +12,30 @@ abstract class AppDatabaseService {
   //----------------------------------------------------------------------------
   // Message
   //----------------------------------------------------------------------------
-  Future<Message> createMessage(Message message);
+  Future<Story> createMessage(Story message);
   Future<int> deleteMessage(int id);
-  Future<Message> readMessage(int id);
-  Future<List<Message>> readThreadMessages(int threadId);
-  Future<List<Message>> readThreadMessagesChunk(
+  Future<Story> readMessage(int id);
+  Future<List<Story>> readThreadMessages(int threadId);
+  Future<List<Story>> readThreadMessagesChunk(
     int threadId,
     int? offset,
     int? limit,
   );
-  Future<List<Message>> readAllMessages();
-  Future<List<Message>> readAllMessagesChunk(
+  Future<List<Story>> readAllMessages();
+  Future<List<Story>> readAllMessagesChunk(
     int? offset,
     int? limit,
   );
-  Future<List<Message>> searchAllMessagesChunk(
+  Future<List<Story>> searchAllMessagesChunk(
     int? offset,
     int? limit,
     String query,
   );
-  Future<List<Message>> searchAllStarredMessagesChunk(
+  Future<List<Story>> searchAllStarredMessagesChunk(
     int? offset,
     int? limit,
   );
-  Future<int> updateMessage(Message message);
+  Future<int> updateMessage(Story message);
   //----------------------------------------------------------------------------
   // Thread
   //----------------------------------------------------------------------------

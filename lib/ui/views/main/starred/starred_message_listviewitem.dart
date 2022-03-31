@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +18,7 @@ class StarredMessageListViewItem extends StatelessWidget {
     this.emphasis,
   }) : super(key: key);
 
-  final Message message;
+  final Story message;
   final void Function() onStar;
   final void Function() onDelete;
   final String? emphasis;
@@ -34,7 +34,7 @@ class StarredMessageListViewItem extends StatelessWidget {
     if (emphasis != null && emphasis!.isNotEmpty) {
       // Generate span list
       final pattern = RegExp(emphasis!, caseSensitive: false, unicode: true);
-      var textSpanList = splitStringWithPattern(message.message, pattern);
+      var textSpanList = splitStringWithPattern(message.story, pattern);
       var textSpanWidgetList = textSpanList.map((e) {
         final style = (e.toLowerCase() == emphasis!.toLowerCase())
             ? textStyle?.copyWith(fontWeight: FontWeight.bold)
@@ -51,7 +51,7 @@ class StarredMessageListViewItem extends StatelessWidget {
     } else {
       // Create Text
       messageWidget = SelectableText(
-        message.message,
+        message.story,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
         selectionHeightStyle: BoxHeightStyle.max,
         style: textStyle,

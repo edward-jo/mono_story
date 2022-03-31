@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/message_listview.dart';
@@ -146,9 +146,9 @@ class HomeScreenState extends State<HomeScreen> {
     await Future.delayed(const Duration(milliseconds: 200));
 
     await _messageVM.save(
-      Message(
+      Story(
         id: null,
-        message: ret.message,
+        story: ret.message,
         threadId: ret.savedMessageThreadId,
         createdTime: DateTime.now().toUtc(),
         starred: 0,
