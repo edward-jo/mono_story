@@ -5,7 +5,7 @@ import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
-import 'package:mono_story/ui/views/main/starred/starred_message_listviewitem.dart';
+import 'package:mono_story/ui/views/main/starred/starred_story_listviewitem.dart';
 import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:provider/src/provider.dart';

@@ -107,9 +107,9 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     final threadVM = context.read<ThreadViewModel>();
     await threadVM.renameThread(thread.id!, newName);
 
-    final messageVM = context.read<StoryViewModel>();
-    messageVM.initStories();
-    await messageVM.readStoriesChunk(threadVM.currentThreadId);
+    final storyVM = context.read<StoryViewModel>();
+    storyVM.initStories();
+    await storyVM.readStoriesChunk(threadVM.currentThreadId);
 
     final starredVM = context.read<StarredStoryViewModel>();
     starredVM.initStories();
@@ -142,9 +142,9 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
       threadVM.setCurrentThreadId(null, notify: true);
     }
 
-    final messageVM = context.read<StoryViewModel>();
-    messageVM.initStories();
-    await messageVM.readStoriesChunk(threadVM.currentThreadId);
+    final storyVM = context.read<StoryViewModel>();
+    storyVM.initStories();
+    await storyVM.readStoriesChunk(threadVM.currentThreadId);
 
     final starredVM = context.read<StarredStoryViewModel>();
     starredVM.initStories();
