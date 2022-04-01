@@ -35,8 +35,8 @@ class ThreadViewModel extends ChangeNotifier {
     }
   }
 
-  void insertItem(int index, Thread message) {
-    _threads.insert(index, message);
+  void insertItem(int index, Thread story) {
+    _threads.insert(index, story);
     AnimatedListState? listCurrentState = listKey.currentState;
     listCurrentState?.insertItem(index);
   }
