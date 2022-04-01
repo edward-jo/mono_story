@@ -13,18 +13,18 @@ import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class NewMessageScreen extends StatefulWidget {
-  static const routeName = '/new_message';
-  const NewMessageScreen({Key? key}) : super(key: key);
+class NewStoryScreen extends StatefulWidget {
+  static const routeName = '/new_story';
+  const NewStoryScreen({Key? key}) : super(key: key);
 
   @override
-  _NewMessageScreenState createState() => _NewMessageScreenState();
+  _NewStoryScreenState createState() => _NewStoryScreenState();
 }
 
-class _NewMessageScreenState extends State<NewMessageScreen> {
-  final _newMessageController = TextEditingController();
+class _NewStoryScreenState extends State<NewStoryScreen> {
+  final _newStoryController = TextEditingController();
   late final ThreadViewModel _threadVM;
-  late final StoryViewModel _messageVM;
+  late final StoryViewModel _storyVM;
   Thread? _threadData;
   bool _initialized = false;
   bool _disableSaveButton = true;
@@ -33,7 +33,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _messageVM = context.read<StoryViewModel>();
+    _storyVM = context.read<StoryViewModel>();
   }
 
   @override
@@ -41,7 +41,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     super.didChangeDependencies();
     if (!_initialized) {
       final arguments = ModalRoute.of(context)!.settings.arguments
-          as NewMessageScreenArgument;
+          as NewStoryScreenArgument;
       int? threadId = arguments.threadId;
       if (threadId == null) {
         _threadData = null;
@@ -103,14 +103,14 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
 
               const Divider(),
 
-              // -- MESSAGE TEXT FIELD --
+              // -- STORY TEXT FIELD --
               Expanded(
                 child: TextField(
                   autofocus: true,
                   maxLines: null,
                   maxLength: storyMaxLength,
                   keyboardType: TextInputType.multiline,
-                  controller: _newMessageController,
+                  controller: _newStoryController,
                   onSubmitted: (_) => _save(context),
                   onChanged: (value) {
                     if (value.isEmpty) {
@@ -145,16 +145,16 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 
   Future _save(BuildContext context) async {
-    final String message = _newMessageController.text.trim();
+    final String story = _newStoryController.text.trim();
 
-    if (message.isEmpty) {
+    if (story.isEmpty) {
       return;
     }
 
-    final result = NewMessageScreenResult(
+    final result = NewStoryScreenResult(
       isSaved: true,
-      savedMessageThreadId: _threadData?.id,
-      message: message,
+      savedStoryThreadId: _threadData?.id,
+      story: story,
     );
 
     Navigator.of(context).pop(result);
@@ -212,19 +212,19 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   }
 }
 
-class NewMessageScreenArgument {
+class NewStoryScreenArgument {
   final int? threadId;
-  NewMessageScreenArgument(this.threadId);
+  NewStoryScreenArgument(this.threadId);
 }
 
-class NewMessageScreenResult {
-  final int? savedMessageThreadId;
+class NewStoryScreenResult {
+  final int? savedStoryThreadId;
   final bool isSaved;
-  final String message;
-  const NewMessageScreenResult({
-    this.savedMessageThreadId,
+  final String story;
+  const NewStoryScreenResult({
+    this.savedStoryThreadId,
     required this.isSaved,
-    required this.message,
+    required this.story,
   });
 }
 

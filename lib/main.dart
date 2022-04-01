@@ -8,7 +8,7 @@ import 'package:mono_story/ui/common/modal_page_route.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/theme/themes.dart';
-import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
+import 'package:mono_story/ui/views/main/home/new_story/new_story_screen.dart';
 import 'package:mono_story/ui/views/main/main_screen.dart';
 import 'package:mono_story/ui/views/main/settings/about/about_screen.dart';
 import 'package:mono_story/ui/views/main/settings/backup_restore/backup_restore_screen.dart';
@@ -114,10 +114,10 @@ class StartMyApp extends StatelessWidget {
       home: const MainScreen(),
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case NewMessageScreen.routeName:
+          case NewStoryScreen.routeName:
             return ModalPageRoute(
               settings: settings,
-              child: const NewMessageScreen(),
+              child: const NewStoryScreen(),
             );
           case ThreadSettingScreen.routeName:
             return MaterialPageRoute(
