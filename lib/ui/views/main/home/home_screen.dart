@@ -10,7 +10,7 @@ import 'package:mono_story/ui/views/main/home/message_listview.dart';
 import 'package:mono_story/ui/views/main/home/message_search_delegate.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 

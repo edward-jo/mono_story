@@ -12,9 +12,9 @@ import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_switch.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/utils/utils.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/settings_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -321,7 +321,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             //
             final messageVM = context.read<StoryViewModel>();
             final threadVM = context.read<ThreadViewModel>();
-            final starredVM = context.read<StarredMessageViewModel>();
+            final starredVM = context.read<StarredStoryViewModel>();
 
             await messageVM.applyRestoreStories();
             await messageVM.initStoryDatabase();

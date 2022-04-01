@@ -5,8 +5,8 @@ import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/rename_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_listviewitem.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -111,7 +111,7 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     messageVM.initStories();
     await messageVM.readStoriesChunk(threadVM.currentThreadId);
 
-    final starredVM = context.read<StarredMessageViewModel>();
+    final starredVM = context.read<StarredStoryViewModel>();
     starredVM.initStories();
     await starredVM.readStarredStoriesChunk();
   }
@@ -146,7 +146,7 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     messageVM.initStories();
     await messageVM.readStoriesChunk(threadVM.currentThreadId);
 
-    final starredVM = context.read<StarredMessageViewModel>();
+    final starredVM = context.read<StarredStoryViewModel>();
     starredVM.initStories();
     await starredVM.readStarredStoriesChunk();
   }

@@ -10,8 +10,8 @@ import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +32,7 @@ class MessageListView extends StatefulWidget {
 class _MessageListViewState extends State<MessageListView> {
   late ThreadViewModel _threadVM;
   late StoryViewModel _messageVM;
-  late StarredMessageViewModel _starredVM;
+  late StarredStoryViewModel _starredVM;
   late Future<void> _readMessagesFuture;
   late Future<void> _readThreadsFuture;
   late final ScrollController _scrollController;
@@ -43,7 +43,7 @@ class _MessageListViewState extends State<MessageListView> {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
     _messageVM = context.read<StoryViewModel>();
-    _starredVM = context.read<StarredMessageViewModel>();
+    _starredVM = context.read<StarredStoryViewModel>();
 
     _scrollController = widget.scrollController;
     _scrollController.addListener(_scrollListener);

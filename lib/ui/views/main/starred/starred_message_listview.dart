@@ -6,8 +6,8 @@ import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/starred/starred_message_listviewitem.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
 class StarredMessageListView extends StatefulWidget {
@@ -23,7 +23,7 @@ class StarredMessageListView extends StatefulWidget {
 }
 
 class _StarredMessageListViewState extends State<StarredMessageListView> {
-  late final StarredMessageViewModel _starredVM;
+  late final StarredStoryViewModel _starredVM;
   late final StoryViewModel _messageVM;
   late Future<int> _starredMessagesFuture;
   late final ScrollController _scrollController;
@@ -32,7 +32,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   @override
   void initState() {
     super.initState();
-    _starredVM = context.read<StarredMessageViewModel>();
+    _starredVM = context.read<StarredStoryViewModel>();
     _messageVM = context.read<StoryViewModel>();
     _starredVM.initStories();
     _starredMessagesFuture = _starredVM.readStarredStoriesChunk();
@@ -80,7 +80,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
     }
 
     List<Story> starredList;
-    starredList = context.watch<StarredMessageViewModel>().stories;
+    starredList = context.watch<StarredStoryViewModel>().stories;
 
     if (starredList.isEmpty) {
       return Center(

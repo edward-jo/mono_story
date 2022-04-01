@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
 import 'package:mono_story/services/service_locator.dart';
-import 'package:mono_story/view_models/message_viewmodel_base.dart';
+import 'package:mono_story/view_models/story_viewmodel_base.dart';
 import 'package:path/path.dart';
 
 class StoryViewModel extends StoryViewModelBase {

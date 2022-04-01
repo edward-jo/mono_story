@@ -7,9 +7,9 @@ import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:mono_story/view_models/searched_message_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
+import 'package:mono_story/view_models/searched_story_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
 class MessageSearchResultListView extends StatefulWidget {
@@ -27,9 +27,9 @@ class MessageSearchResultListView extends StatefulWidget {
 
 class _MessageSearchResultListViewState
     extends State<MessageSearchResultListView> {
-  late final SearchedMessageViewModel _searchedVM;
+  late final SearchedStoryViewModel _searchedVM;
   late final StoryViewModel _messageVM;
-  late final StarredMessageViewModel _starredVM;
+  late final StarredStoryViewModel _starredVM;
   late Future<int> _searchMessagesFuture;
   final _scrollController = ScrollController();
   late final dynamic _listKey;
@@ -37,9 +37,9 @@ class _MessageSearchResultListViewState
   @override
   void initState() {
     super.initState();
-    _searchedVM = context.read<SearchedMessageViewModel>();
+    _searchedVM = context.read<SearchedStoryViewModel>();
     _messageVM = context.read<StoryViewModel>();
-    _starredVM = context.read<StarredMessageViewModel>();
+    _starredVM = context.read<StarredStoryViewModel>();
     _searchedVM.initStories();
     _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
     _searchedVM.removedItemBuilder = _buildRemovedSearchedItem;
@@ -91,7 +91,7 @@ class _MessageSearchResultListViewState
     }
 
     List<Story> searchResult;
-    searchResult = context.watch<SearchedMessageViewModel>().stories;
+    searchResult = context.watch<SearchedStoryViewModel>().stories;
 
     if (searchResult.isEmpty) {
       return Center(
