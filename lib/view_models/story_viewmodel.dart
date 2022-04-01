@@ -4,10 +4,10 @@ import 'dart:developer' as developer;
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
 import 'package:mono_story/services/service_locator.dart';
-import 'package:mono_story/view_models/message_viewmodel_base.dart';
+import 'package:mono_story/view_models/story_viewmodel_base.dart';
 import 'package:path/path.dart';
 
-class MessageViewModel extends MessageViewModelBase {
+class StoryViewModel extends StoryViewModelBase {
   final _iStorageService = serviceLocator<IcloudStorageService>();
 
   Future<List<String>> listBackupFiles() async {
@@ -51,7 +51,7 @@ class MessageViewModel extends MessageViewModelBase {
     );
   }
 
-  Future<void> initMessageDatabase() async {
+  Future<void> initStoryDatabase() async {
     await dbService.init();
   }
 
@@ -59,7 +59,7 @@ class MessageViewModel extends MessageViewModelBase {
     return dbService.getAppDatabaseRestoreFilePath();
   }
 
-  Future<void> uploadMessages(
+  Future<void> uploadStories(
     void Function(Stream<double>) onProgress,
   ) async {
     final path = await dbService.getAppDatabaseFilePath();
@@ -72,7 +72,7 @@ class MessageViewModel extends MessageViewModelBase {
     );
   }
 
-  Future<void> downloadMessages(
+  Future<void> downloadStories(
     String fileName,
     String restoreFilePath,
     void Function(Stream<double>) onProgress,
@@ -84,17 +84,17 @@ class MessageViewModel extends MessageViewModelBase {
     );
   }
 
-  Future<void> applyRestoreMessages() async {
+  Future<void> applyRestoreStories() async {
     await dbService.closeAppDatabase();
     await dbService.deleteAppDatabase();
     await dbService.replaceAppDatabase();
   }
 
-  Future<void> deleteMessages() async {
+  Future<void> deleteStories() async {
     await dbService.closeAppDatabase();
     await dbService.deleteAppDatabase();
 
-    initMessages();
+    initStories();
     notifyListeners();
   }
 }

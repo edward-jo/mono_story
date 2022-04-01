@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
-import 'package:mono_story/ui/views/main/home/message_listview.dart';
-import 'package:mono_story/ui/views/main/home/message_search_delegate.dart';
-import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
+import 'package:mono_story/ui/views/main/home/story_listview.dart';
+import 'package:mono_story/ui/views/main/home/story_search_delegate.dart';
+import 'package:mono_story/ui/views/main/home/new_story/new_story_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   late ThreadViewModel _threadVM;
-  late MessageViewModel _messageVM;
+  late StoryViewModel _storyVM;
 
   final scrollController = ScrollController();
 
@@ -31,7 +31,7 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _messageVM = context.read<MessageViewModel>();
+    _storyVM = context.read<StoryViewModel>();
   }
 
   @override
@@ -59,7 +59,7 @@ class HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              showSearch(context: context, delegate: MessageSearchDelegate());
+              showSearch(context: context, delegate: StorySearchDelegate());
             },
           ),
         ],
@@ -68,7 +68,7 @@ class HomeScreenState extends State<HomeScreen> {
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
-        builder: (_, id, __) => MessageListView(
+        builder: (_, id, __) => StoryListView(
           threadId: id,
           scrollController: scrollController,
         ),
@@ -76,7 +76,7 @@ class HomeScreenState extends State<HomeScreen> {
 
       // FLOATING BUTTON
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _pushNewMessageScreen(context),
+        onPressed: () => _pushNewStoryScreen(context),
         child: const Icon(Icons.add),
         tooltip: 'Create new story',
       ),
@@ -130,40 +130,40 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _pushNewMessageScreen(BuildContext context) async {
+  void _pushNewStoryScreen(BuildContext context) async {
     var ret = await Navigator.of(context).pushNamed(
-      NewMessageScreen.routeName,
-      arguments: NewMessageScreenArgument(_threadVM.currentThreadId),
+      NewStoryScreen.routeName,
+      arguments: NewStoryScreenArgument(_threadVM.currentThreadId),
     );
 
-    ret = ret as NewMessageScreenResult?;
+    ret = ret as NewStoryScreenResult?;
 
     if (ret == null) return;
 
-    // XXX: Animation does not work after removing all items. During NewMessage
+    // XXX: Animation does not work after removing all items. During NewStory
     // Screen disappears, Flutter already draws the saved item on the Animated-
     // List. So, in order to show the animation, need this delay time.
     await Future.delayed(const Duration(milliseconds: 200));
 
-    await _messageVM.save(
-      Message(
+    await _storyVM.save(
+      Story(
         id: null,
-        message: ret.message,
-        threadId: ret.savedMessageThreadId,
+        story: ret.story,
+        threadId: ret.savedStoryThreadId,
         createdTime: DateTime.now().toUtc(),
         starred: 0,
       ),
       insertAfterSaving: (_threadVM.currentThreadId == null ||
-          _threadVM.currentThreadId == ret.savedMessageThreadId),
+          _threadVM.currentThreadId == ret.savedStoryThreadId),
       // If list is empty, need to rebuild home screen since AnimatedList was
       // not created. So if not rebuild, the inserted story will not show on the
       // screen.
-      notify: _messageVM.messages.isEmpty,
+      notify: _storyVM.stories.isEmpty,
     );
   }
 
   void scrollToTop() {
-    if (_messageVM.messages.isEmpty) return;
+    if (_storyVM.stories.isEmpty) return;
 
     scrollController.animateTo(
       0.0,

@@ -3,10 +3,10 @@ import 'package:mono_story/services/app_database/app_database_service.dart';
 import 'package:mono_story/services/app_database/app_database_service_impl.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service.dart';
 import 'package:mono_story/services/icloud_storage/icloud_storage_service_impl.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:mono_story/view_models/searched_message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
+import 'package:mono_story/view_models/searched_story_viewmodel.dart';
 import 'package:mono_story/view_models/settings_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 
 GetIt serviceLocator = GetIt.instance;
@@ -23,16 +23,16 @@ void setupServiceLocator() {
   //
   // View Model
   //
-  serviceLocator.registerSingletonWithDependencies<MessageViewModel>(
-    () => MessageViewModel(),
+  serviceLocator.registerSingletonWithDependencies<StoryViewModel>(
+    () => StoryViewModel(),
     dependsOn: [AppDatabaseService, IcloudStorageService],
   );
-  serviceLocator.registerSingletonWithDependencies<SearchedMessageViewModel>(
-    () => SearchedMessageViewModel(),
+  serviceLocator.registerSingletonWithDependencies<SearchedStoryViewModel>(
+    () => SearchedStoryViewModel(),
     dependsOn: [AppDatabaseService],
   );
-  serviceLocator.registerSingletonWithDependencies<StarredMessageViewModel>(
-    () => StarredMessageViewModel(),
+  serviceLocator.registerSingletonWithDependencies<StarredStoryViewModel>(
+    () => StarredStoryViewModel(),
     dependsOn: [AppDatabaseService],
   );
   serviceLocator.registerSingletonWithDependencies<ThreadViewModel>(

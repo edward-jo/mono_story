@@ -5,8 +5,8 @@ import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/rename_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_listviewitem.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -107,13 +107,13 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
     final threadVM = context.read<ThreadViewModel>();
     await threadVM.renameThread(thread.id!, newName);
 
-    final messageVM = context.read<MessageViewModel>();
-    messageVM.initMessages();
-    await messageVM.readMessagesChunk(threadVM.currentThreadId);
+    final storyVM = context.read<StoryViewModel>();
+    storyVM.initStories();
+    await storyVM.readStoriesChunk(threadVM.currentThreadId);
 
-    final starredVM = context.read<StarredMessageViewModel>();
-    starredVM.initMessages();
-    await starredVM.readStarredMessagesChunk();
+    final starredVM = context.read<StarredStoryViewModel>();
+    starredVM.initStories();
+    await starredVM.readStarredStoriesChunk();
   }
 
   Future<bool?> _showDeleteThreadAlertDialog(
@@ -142,12 +142,12 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
       threadVM.setCurrentThreadId(null, notify: true);
     }
 
-    final messageVM = context.read<MessageViewModel>();
-    messageVM.initMessages();
-    await messageVM.readMessagesChunk(threadVM.currentThreadId);
+    final storyVM = context.read<StoryViewModel>();
+    storyVM.initStories();
+    await storyVM.readStoriesChunk(threadVM.currentThreadId);
 
-    final starredVM = context.read<StarredMessageViewModel>();
-    starredVM.initMessages();
-    await starredVM.readStarredMessagesChunk();
+    final starredVM = context.read<StarredStoryViewModel>();
+    starredVM.initStories();
+    await starredVM.readStarredStoriesChunk();
   }
 }

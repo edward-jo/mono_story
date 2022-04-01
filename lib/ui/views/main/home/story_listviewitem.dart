@@ -1,57 +1,70 @@
 import 'dart:ui';
+import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class StarredMessageListViewItem extends StatelessWidget {
-  const StarredMessageListViewItem({
+enum _StoryListViewItemMenu {
+  delete,
+  changeThread,
+}
+
+class StoryListViewItem extends StatefulWidget {
+  const StoryListViewItem({
     Key? key,
-    required this.message,
+    required this.story,
     required this.onDelete,
     required this.onStar,
     this.emphasis,
   }) : super(key: key);
 
-  final Message message;
+  final Story story;
   final void Function() onStar;
   final void Function() onDelete;
   final String? emphasis;
 
   @override
+  State<StoryListViewItem> createState() => _StoryListViewItemState();
+}
+
+class _StoryListViewItemState extends State<StoryListViewItem> {
+  @override
   Widget build(BuildContext context) {
     final threadVM = context.read<ThreadViewModel>();
     final threadName =
-        threadVM.findThreadData(id: message.threadId)?.name ?? 'undefined';
+        threadVM.findThreadData(id: widget.story.threadId)?.name ??
+            'undefined';
 
-    Widget messageWidget;
+    Widget storyWidget;
     TextStyle? textStyle = Theme.of(context).textTheme.bodyText2;
-    if (emphasis != null && emphasis!.isNotEmpty) {
+    if (widget.emphasis != null && widget.emphasis!.isNotEmpty) {
       // Generate span list
-      final pattern = RegExp(emphasis!, caseSensitive: false, unicode: true);
-      var textSpanList = splitStringWithPattern(message.message, pattern);
+      final pattern =
+          RegExp(widget.emphasis!, caseSensitive: false, unicode: true);
+      var textSpanList = splitStringWithPattern(widget.story.story, pattern);
       var textSpanWidgetList = textSpanList.map((e) {
-        final style = (e.toLowerCase() == emphasis!.toLowerCase())
+        final style = (e.toLowerCase() == widget.emphasis!.toLowerCase())
             ? textStyle?.copyWith(fontWeight: FontWeight.bold)
             : textStyle;
         return TextSpan(text: e, style: style);
       }).toList();
 
       // Create RichText
-      messageWidget = SelectableText.rich(
+      storyWidget = SelectableText.rich(
         TextSpan(children: <TextSpan>[...textSpanWidgetList]),
         selectionHeightStyle: BoxHeightStyle.max,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
       );
     } else {
       // Create Text
-      messageWidget = SelectableText(
-        message.message,
+      storyWidget = SelectableText(
+        widget.story.story,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
         selectionHeightStyle: BoxHeightStyle.max,
         style: textStyle,
@@ -59,23 +72,19 @@ class StarredMessageListViewItem extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // -- MESSAGE --
-          messageWidget,
+          // -- STORY --
+          storyWidget,
 
           // -- PADDING --
           const SizedBox(height: 10.0),
 
           //
-          // -- MESSAGE INFO --
+          // -- STORY INFO --
           //
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,7 +93,7 @@ class StarredMessageListViewItem extends StatelessWidget {
               // -- CREATED TIME --
               Expanded(
                 child: Text(
-                  genCreatedTimeInfo(message.createdTime),
+                  genCreatedTimeInfo(widget.story.createdTime),
                   overflow: TextOverflow.fade,
                   softWrap: false,
                   style: Theme.of(context)
@@ -96,22 +105,52 @@ class StarredMessageListViewItem extends StatelessWidget {
               Row(
                 children: <Widget>[
                   // -- STARRED --
-                  StarIconButton(starred: message.starred, onPressed: onStar),
+                  StarIconButton(
+                      starred: widget.story.starred,
+                      onPressed: widget.onStar),
 
                   // -- DELETE BUTTON --
                   IconButton(
-                    onPressed: onDelete,
+                    onPressed: widget.onDelete,
                     icon: const Icon(Icons.delete_outline_rounded, size: 20.0),
                   ),
+
+                  // -- POPUP MENU BUTTON --
+                  PopupMenuButton(
+                      onSelected: _popupMenuButtonSelected,
+                      itemBuilder: (context) =>
+                          <PopupMenuItem<_StoryListViewItemMenu>>[
+                            const PopupMenuItem(
+                              child: Text('Delete'),
+                              value: _StoryListViewItemMenu.delete,
+                            ),
+                            const PopupMenuItem(
+                              child: Text('Change Thread'),
+                              value: _StoryListViewItemMenu.changeThread,
+                            ),
+                          ]),
                 ],
               ),
             ],
           ),
           // -- THREAD --
-          if (message.threadId != null) ThreadInfoWidget(label: threadName),
+          if (widget.story.threadId != null)
+            ThreadInfoWidget(label: threadName),
         ],
       ),
     );
+  }
+
+  void _popupMenuButtonSelected(_StoryListViewItemMenu value) {
+    switch (value) {
+      case _StoryListViewItemMenu.delete:
+        widget.onDelete();
+        break;
+      case _StoryListViewItemMenu.changeThread:
+        break;
+      default:
+        throw Exception('Invalid status');
+    }
   }
 
   /// createdTime: UTC time

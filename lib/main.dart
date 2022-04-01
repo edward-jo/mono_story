@@ -8,15 +8,15 @@ import 'package:mono_story/ui/common/modal_page_route.dart';
 import 'package:mono_story/ui/common/platform_widget.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/theme/themes.dart';
-import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
+import 'package:mono_story/ui/views/main/home/new_story/new_story_screen.dart';
 import 'package:mono_story/ui/views/main/main_screen.dart';
 import 'package:mono_story/ui/views/main/settings/about/about_screen.dart';
 import 'package:mono_story/ui/views/main/settings/backup_restore/backup_restore_screen.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_screen.dart';
-import 'package:mono_story/view_models/searched_message_viewmodel.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/searched_story_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/settings_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -79,13 +79,13 @@ class MyApp extends StatelessWidget {
         return MultiProvider(
           providers: [
             ChangeNotifierProvider.value(
-              value: serviceLocator<MessageViewModel>(),
+              value: serviceLocator<StoryViewModel>(),
             ),
             ChangeNotifierProvider.value(
-              value: serviceLocator<SearchedMessageViewModel>(),
+              value: serviceLocator<SearchedStoryViewModel>(),
             ),
             ChangeNotifierProvider.value(
-              value: serviceLocator<StarredMessageViewModel>(),
+              value: serviceLocator<StarredStoryViewModel>(),
             ),
             ChangeNotifierProvider.value(
               value: serviceLocator<ThreadViewModel>(),
@@ -114,10 +114,10 @@ class StartMyApp extends StatelessWidget {
       home: const MainScreen(),
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case NewMessageScreen.routeName:
+          case NewStoryScreen.routeName:
             return ModalPageRoute(
               settings: settings,
-              child: const NewMessageScreen(),
+              child: const NewStoryScreen(),
             );
           case ThreadSettingScreen.routeName:
             return MaterialPageRoute(

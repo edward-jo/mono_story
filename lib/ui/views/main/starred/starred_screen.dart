@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mono_story/ui/views/main/starred/starred_message_listview.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/ui/views/main/starred/starred_story_listview.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
 class StarredScreen extends StatefulWidget {
@@ -12,12 +12,12 @@ class StarredScreen extends StatefulWidget {
 
 class StarredScreenState extends State<StarredScreen> {
   final scrollController = ScrollController();
-  late final StarredMessageViewModel _starredVM;
+  late final StarredStoryViewModel _starredVM;
 
   @override
   void initState() {
     super.initState();
-    _starredVM = context.read<StarredMessageViewModel>();
+    _starredVM = context.read<StarredStoryViewModel>();
   }
 
   @override
@@ -35,7 +35,7 @@ class StarredScreenState extends State<StarredScreen> {
       ),
       body: Container(
         color: Colors.grey.shade200,
-        child: StarredMessageListView(
+        child: StarredStoryListView(
           scrollController: scrollController,
         ),
       ),
@@ -43,7 +43,7 @@ class StarredScreenState extends State<StarredScreen> {
   }
 
   void scrollToTop() {
-    if (_starredVM.messages.isEmpty) return;
+    if (_starredVM.stories.isEmpty) return;
 
     scrollController.animateTo(
       0.0,

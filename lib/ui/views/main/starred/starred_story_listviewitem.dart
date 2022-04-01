@@ -4,21 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class MessageListViewItem extends StatelessWidget {
-  const MessageListViewItem({
+class StarredStoryListViewItem extends StatelessWidget {
+  const StarredStoryListViewItem({
     Key? key,
-    required this.message,
+    required this.story,
     required this.onDelete,
     required this.onStar,
     this.emphasis,
   }) : super(key: key);
 
-  final Message message;
+  final Story story;
   final void Function() onStar;
   final void Function() onDelete;
   final String? emphasis;
@@ -27,14 +27,14 @@ class MessageListViewItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final threadVM = context.read<ThreadViewModel>();
     final threadName =
-        threadVM.findThreadData(id: message.threadId)?.name ?? 'undefined';
+        threadVM.findThreadData(id: story.threadId)?.name ?? 'undefined';
 
-    Widget messageWidget;
+    Widget storyWidget;
     TextStyle? textStyle = Theme.of(context).textTheme.bodyText2;
     if (emphasis != null && emphasis!.isNotEmpty) {
       // Generate span list
       final pattern = RegExp(emphasis!, caseSensitive: false, unicode: true);
-      var textSpanList = splitStringWithPattern(message.message, pattern);
+      var textSpanList = splitStringWithPattern(story.story, pattern);
       var textSpanWidgetList = textSpanList.map((e) {
         final style = (e.toLowerCase() == emphasis!.toLowerCase())
             ? textStyle?.copyWith(fontWeight: FontWeight.bold)
@@ -43,15 +43,15 @@ class MessageListViewItem extends StatelessWidget {
       }).toList();
 
       // Create RichText
-      messageWidget = SelectableText.rich(
+      storyWidget = SelectableText.rich(
         TextSpan(children: <TextSpan>[...textSpanWidgetList]),
         selectionHeightStyle: BoxHeightStyle.max,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
       );
     } else {
       // Create Text
-      messageWidget = SelectableText(
-        message.message,
+      storyWidget = SelectableText(
+        story.story,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
         selectionHeightStyle: BoxHeightStyle.max,
         style: textStyle,
@@ -59,19 +59,23 @@ class MessageListViewItem extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // -- MESSAGE --
-          messageWidget,
+          // -- STORY --
+          storyWidget,
 
           // -- PADDING --
           const SizedBox(height: 10.0),
 
           //
-          // -- MESSAGE INFO --
+          // -- STORY INFO --
           //
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,7 +84,7 @@ class MessageListViewItem extends StatelessWidget {
               // -- CREATED TIME --
               Expanded(
                 child: Text(
-                  genCreatedTimeInfo(message.createdTime),
+                  genCreatedTimeInfo(story.createdTime),
                   overflow: TextOverflow.fade,
                   softWrap: false,
                   style: Theme.of(context)
@@ -92,7 +96,7 @@ class MessageListViewItem extends StatelessWidget {
               Row(
                 children: <Widget>[
                   // -- STARRED --
-                  StarIconButton(starred: message.starred, onPressed: onStar),
+                  StarIconButton(starred: story.starred, onPressed: onStar),
 
                   // -- DELETE BUTTON --
                   IconButton(
@@ -104,7 +108,7 @@ class MessageListViewItem extends StatelessWidget {
             ],
           ),
           // -- THREAD --
-          if (message.threadId != null) ThreadInfoWidget(label: threadName),
+          if (story.threadId != null) ThreadInfoWidget(label: threadName),
         ],
       ),
     );
