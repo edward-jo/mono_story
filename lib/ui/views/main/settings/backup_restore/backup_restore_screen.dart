@@ -28,7 +28,7 @@ class BackupRestoreScreen extends StatefulWidget {
 }
 
 class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
-  late final StoryViewModel _messageVM;
+  late final StoryViewModel _storyVM;
   late final SettingsViewModel _settingsVM;
 
   late Future<_BackupInfo> _getLastBackupInfoFuture;
@@ -41,7 +41,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   @override
   void initState() {
     super.initState();
-    _messageVM = context.read<StoryViewModel>();
+    _storyVM = context.read<StoryViewModel>();
     _settingsVM = context.read<SettingsViewModel>();
     _getLastBackupInfoFuture = _getLastBackupInfo();
     _useCellularData = _settingsVM.settings.useCellularData ?? false;
@@ -137,7 +137,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   }
 
   Future<_BackupInfo> _getLastBackupInfo() async {
-    final backupList = await _messageVM.listBackupFiles();
+    final backupList = await _storyVM.listBackupFiles();
     if (backupList.isEmpty) return const _BackupInfo();
 
     final availableList = backupList
@@ -179,7 +179,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   Future<void> _deleteBackupFiles(List<String> fileNames) async {
     for (String f in fileNames) {
       developer.log('* Start to delete old backup file( $f )');
-      await _messageVM.deleteBackupFile(f);
+      await _storyVM.deleteBackupFile(f);
     }
   }
 
@@ -200,7 +200,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
     //
     try {
       developer.log('Start backup');
-      await _messageVM.uploadStories((stream) {
+      await _storyVM.uploadStories((stream) {
         _backupProgressSub = stream.listen(
           (progress) {
             // First progress is 100.0. Looks like it is bug of the package. So
@@ -288,10 +288,10 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
     // Start restore
     //
     try {
-      final restoreFilePath = await _messageVM.getRestoreFilePath();
+      final restoreFilePath = await _storyVM.getRestoreFilePath();
       developer.log('Start downloading $fileName to $restoreFilePath');
 
-      await _messageVM.downloadStories(fileName, restoreFilePath, (stream) {
+      await _storyVM.downloadStories(fileName, restoreFilePath, (stream) {
         _restoreProgressSub = stream.listen(
           (progress) {
             // First progress is 100.0. Looks like it is bug of the package. So
@@ -319,20 +319,20 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             //
             // Init Thread / Home / Starred list
             //
-            final messageVM = context.read<StoryViewModel>();
+            final storyVM = context.read<StoryViewModel>();
             final threadVM = context.read<ThreadViewModel>();
             final starredVM = context.read<StarredStoryViewModel>();
 
-            await messageVM.applyRestoreStories();
-            await messageVM.initStoryDatabase();
+            await storyVM.applyRestoreStories();
+            await storyVM.initStoryDatabase();
 
             threadVM.initThreads();
-            messageVM.initStories();
+            storyVM.initStories();
             starredVM.initStories();
             threadVM.setCurrentThreadId(null, notify: true);
 
             await threadVM.readThreadList();
-            await messageVM.readStoriesChunk(threadVM.currentThreadId);
+            await storyVM.readStoriesChunk(threadVM.currentThreadId);
             await starredVM.readStarredStoriesChunk();
 
             dialog.update(
@@ -352,7 +352,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       });
     } catch (e) {
       developer.log('_restore', error: e.toString());
-      // In case that downloadMessages throws error, dialog update below does not work.
+      // In case that downloadStories throws error, dialog update below does not work.
       await Future.delayed(const Duration(seconds: 1)); // TODO: refactor
       dialog.update(
         content: Text(e.toString()),
