@@ -7,7 +7,7 @@ import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/story_listview.dart';
-import 'package:mono_story/ui/views/main/home/message_search_delegate.dart';
+import 'package:mono_story/ui/views/main/home/story_search_delegate.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
 import 'package:mono_story/view_models/story_viewmodel.dart';
@@ -59,7 +59,7 @@ class HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              showSearch(context: context, delegate: MessageSearchDelegate());
+              showSearch(context: context, delegate: StorySearchDelegate());
             },
           ),
         ],

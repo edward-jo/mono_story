@@ -185,7 +185,7 @@ class _StoryListViewState extends State<StoryListView> {
               padding: EdgeInsets.symmetric(vertical: 5.0),
               child: PlatformIndicator(),
             )
-          // -- END STORY --
+          // -- END MESSAGE --
           else if (index == list.length - 1)
             Center(
               child: Padding(
