@@ -7,7 +7,7 @@ import 'package:mono_story/models/story.dart';
 import 'package:mono_story/services/app_database/app_database_service.dart';
 import 'package:mono_story/services/service_locator.dart';
 
-abstract class MessageViewModelBase extends ChangeNotifier {
+abstract class StoryViewModelBase extends ChangeNotifier {
   final dynamic listKey = Platform.isIOS
       ? GlobalKey<SliverAnimatedListState>()
       : GlobalKey<AnimatedListState>();
@@ -20,40 +20,40 @@ abstract class MessageViewModelBase extends ChangeNotifier {
 
   final _dbService = serviceLocator<AppDatabaseService>();
 
-  final List<Story> _messages = [];
-  final int _messageChunkLimit = 15;
+  final List<Story> _stories = [];
+  final int _storyChunkLimit = 15;
   bool _isLoading = false;
   bool hasNext = true;
 
   AppDatabaseService get dbService => _dbService;
-  List<Story> get messages => _messages;
+  List<Story> get stories => _stories;
   bool get isLoading => _isLoading;
 
-  void initMessages() {
+  void initStories() {
     clearAllItem();
     hasNext = true;
   }
 
   void clearAllItem() {
-    while (_messages.isNotEmpty) {
-      removeItem(_messages.length - 1);
+    while (_stories.isNotEmpty) {
+      removeItem(_stories.length - 1);
     }
   }
 
-  void insertItem(int index, Story message) {
-    _messages.insert(index, message);
+  void insertItem(int index, Story story) {
+    _stories.insert(index, story);
     dynamic listCurrentState = Platform.isIOS
         ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
         : (listKey as GlobalKey<AnimatedListState>).currentState;
     listCurrentState?.insertItem(index);
   }
 
-  void addItem(Story message) {
-    _messages.add(message);
+  void addItem(Story story) {
+    _stories.add(story);
     dynamic listCurrentState = Platform.isIOS
         ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
         : (listKey as GlobalKey<AnimatedListState>).currentState;
-    listCurrentState?.insertItem(messages.length - 1);
+    listCurrentState?.insertItem(stories.length - 1);
   }
 
   void insertAllItem(int index, List<Story> newList) {
@@ -63,7 +63,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }
 
   void removeItem(int index) {
-    Story removedItem = _messages.removeAt(index);
+    Story removedItem = _stories.removeAt(index);
     dynamic listCurrentState = Platform.isIOS
         ? (listKey as GlobalKey<SliverAnimatedListState>).currentState
         : (listKey as GlobalKey<AnimatedListState>).currentState;
@@ -73,11 +73,11 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }
 
   Future<int?> save(
-    Story message, {
+    Story story, {
     bool insertAfterSaving = false,
     bool notify = false,
   }) async {
-    Story msg = await _dbService.createStory(message);
+    Story msg = await _dbService.createStory(story);
     if (insertAfterSaving) {
       insertItem(0, msg);
       if (notify) notifyListeners();
@@ -86,7 +86,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return null;
   }
 
-  bool canLoadMessagesChunk() {
+  bool canLoadStoriesChunk() {
     if (_isLoading) {
       developer.log('Reading thread in progress');
       return false;
@@ -100,7 +100,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return true;
   }
 
-  Future<int> readMessagesChunk(int? threadId) async {
+  Future<int> readStoriesChunk(int? threadId) async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -108,19 +108,19 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     List<Story> stories;
     if (threadId == null) {
       stories = await _dbService.readAllStoriesChunk(
-          _messages.length, _messageChunkLimit);
+          _stories.length, _storyChunkLimit);
     } else {
       stories = await _dbService.readThreadStoriesChunk(
-          threadId, _messages.length, _messageChunkLimit);
+          threadId, _stories.length, _storyChunkLimit);
     }
 
-    // developer.log('Message List');
-    // for (Message m in stories) {
+    // developer.log('Story List');
+    // for (Story m in stories) {
     //   developer.log('id( ${m.id}: ' + m.toJson().toString());
     // }
 
-    hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    insertAllItem(_messages.length, stories);
+    hasNext = (stories.length < _storyChunkLimit) ? false : true;
+    insertAllItem(_stories.length, stories);
     _isLoading = false;
     notifyListeners();
 
@@ -135,25 +135,25 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     List<Story> stories;
 
     stories = await _dbService.searchAllStoriesChunk(
-      _messages.length,
-      _messageChunkLimit,
+      _stories.length,
+      _storyChunkLimit,
       query,
     );
 
-    // developer.log('Message List');
-    // for (Message m in stories) {
+    // developer.log('Story List');
+    // for (Story m in stories) {
     //   developer.log('id( ${m.id}: ' + m.toJson().toString());
     // }
 
-    hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    insertAllItem(_messages.length, stories);
+    hasNext = (stories.length < _storyChunkLimit) ? false : true;
+    insertAllItem(_stories.length, stories);
     _isLoading = false;
     notifyListeners();
 
     return stories.length;
   }
 
-  Future<int> readStarredMessagesChunk() async {
+  Future<int> readStarredStoriesChunk() async {
     _isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -161,17 +161,17 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     List<Story> stories;
 
     stories = await _dbService.searchAllStarredStoriesChunk(
-      _messages.length,
-      _messageChunkLimit,
+      _stories.length,
+      _storyChunkLimit,
     );
 
-    // developer.log('Message List');
-    // for (Message m in stories) {
+    // developer.log('Story List');
+    // for (Story m in stories) {
     //   developer.log('id( ${m.id}: ' + m.toJson().toString());
     // }
 
-    hasNext = (stories.length < _messageChunkLimit) ? false : true;
-    insertAllItem(_messages.length, stories);
+    hasNext = (stories.length < _storyChunkLimit) ? false : true;
+    insertAllItem(_stories.length, stories);
     _isLoading = false;
     notifyListeners();
 
@@ -179,85 +179,85 @@ abstract class MessageViewModelBase extends ChangeNotifier {
   }
 
   bool contains(int id) {
-    return (messages.indexWhere((e) => e.id == id) < 0) ? false : true;
+    return (stories.indexWhere((e) => e.id == id) < 0) ? false : true;
   }
 
-  Future<Story?> updateMessage(int id, {bool notify = false}) async {
-    int index = _messages.indexWhere((e) => e.id == id);
+  Future<Story?> updateStory(int id, {bool notify = false}) async {
+    int index = _stories.indexWhere((e) => e.id == id);
     if (index < 0) {
       return null;
     }
 
     try {
-      Story message = await _dbService.readStory(id);
-      // Since the list already has this message, should not update animated list state
-      _messages[index] = message;
+      Story story = await _dbService.readStory(id);
+      // Since the list already has this story, should not update animated list state
+      _stories[index] = story;
       if (notify) notifyListeners();
     } catch (e) {
       developer.log(
-        'readMessage:',
-        error: 'Failed to read message with id($id) error( ${e.toString()})',
+        'readStory:',
+        error: 'Failed to read story with id($id) error( ${e.toString()})',
       );
       return null;
     }
   }
 
-  Future<Story?> insertMessage(int id, {bool notify = false}) async {
+  Future<Story?> insertStory(int id, {bool notify = false}) async {
     try {
-      Story message = await _dbService.readStory(id);
-      if (_messages.isEmpty) {
-        insertItem(0, message);
+      Story story = await _dbService.readStory(id);
+      if (_stories.isEmpty) {
+        insertItem(0, story);
       } else {
-        int index = _messages.indexWhere((e) => e.id == id);
+        int index = _stories.indexWhere((e) => e.id == id);
         if (index < 0) {
-          // List does not have this message, find index to insert it.
-          index = _messages.indexWhere((e) {
-            return message.createdTime.isAfter(e.createdTime);
+          // List does not have this story, find index to insert it.
+          index = _stories.indexWhere((e) {
+            return story.createdTime.isAfter(e.createdTime);
           });
           if (index < 0) {
-            addItem(message);
+            addItem(story);
           } else {
-            insertItem(index, message);
+            insertItem(index, story);
           }
         } else {
-          // List has this message. update item in the list without updating animated list state.
-          _messages[index] = message;
+          // List has this story. update item in the list without updating animated list state.
+          _stories[index] = story;
         }
       }
       if (notify) notifyListeners();
-      return message;
+      return story;
     } catch (e) {
       developer.log(
-        'readMessage:',
-        error: 'Failed to read message with id($id) error( ${e.toString()})',
+        'readStory:',
+        error: 'Failed to read story with id($id) error( ${e.toString()})',
       );
       return null;
     }
   }
 
-  Future<Story?> deleteMessage(int id, {bool notify = false}) async {
+  Future<Story?> deleteStory(int id, {bool notify = false}) async {
     try {
-      final index = _messages.indexWhere((e) => e.id == id);
-      final message = _messages[index];
-      int affectedCount = await _dbService.deleteStory(message.id!);
+      final index = _stories.indexWhere((e) => e.id == id);
+      final story = _stories[index];
+      int affectedCount = await _dbService.deleteStory(story.id!);
       if (affectedCount != 1) {
-        developer.log('deleteMessage:', error: 'Failed to delete message');
+        developer.log('deleteStory:', error: 'Failed to delete story');
         return null;
       }
       removeItem(index);
       if (notify) notifyListeners();
-      return message;
+      return story;
     } catch (e) {
       developer.log(
         'Error:',
-        error: 'Failed to delete message with id($id) error( ${e.toString()})',
+        error: 'Failed to delete story with id($id) error( ${e.toString()})',
       );
       return null;
     }
   }
 
-  void deleteMessageFromList(int id, {bool notify = false}) {
-    final index = messages.indexWhere((e) => e.id == id);
+  void deleteStoryFromList(int id, {bool notify = false}) {
+    final index = stories.indexWhere((e) => e.id == id);
     if (index < 0) return;
 
     removeItem(index);
@@ -266,23 +266,23 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     return;
   }
 
-  Future<Story?> starMessage(int id) async {
+  Future<Story?> starStory(int id) async {
     try {
-      final index = _messages.indexWhere((e) => e.id == id);
-      final message = Story.fromJson(_messages[index].toJson());
-      message.starred = message.starred == 0 ? 1 : 0;
-      int affectedCount = await _dbService.updateStory(message);
+      final index = _stories.indexWhere((e) => e.id == id);
+      final story = Story.fromJson(_stories[index].toJson());
+      story.starred = story.starred == 0 ? 1 : 0;
+      int affectedCount = await _dbService.updateStory(story);
       if (affectedCount != 1) {
-        developer.log('Fail:', error: 'Failed to star message');
+        developer.log('Fail:', error: 'Failed to star story');
         return null;
       }
-      _messages[index] = message;
+      _stories[index] = story;
       notifyListeners();
-      return message;
+      return story;
     } catch (e) {
       developer.log(
         'Error:',
-        error: 'Failed to star message with id($id) error( ${e.toString()})',
+        error: 'Failed to star story with id($id) error( ${e.toString()})',
       );
       return null;
     }

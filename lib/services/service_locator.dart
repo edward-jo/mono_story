@@ -23,8 +23,8 @@ void setupServiceLocator() {
   //
   // View Model
   //
-  serviceLocator.registerSingletonWithDependencies<MessageViewModel>(
-    () => MessageViewModel(),
+  serviceLocator.registerSingletonWithDependencies<StoryViewModel>(
+    () => StoryViewModel(),
     dependsOn: [AppDatabaseService, IcloudStorageService],
   );
   serviceLocator.registerSingletonWithDependencies<SearchedMessageViewModel>(

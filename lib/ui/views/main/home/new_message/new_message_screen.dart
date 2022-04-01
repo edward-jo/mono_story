@@ -24,7 +24,7 @@ class NewMessageScreen extends StatefulWidget {
 class _NewMessageScreenState extends State<NewMessageScreen> {
   final _newMessageController = TextEditingController();
   late final ThreadViewModel _threadVM;
-  late final MessageViewModel _messageVM;
+  late final StoryViewModel _messageVM;
   Thread? _threadData;
   bool _initialized = false;
   bool _disableSaveButton = true;
@@ -33,7 +33,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _messageVM = context.read<MessageViewModel>();
+    _messageVM = context.read<StoryViewModel>();
   }
 
   @override

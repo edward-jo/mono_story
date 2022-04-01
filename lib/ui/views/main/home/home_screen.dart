@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   late ThreadViewModel _threadVM;
-  late MessageViewModel _messageVM;
+  late StoryViewModel _messageVM;
 
   final scrollController = ScrollController();
 
@@ -31,7 +31,7 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _messageVM = context.read<MessageViewModel>();
+    _messageVM = context.read<StoryViewModel>();
   }
 
   @override
@@ -158,12 +158,12 @@ class HomeScreenState extends State<HomeScreen> {
       // If list is empty, need to rebuild home screen since AnimatedList was
       // not created. So if not rebuild, the inserted story will not show on the
       // screen.
-      notify: _messageVM.messages.isEmpty,
+      notify: _messageVM.stories.isEmpty,
     );
   }
 
   void scrollToTop() {
-    if (_messageVM.messages.isEmpty) return;
+    if (_messageVM.stories.isEmpty) return;
 
     scrollController.animateTo(
       0.0,

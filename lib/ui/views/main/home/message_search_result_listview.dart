@@ -28,7 +28,7 @@ class MessageSearchResultListView extends StatefulWidget {
 class _MessageSearchResultListViewState
     extends State<MessageSearchResultListView> {
   late final SearchedMessageViewModel _searchedVM;
-  late final MessageViewModel _messageVM;
+  late final StoryViewModel _messageVM;
   late final StarredMessageViewModel _starredVM;
   late Future<int> _searchMessagesFuture;
   final _scrollController = ScrollController();
@@ -38,9 +38,9 @@ class _MessageSearchResultListViewState
   void initState() {
     super.initState();
     _searchedVM = context.read<SearchedMessageViewModel>();
-    _messageVM = context.read<MessageViewModel>();
+    _messageVM = context.read<StoryViewModel>();
     _starredVM = context.read<StarredMessageViewModel>();
-    _searchedVM.initMessages();
+    _searchedVM.initStories();
     _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
     _searchedVM.removedItemBuilder = _buildRemovedSearchedItem;
     _listKey = _searchedVM.listKey;
@@ -50,7 +50,7 @@ class _MessageSearchResultListViewState
   @override
   void didUpdateWidget(covariant MessageSearchResultListView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _searchedVM.initMessages();
+    _searchedVM.initStories();
     _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
   }
 
@@ -91,7 +91,7 @@ class _MessageSearchResultListViewState
     }
 
     List<Story> searchResult;
-    searchResult = context.watch<SearchedMessageViewModel>().messages;
+    searchResult = context.watch<SearchedMessageViewModel>().stories;
 
     if (searchResult.isEmpty) {
       return Center(
@@ -138,7 +138,7 @@ class _MessageSearchResultListViewState
             emphasis: widget.query,
             message: item,
             onStar: () async {
-              Story? message = await _searchedVM.starMessage(item.id!);
+              Story? message = await _searchedVM.starStory(item.id!);
               // When setting off the starred, if this story exists in the
               // StarredMessage list, then DELETE the story from the list. If
               // the story exists in Message list, then UPDATE its status.
@@ -146,26 +146,26 @@ class _MessageSearchResultListViewState
               // nothing.
               if (message?.starred == 0) {
                 if (_starredVM.contains(item.id!)) {
-                  _starredVM.deleteMessageFromList(item.id!, notify: true);
+                  _starredVM.deleteStoryFromList(item.id!, notify: true);
                 }
                 if (_messageVM.contains(item.id!)) {
-                  _messageVM.updateMessage(item.id!, notify: true);
+                  _messageVM.updateStory(item.id!, notify: true);
                 }
               }
             },
             onDelete: () async {
               bool? ret = await _showDeleteMessageAlertDialog(item.id!);
               if (ret != null && ret) {
-                final message = await _searchedVM.deleteMessage(item.id!);
+                final message = await _searchedVM.deleteStory(item.id!);
                 if (message != null) {
                   // Story is already deleted, so just delete the story from
                   // Message list and StarredMessage list if exists. If not
                   // exists, do nothing.
                   if (_messageVM.contains(item.id!)) {
-                    _messageVM.deleteMessageFromList(item.id!, notify: true);
+                    _messageVM.deleteStoryFromList(item.id!, notify: true);
                   }
                   if (_starredVM.contains(item.id!)) {
-                    _starredVM.deleteMessageFromList(item.id!, notify: true);
+                    _starredVM.deleteStoryFromList(item.id!, notify: true);
                   }
                 }
               }
@@ -221,7 +221,7 @@ class _MessageSearchResultListViewState
 
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_searchedVM.canLoadMessagesChunk()) {
+      if (_searchedVM.canLoadStoriesChunk()) {
         await _searchedVM.searchThreadChunk(widget.query);
       }
     }
@@ -242,7 +242,7 @@ class _MessageSearchResultListViewState
   }
 
   Future<void> _refresh(List<Story> list) async {
-    _searchedVM.initMessages();
+    _searchedVM.initStories();
     _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
     setState(() {});
   }

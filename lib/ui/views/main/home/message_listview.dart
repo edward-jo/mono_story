@@ -31,7 +31,7 @@ class MessageListView extends StatefulWidget {
 
 class _MessageListViewState extends State<MessageListView> {
   late ThreadViewModel _threadVM;
-  late MessageViewModel _messageVM;
+  late StoryViewModel _messageVM;
   late StarredMessageViewModel _starredVM;
   late Future<void> _readMessagesFuture;
   late Future<void> _readThreadsFuture;
@@ -42,14 +42,14 @@ class _MessageListViewState extends State<MessageListView> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _messageVM = context.read<MessageViewModel>();
+    _messageVM = context.read<StoryViewModel>();
     _starredVM = context.read<StarredMessageViewModel>();
 
     _scrollController = widget.scrollController;
     _scrollController.addListener(_scrollListener);
 
     _readThreadsFuture = _threadVM.readThreadList();
-    _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
+    _readMessagesFuture = _messageVM.readStoriesChunk(widget.threadId);
 
     _messageVM.removedItemBuilder = _buildRemovedMessageItem;
     _listKey = _messageVM.listKey;
@@ -59,8 +59,8 @@ class _MessageListViewState extends State<MessageListView> {
   void didUpdateWidget(covariant MessageListView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.threadId != widget.threadId) {
-      _messageVM.initMessages();
-      _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
+      _messageVM.initStories();
+      _readMessagesFuture = _messageVM.readStoriesChunk(widget.threadId);
       return;
     }
   }
@@ -103,7 +103,7 @@ class _MessageListViewState extends State<MessageListView> {
     }
 
     List<Story> messageList;
-    messageList = context.watch<MessageViewModel>().messages;
+    messageList = context.watch<StoryViewModel>().stories;
 
     if (messageList.isEmpty) {
       return Center(
@@ -153,13 +153,13 @@ class _MessageListViewState extends State<MessageListView> {
           MessageListViewItem(
             message: item,
             onStar: () async {
-              Story? message = await _messageVM.starMessage(item.id!);
+              Story? message = await _messageVM.starStory(item.id!);
               // When setting off the starred, if this story exists in the
               // StarredMessage ListView, then delete the story from that list.
               // If not exist(not loaded yet from DB), do nothing.
               if (message?.starred == 0) {
                 if (_starredVM.contains(item.id!)) {
-                  _starredVM.deleteMessageFromList(item.id!, notify: true);
+                  _starredVM.deleteStoryFromList(item.id!, notify: true);
                 }
               }
               // When setting on the starred, do nothing. User should refresh
@@ -169,11 +169,11 @@ class _MessageListViewState extends State<MessageListView> {
               // Show alert dialog to confirm again
               bool? ret = await _showDeleteMessageAlertDialog(item.id!);
               if (ret != null && ret) {
-                final message = await _messageVM.deleteMessage(item.id!);
+                final message = await _messageVM.deleteStory(item.id!);
                 if (message != null) {
                   // Remove item from Starred Messages if exists.
                   if (_starredVM.contains(item.id!)) {
-                    _starredVM.deleteMessageFromList(item.id!, notify: true);
+                    _starredVM.deleteStoryFromList(item.id!, notify: true);
                   }
                 }
               }
@@ -224,8 +224,8 @@ class _MessageListViewState extends State<MessageListView> {
 
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_messageVM.canLoadMessagesChunk()) {
-        await _messageVM.readMessagesChunk(widget.threadId);
+      if (_messageVM.canLoadStoriesChunk()) {
+        await _messageVM.readStoriesChunk(widget.threadId);
       }
     }
   }
@@ -245,8 +245,8 @@ class _MessageListViewState extends State<MessageListView> {
   }
 
   Future<void> _refresh(List<Story> list) async {
-    _messageVM.initMessages();
-    _readMessagesFuture = _messageVM.readMessagesChunk(widget.threadId);
+    _messageVM.initStories();
+    _readMessagesFuture = _messageVM.readStoriesChunk(widget.threadId);
     setState(() {});
   }
 }

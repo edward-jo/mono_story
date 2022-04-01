@@ -43,7 +43,7 @@ class StarredScreenState extends State<StarredScreen> {
   }
 
   void scrollToTop() {
-    if (_starredVM.messages.isEmpty) return;
+    if (_starredVM.stories.isEmpty) return;
 
     scrollController.animateTo(
       0.0,

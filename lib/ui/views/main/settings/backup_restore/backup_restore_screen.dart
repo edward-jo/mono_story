@@ -28,7 +28,7 @@ class BackupRestoreScreen extends StatefulWidget {
 }
 
 class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
-  late final MessageViewModel _messageVM;
+  late final StoryViewModel _messageVM;
   late final SettingsViewModel _settingsVM;
 
   late Future<_BackupInfo> _getLastBackupInfoFuture;
@@ -41,7 +41,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   @override
   void initState() {
     super.initState();
-    _messageVM = context.read<MessageViewModel>();
+    _messageVM = context.read<StoryViewModel>();
     _settingsVM = context.read<SettingsViewModel>();
     _getLastBackupInfoFuture = _getLastBackupInfo();
     _useCellularData = _settingsVM.settings.useCellularData ?? false;
@@ -200,7 +200,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
     //
     try {
       developer.log('Start backup');
-      await _messageVM.uploadMessages((stream) {
+      await _messageVM.uploadStories((stream) {
         _backupProgressSub = stream.listen(
           (progress) {
             // First progress is 100.0. Looks like it is bug of the package. So
@@ -291,7 +291,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       final restoreFilePath = await _messageVM.getRestoreFilePath();
       developer.log('Start downloading $fileName to $restoreFilePath');
 
-      await _messageVM.downloadMessages(fileName, restoreFilePath, (stream) {
+      await _messageVM.downloadStories(fileName, restoreFilePath, (stream) {
         _restoreProgressSub = stream.listen(
           (progress) {
             // First progress is 100.0. Looks like it is bug of the package. So
@@ -319,21 +319,21 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             //
             // Init Thread / Home / Starred list
             //
-            final messageVM = context.read<MessageViewModel>();
+            final messageVM = context.read<StoryViewModel>();
             final threadVM = context.read<ThreadViewModel>();
             final starredVM = context.read<StarredMessageViewModel>();
 
-            await messageVM.applyRestoreMessages();
-            await messageVM.initMessageDatabase();
+            await messageVM.applyRestoreStories();
+            await messageVM.initStoryDatabase();
 
             threadVM.initThreads();
-            messageVM.initMessages();
-            starredVM.initMessages();
+            messageVM.initStories();
+            starredVM.initStories();
             threadVM.setCurrentThreadId(null, notify: true);
 
             await threadVM.readThreadList();
-            await messageVM.readMessagesChunk(threadVM.currentThreadId);
-            await starredVM.readStarredMessagesChunk();
+            await messageVM.readStoriesChunk(threadVM.currentThreadId);
+            await starredVM.readStarredStoriesChunk();
 
             dialog.update(
               content: const Text('Completed'),

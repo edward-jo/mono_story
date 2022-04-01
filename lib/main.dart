@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
         return MultiProvider(
           providers: [
             ChangeNotifierProvider.value(
-              value: serviceLocator<MessageViewModel>(),
+              value: serviceLocator<StoryViewModel>(),
             ),
             ChangeNotifierProvider.value(
               value: serviceLocator<SearchedMessageViewModel>(),
