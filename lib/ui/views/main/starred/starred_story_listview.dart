@@ -10,8 +10,8 @@ import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
-class StarredMessageListView extends StatefulWidget {
-  const StarredMessageListView({
+class StarredStoryListView extends StatefulWidget {
+  const StarredStoryListView({
     Key? key,
     required this.scrollController,
   }) : super(key: key);
@@ -19,10 +19,10 @@ class StarredMessageListView extends StatefulWidget {
   final ScrollController scrollController;
 
   @override
-  State<StarredMessageListView> createState() => _StarredMessageListViewState();
+  State<StarredStoryListView> createState() => _StarredStoryListViewState();
 }
 
-class _StarredMessageListViewState extends State<StarredMessageListView> {
+class _StarredStoryListViewState extends State<StarredStoryListView> {
   late final StarredStoryViewModel _starredVM;
   late final StoryViewModel _messageVM;
   late Future<int> _starredMessagesFuture;
@@ -43,7 +43,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   }
 
   @override
-  void didUpdateWidget(covariant StarredMessageListView oldWidget) {
+  void didUpdateWidget(covariant StarredStoryListView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _starredVM.initStories();
     _starredMessagesFuture = _starredVM.readStarredStoriesChunk();
@@ -145,8 +145,8 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
               ),
             ),
 
-          StarredMessageListViewItem(
-            message: item,
+          StarredStoryListViewItem(
+            story: item,
             onStar: () async {
               await _starredVM.starStory(item.id!, notify: true);
               if (_messageVM.contains(item.id!)) {
@@ -197,8 +197,8 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          StarredMessageListViewItem(
-            message: item,
+          StarredStoryListViewItem(
+            story: item,
             onStar: () {},
             onDelete: () {},
           ),

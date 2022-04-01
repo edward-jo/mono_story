@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mono_story/ui/views/main/starred/starred_message_listview.dart';
+import 'package:mono_story/ui/views/main/starred/starred_story_listview.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
@@ -35,7 +35,7 @@ class StarredScreenState extends State<StarredScreen> {
       ),
       body: Container(
         color: Colors.grey.shade200,
-        child: StarredMessageListView(
+        child: StarredStoryListView(
           scrollController: scrollController,
         ),
       ),
