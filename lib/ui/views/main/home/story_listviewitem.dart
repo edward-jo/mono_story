@@ -10,44 +10,44 @@ import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-enum _MessageListViewItemMenu {
+enum _StoryListViewItemMenu {
   delete,
   changeThread,
 }
 
-class MessageListViewItem extends StatefulWidget {
-  const MessageListViewItem({
+class StoryListViewItem extends StatefulWidget {
+  const StoryListViewItem({
     Key? key,
-    required this.message,
+    required this.story,
     required this.onDelete,
     required this.onStar,
     this.emphasis,
   }) : super(key: key);
 
-  final Story message;
+  final Story story;
   final void Function() onStar;
   final void Function() onDelete;
   final String? emphasis;
 
   @override
-  State<MessageListViewItem> createState() => _MessageListViewItemState();
+  State<StoryListViewItem> createState() => _StoryListViewItemState();
 }
 
-class _MessageListViewItemState extends State<MessageListViewItem> {
+class _StoryListViewItemState extends State<StoryListViewItem> {
   @override
   Widget build(BuildContext context) {
     final threadVM = context.read<ThreadViewModel>();
     final threadName =
-        threadVM.findThreadData(id: widget.message.threadId)?.name ??
+        threadVM.findThreadData(id: widget.story.threadId)?.name ??
             'undefined';
 
-    Widget messageWidget;
+    Widget storyWidget;
     TextStyle? textStyle = Theme.of(context).textTheme.bodyText2;
     if (widget.emphasis != null && widget.emphasis!.isNotEmpty) {
       // Generate span list
       final pattern =
           RegExp(widget.emphasis!, caseSensitive: false, unicode: true);
-      var textSpanList = splitStringWithPattern(widget.message.story, pattern);
+      var textSpanList = splitStringWithPattern(widget.story.story, pattern);
       var textSpanWidgetList = textSpanList.map((e) {
         final style = (e.toLowerCase() == widget.emphasis!.toLowerCase())
             ? textStyle?.copyWith(fontWeight: FontWeight.bold)
@@ -56,15 +56,15 @@ class _MessageListViewItemState extends State<MessageListViewItem> {
       }).toList();
 
       // Create RichText
-      messageWidget = SelectableText.rich(
+      storyWidget = SelectableText.rich(
         TextSpan(children: <TextSpan>[...textSpanWidgetList]),
         selectionHeightStyle: BoxHeightStyle.max,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
       );
     } else {
       // Create Text
-      messageWidget = SelectableText(
-        widget.message.story,
+      storyWidget = SelectableText(
+        widget.story.story,
         toolbarOptions: const ToolbarOptions(copy: true, selectAll: true),
         selectionHeightStyle: BoxHeightStyle.max,
         style: textStyle,
@@ -77,14 +77,14 @@ class _MessageListViewItemState extends State<MessageListViewItem> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // -- MESSAGE --
-          messageWidget,
+          // -- STORY --
+          storyWidget,
 
           // -- PADDING --
           const SizedBox(height: 10.0),
 
           //
-          // -- MESSAGE INFO --
+          // -- STORY INFO --
           //
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,7 +93,7 @@ class _MessageListViewItemState extends State<MessageListViewItem> {
               // -- CREATED TIME --
               Expanded(
                 child: Text(
-                  genCreatedTimeInfo(widget.message.createdTime),
+                  genCreatedTimeInfo(widget.story.createdTime),
                   overflow: TextOverflow.fade,
                   softWrap: false,
                   style: Theme.of(context)
@@ -106,7 +106,7 @@ class _MessageListViewItemState extends State<MessageListViewItem> {
                 children: <Widget>[
                   // -- STARRED --
                   StarIconButton(
-                      starred: widget.message.starred,
+                      starred: widget.story.starred,
                       onPressed: widget.onStar),
 
                   // -- DELETE BUTTON --
@@ -119,14 +119,14 @@ class _MessageListViewItemState extends State<MessageListViewItem> {
                   PopupMenuButton(
                       onSelected: _popupMenuButtonSelected,
                       itemBuilder: (context) =>
-                          <PopupMenuItem<_MessageListViewItemMenu>>[
+                          <PopupMenuItem<_StoryListViewItemMenu>>[
                             const PopupMenuItem(
                               child: Text('Delete'),
-                              value: _MessageListViewItemMenu.delete,
+                              value: _StoryListViewItemMenu.delete,
                             ),
                             const PopupMenuItem(
                               child: Text('Change Thread'),
-                              value: _MessageListViewItemMenu.changeThread,
+                              value: _StoryListViewItemMenu.changeThread,
                             ),
                           ]),
                 ],
@@ -134,19 +134,19 @@ class _MessageListViewItemState extends State<MessageListViewItem> {
             ],
           ),
           // -- THREAD --
-          if (widget.message.threadId != null)
+          if (widget.story.threadId != null)
             ThreadInfoWidget(label: threadName),
         ],
       ),
     );
   }
 
-  void _popupMenuButtonSelected(_MessageListViewItemMenu value) {
+  void _popupMenuButtonSelected(_StoryListViewItemMenu value) {
     switch (value) {
-      case _MessageListViewItemMenu.delete:
+      case _StoryListViewItemMenu.delete:
         widget.onDelete();
         break;
-      case _MessageListViewItemMenu.changeThread:
+      case _StoryListViewItemMenu.changeThread:
         break;
       default:
         throw Exception('Invalid status');

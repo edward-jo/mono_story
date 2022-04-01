@@ -9,14 +9,14 @@ import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
-import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
+import 'package:mono_story/ui/views/main/home/story_listviewitem.dart';
 import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class MessageListView extends StatefulWidget {
-  const MessageListView({
+class StoryListView extends StatefulWidget {
+  const StoryListView({
     Key? key,
     required this.threadId,
     required this.scrollController,
@@ -26,14 +26,14 @@ class MessageListView extends StatefulWidget {
   final ScrollController scrollController;
 
   @override
-  State<MessageListView> createState() => _MessageListViewState();
+  State<StoryListView> createState() => _StoryListViewState();
 }
 
-class _MessageListViewState extends State<MessageListView> {
+class _StoryListViewState extends State<StoryListView> {
   late ThreadViewModel _threadVM;
-  late StoryViewModel _messageVM;
+  late StoryViewModel _storyVM;
   late StarredStoryViewModel _starredVM;
-  late Future<void> _readMessagesFuture;
+  late Future<void> _readStoriesFuture;
   late Future<void> _readThreadsFuture;
   late final ScrollController _scrollController;
   late final dynamic _listKey;
@@ -42,25 +42,25 @@ class _MessageListViewState extends State<MessageListView> {
   void initState() {
     super.initState();
     _threadVM = context.read<ThreadViewModel>();
-    _messageVM = context.read<StoryViewModel>();
+    _storyVM = context.read<StoryViewModel>();
     _starredVM = context.read<StarredStoryViewModel>();
 
     _scrollController = widget.scrollController;
     _scrollController.addListener(_scrollListener);
 
     _readThreadsFuture = _threadVM.readThreadList();
-    _readMessagesFuture = _messageVM.readStoriesChunk(widget.threadId);
+    _readStoriesFuture = _storyVM.readStoriesChunk(widget.threadId);
 
-    _messageVM.removedItemBuilder = _buildRemovedMessageItem;
-    _listKey = _messageVM.listKey;
+    _storyVM.removedItemBuilder = _buildRemovedStoryItem;
+    _listKey = _storyVM.listKey;
   }
 
   @override
-  void didUpdateWidget(covariant MessageListView oldWidget) {
+  void didUpdateWidget(covariant StoryListView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.threadId != widget.threadId) {
-      _messageVM.initStories();
-      _readMessagesFuture = _messageVM.readStoriesChunk(widget.threadId);
+      _storyVM.initStories();
+      _readStoriesFuture = _storyVM.readStoriesChunk(widget.threadId);
       return;
     }
   }
@@ -70,13 +70,13 @@ class _MessageListViewState extends State<MessageListView> {
     return FutureBuilder<dynamic>(
       future: Future.wait([
         _readThreadsFuture,
-        _readMessagesFuture,
+        _readStoriesFuture,
       ]),
-      builder: _messageListViewBuilder,
+      builder: _storyListViewBuilder,
     );
   }
 
-  Widget _messageListViewBuilder(
+  Widget _storyListViewBuilder(
     BuildContext context,
     AsyncSnapshot<dynamic> snapshot,
   ) {
@@ -98,14 +98,14 @@ class _MessageListViewState extends State<MessageListView> {
     var snapshot1 = snapshot.data[1] as int;
     if (snapshot0 == null || snapshot1 < 0) {
       return const StyledBuilderErrorWidget(
-        message: ErrorMessages.messageReadingFailure,
+        message: ErrorMessages.storyReadingFailure,
       );
     }
 
-    List<Story> messageList;
-    messageList = context.watch<StoryViewModel>().stories;
+    List<Story> storyList;
+    storyList = context.watch<StoryViewModel>().stories;
 
-    if (messageList.isEmpty) {
+    if (storyList.isEmpty) {
       return Center(
         child: Text(
           'You don\'t have any stories yet',
@@ -114,7 +114,7 @@ class _MessageListViewState extends State<MessageListView> {
       );
     }
 
-    // -- MESSAGE LIST --
+    // -- STORY LIST --
     return Column(
       children: [
         const SizedBox(height: 10.0),
@@ -123,11 +123,11 @@ class _MessageListViewState extends State<MessageListView> {
             child: PlatformRefreshIndicator(
               listKey: _listKey,
               controller: _scrollController,
-              itemCount: messageList.length,
+              itemCount: storyList.length,
               itemBuilder: (_, i, animation) {
-                return _buildMessageListViewItem(i, animation, messageList);
+                return _buildStoryListViewItem(i, animation, storyList);
               },
-              onRefresh: () => _refresh(messageList),
+              onRefresh: () => _refresh(storyList),
             ),
           ),
         ),
@@ -135,13 +135,13 @@ class _MessageListViewState extends State<MessageListView> {
     );
   }
 
-  Widget _buildMessageListViewItem(
+  Widget _buildStoryListViewItem(
     int index,
     Animation<double> animation,
     List<Story> list,
   ) {
     developer.log(
-      '_buildMessageListViewItem( i: $index, len: ${list.length} )',
+      '_buildStoryListViewItem( i: $index, len: ${list.length} )',
     );
     final item = list[index];
 
@@ -150,28 +150,28 @@ class _MessageListViewState extends State<MessageListView> {
       child: Column(
         children: <Widget>[
           if (index != 0) const MonoDivider(thickness: 7.0),
-          MessageListViewItem(
-            message: item,
+          StoryListViewItem(
+            story: item,
             onStar: () async {
-              Story? message = await _messageVM.starStory(item.id!);
+              Story? story = await _storyVM.starStory(item.id!);
               // When setting off the starred, if this story exists in the
-              // StarredMessage ListView, then delete the story from that list.
+              // StarredStory ListView, then delete the story from that list.
               // If not exist(not loaded yet from DB), do nothing.
-              if (message?.starred == 0) {
+              if (story?.starred == 0) {
                 if (_starredVM.contains(item.id!)) {
                   _starredVM.deleteStoryFromList(item.id!, notify: true);
                 }
               }
               // When setting on the starred, do nothing. User should refresh
-              // the StarredMessage ListView.
+              // the StarredStory ListView.
             },
             onDelete: () async {
               // Show alert dialog to confirm again
-              bool? ret = await _showDeleteMessageAlertDialog(item.id!);
+              bool? ret = await _showDeleteStoryAlertDialog(item.id!);
               if (ret != null && ret) {
-                final message = await _messageVM.deleteStory(item.id!);
-                if (message != null) {
-                  // Remove item from Starred Messages if exists.
+                final story = await _storyVM.deleteStory(item.id!);
+                if (story != null) {
+                  // Remove item from Starred Stories if exists.
                   if (_starredVM.contains(item.id!)) {
                     _starredVM.deleteStoryFromList(item.id!, notify: true);
                   }
@@ -180,12 +180,12 @@ class _MessageListViewState extends State<MessageListView> {
             },
           ),
           // -- LOADING INDICATOR --
-          if (index == list.length - 1 && _messageVM.hasNext)
+          if (index == list.length - 1 && _storyVM.hasNext)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 5.0),
               child: PlatformIndicator(),
             )
-          // -- END MESSAGE --
+          // -- END STORY --
           else if (index == list.length - 1)
             Center(
               child: Padding(
@@ -201,7 +201,7 @@ class _MessageListViewState extends State<MessageListView> {
     );
   }
 
-  Widget _buildRemovedMessageItem(
+  Widget _buildRemovedStoryItem(
     int index,
     Story item,
     Animation<double> animation,
@@ -211,7 +211,7 @@ class _MessageListViewState extends State<MessageListView> {
       child: Column(
         children: <Widget>[
           if (index != 0) const MonoDivider(),
-          MessageListViewItem(message: item, onStar: () {}, onDelete: () {}),
+          StoryListViewItem(story: item, onStar: () {}, onDelete: () {}),
         ],
       ),
     );
@@ -224,13 +224,13 @@ class _MessageListViewState extends State<MessageListView> {
 
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_messageVM.canLoadStoriesChunk()) {
-        await _messageVM.readStoriesChunk(widget.threadId);
+      if (_storyVM.canLoadStoriesChunk()) {
+        await _storyVM.readStoriesChunk(widget.threadId);
       }
     }
   }
 
-  Future<bool?> _showDeleteMessageAlertDialog(int? id) async {
+  Future<bool?> _showDeleteStoryAlertDialog(int? id) async {
     return await MonoAlertDialog().show<bool>(
       context: context,
       title: const Text('Delete Story'),
@@ -245,8 +245,8 @@ class _MessageListViewState extends State<MessageListView> {
   }
 
   Future<void> _refresh(List<Story> list) async {
-    _messageVM.initStories();
-    _readMessagesFuture = _messageVM.readStoriesChunk(widget.threadId);
+    _storyVM.initStories();
+    _readStoriesFuture = _storyVM.readStoriesChunk(widget.threadId);
     setState(() {});
   }
 }

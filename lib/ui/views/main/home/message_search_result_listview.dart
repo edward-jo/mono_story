@@ -6,7 +6,7 @@ import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
-import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
+import 'package:mono_story/ui/views/main/home/story_listviewitem.dart';
 import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/searched_story_viewmodel.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
@@ -86,7 +86,7 @@ class _MessageSearchResultListViewState
 
     if (snapshot.data as int < 0) {
       return const StyledBuilderErrorWidget(
-        message: ErrorMessages.messageReadingFailure,
+        message: ErrorMessages.storyReadingFailure,
       );
     }
 
@@ -134,9 +134,9 @@ class _MessageSearchResultListViewState
       child: Column(
         children: <Widget>[
           if (index != 0) const MonoDivider(),
-          MessageListViewItem(
+          StoryListViewItem(
             emphasis: widget.query,
-            message: item,
+            story: item,
             onStar: () async {
               Story? message = await _searchedVM.starStory(item.id!);
               // When setting off the starred, if this story exists in the
@@ -203,9 +203,9 @@ class _MessageSearchResultListViewState
       child: Column(
         children: <Widget>[
           if (index != 0) const MonoDivider(),
-          MessageListViewItem(
+          StoryListViewItem(
             emphasis: widget.query,
-            message: item,
+            story: item,
             onStar: () {},
             onDelete: () {},
           ),

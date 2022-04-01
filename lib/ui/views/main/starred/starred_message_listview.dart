@@ -75,7 +75,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
     if (snapshot.data as int < 0) {
       return const StyledBuilderErrorWidget(
-        message: ErrorMessages.messageReadingFailure,
+        message: ErrorMessages.storyReadingFailure,
       );
     }
 

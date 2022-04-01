@@ -6,7 +6,7 @@ import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
-import 'package:mono_story/ui/views/main/home/message_listview.dart';
+import 'package:mono_story/ui/views/main/home/story_listview.dart';
 import 'package:mono_story/ui/views/main/home/message_search_delegate.dart';
 import 'package:mono_story/ui/views/main/home/new_message/new_message_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
@@ -68,7 +68,7 @@ class HomeScreenState extends State<HomeScreen> {
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
-        builder: (_, id, __) => MessageListView(
+        builder: (_, id, __) => StoryListView(
           threadId: id,
           scrollController: scrollController,
         ),
