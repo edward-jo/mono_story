@@ -44,21 +44,21 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
     return _appDb.getRestoreFilePath();
   }
   //----------------------------------------------------------------------------
-  // Message
+  // Story
   //----------------------------------------------------------------------------
 
   @override
-  Future<Story> createMessage(Story message) async {
+  Future<Story> createStory(Story story) async {
     final db = _appDb.database;
-    Map<String, dynamic> messageJson = message.toJson();
-    final id = await db.insert(storiesTableNameV2, messageJson);
-    messageJson[StoriesTableCols.id] = id;
+    Map<String, dynamic> storyJson = story.toJson();
+    final id = await db.insert(storiesTableNameV2, storyJson);
+    storyJson[StoriesTableCols.id] = id;
 
-    return Story.fromJson(messageJson);
+    return Story.fromJson(storyJson);
   }
 
   @override
-  Future<int> deleteMessage(int id) async {
+  Future<int> deleteStory(int id) async {
     final db = _appDb.database;
 
     return await db.delete(
@@ -69,9 +69,9 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
   }
 
   @override
-  Future<Story> readMessage(int id) async {
+  Future<Story> readStory(int id) async {
     final db = _appDb.database;
-    final messages = await db.query(
+    final stories = await db.query(
       storiesTableNameV2,
       columns: [
         StoriesTableCols.id,
@@ -84,15 +84,15 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       whereArgs: [id],
     );
 
-    if (messages.isEmpty) throw Exception('Failed to find message id( $id )');
+    if (stories.isEmpty) throw Exception('Failed to find story id( $id )');
 
-    return Story.fromJson(messages.first);
+    return Story.fromJson(stories.first);
   }
 
   @override
-  Future<List<Story>> readThreadMessages(int threadId) async {
+  Future<List<Story>> readThreadStory(int threadId) async {
     final db = _appDb.database;
-    final messages = await db.query(
+    final stories = await db.query(
       storiesTableNameV2,
       columns: [
         StoriesTableCols.id,
@@ -106,19 +106,19 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
-    return messages.map((e) {
+    return stories.map((e) {
       return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Story>> readThreadMessagesChunk(
+  Future<List<Story>> readThreadStoriesChunk(
     int threadId,
     int? offset,
     int? limit,
   ) async {
     final db = _appDb.database;
-    final messages = await db.query(
+    final stories = await db.query(
       storiesTableNameV2,
       columns: [
         StoriesTableCols.id,
@@ -134,47 +134,47 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
-    return messages.map((e) {
+    return stories.map((e) {
       return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Story>> readAllMessages() async {
+  Future<List<Story>> readAllStories() async {
     final db = _appDb.database;
-    final messages = await db.query(
+    final stories = await db.query(
       storiesTableNameV2,
       orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
-    return messages.map((e) {
+    return stories.map((e) {
       return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Story>> readAllMessagesChunk(int? offset, int? limit) async {
+  Future<List<Story>> readAllStoriesChunk(int? offset, int? limit) async {
     final db = _appDb.database;
-    final messages = await db.query(
+    final stories = await db.query(
       storiesTableNameV2,
       offset: offset,
       limit: limit,
       orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
-    return messages.map((e) {
+    return stories.map((e) {
       return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Story>> searchAllMessagesChunk(
+  Future<List<Story>> searchAllStoriesChunk(
     int? offset,
     int? limit,
     String query,
   ) async {
     final db = _appDb.database;
-    final messages = await db.query(
+    final stories = await db.query(
       storiesTableNameV2,
       columns: [
         StoriesTableCols.id,
@@ -190,18 +190,18 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
-    return messages.map((e) {
+    return stories.map((e) {
       return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<List<Story>> searchAllStarredMessagesChunk(
+  Future<List<Story>> searchAllStarredStoriesChunk(
     int? offset,
     int? limit,
   ) async {
     final db = _appDb.database;
-    final messages = await db.query(
+    final stories = await db.query(
       storiesTableNameV2,
       where: '${StoriesTableCols.starred} = ?',
       whereArgs: [1],
@@ -210,20 +210,20 @@ class AppDatabaseServiceImpl extends AppDatabaseService {
       orderBy: '${StoriesTableCols.createdTime} DESC',
     );
 
-    return messages.map((e) {
+    return stories.map((e) {
       return Story.fromJson(e);
     }).toList();
   }
 
   @override
-  Future<int> updateMessage(Story message) async {
+  Future<int> updateStory(Story story) async {
     final db = _appDb.database;
 
     return await db.update(
       storiesTableNameV2,
-      message.toJson(),
+      story.toJson(),
       where: '${StoriesTableCols.id} = ?',
-      whereArgs: [message.id],
+      whereArgs: [story.id],
     );
   }
   //----------------------------------------------------------------------------

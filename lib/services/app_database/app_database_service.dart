@@ -10,32 +10,32 @@ abstract class AppDatabaseService {
   Future<String> getAppDatabaseFilePath();
   Future<String> getAppDatabaseRestoreFilePath();
   //----------------------------------------------------------------------------
-  // Message
+  // Story
   //----------------------------------------------------------------------------
-  Future<Story> createMessage(Story message);
-  Future<int> deleteMessage(int id);
-  Future<Story> readMessage(int id);
-  Future<List<Story>> readThreadMessages(int threadId);
-  Future<List<Story>> readThreadMessagesChunk(
+  Future<Story> createStory(Story story);
+  Future<int> deleteStory(int id);
+  Future<Story> readStory(int id);
+  Future<List<Story>> readThreadStory(int threadId);
+  Future<List<Story>> readThreadStoriesChunk(
     int threadId,
     int? offset,
     int? limit,
   );
-  Future<List<Story>> readAllMessages();
-  Future<List<Story>> readAllMessagesChunk(
+  Future<List<Story>> readAllStories();
+  Future<List<Story>> readAllStoriesChunk(
     int? offset,
     int? limit,
   );
-  Future<List<Story>> searchAllMessagesChunk(
+  Future<List<Story>> searchAllStoriesChunk(
     int? offset,
     int? limit,
     String query,
   );
-  Future<List<Story>> searchAllStarredMessagesChunk(
+  Future<List<Story>> searchAllStarredStoriesChunk(
     int? offset,
     int? limit,
   );
-  Future<int> updateMessage(Story message);
+  Future<int> updateStory(Story story);
   //----------------------------------------------------------------------------
   // Thread
   //----------------------------------------------------------------------------

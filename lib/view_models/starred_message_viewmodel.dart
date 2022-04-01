@@ -9,7 +9,7 @@ class StarredMessageViewModel extends MessageViewModelBase {
       final index = messages.indexWhere((e) => e.id == id);
       final message = Story.fromJson(messages[index].toJson());
       message.starred = message.starred == 0 ? 1 : 0;
-      int affectedCount = await dbService.updateMessage(message);
+      int affectedCount = await dbService.updateStory(message);
       if (affectedCount != 1) {
         developer.log('Fail:', error: 'Failed to star message');
         return null;

@@ -77,7 +77,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     bool insertAfterSaving = false,
     bool notify = false,
   }) async {
-    Story msg = await _dbService.createMessage(message);
+    Story msg = await _dbService.createStory(message);
     if (insertAfterSaving) {
       insertItem(0, msg);
       if (notify) notifyListeners();
@@ -107,10 +107,10 @@ abstract class MessageViewModelBase extends ChangeNotifier {
 
     List<Story> stories;
     if (threadId == null) {
-      stories = await _dbService.readAllMessagesChunk(
+      stories = await _dbService.readAllStoriesChunk(
           _messages.length, _messageChunkLimit);
     } else {
-      stories = await _dbService.readThreadMessagesChunk(
+      stories = await _dbService.readThreadStoriesChunk(
           threadId, _messages.length, _messageChunkLimit);
     }
 
@@ -134,7 +134,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
 
     List<Story> stories;
 
-    stories = await _dbService.searchAllMessagesChunk(
+    stories = await _dbService.searchAllStoriesChunk(
       _messages.length,
       _messageChunkLimit,
       query,
@@ -160,7 +160,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
 
     List<Story> stories;
 
-    stories = await _dbService.searchAllStarredMessagesChunk(
+    stories = await _dbService.searchAllStarredStoriesChunk(
       _messages.length,
       _messageChunkLimit,
     );
@@ -189,7 +189,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     }
 
     try {
-      Story message = await _dbService.readMessage(id);
+      Story message = await _dbService.readStory(id);
       // Since the list already has this message, should not update animated list state
       _messages[index] = message;
       if (notify) notifyListeners();
@@ -204,7 +204,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
 
   Future<Story?> insertMessage(int id, {bool notify = false}) async {
     try {
-      Story message = await _dbService.readMessage(id);
+      Story message = await _dbService.readStory(id);
       if (_messages.isEmpty) {
         insertItem(0, message);
       } else {
@@ -239,7 +239,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
     try {
       final index = _messages.indexWhere((e) => e.id == id);
       final message = _messages[index];
-      int affectedCount = await _dbService.deleteMessage(message.id!);
+      int affectedCount = await _dbService.deleteStory(message.id!);
       if (affectedCount != 1) {
         developer.log('deleteMessage:', error: 'Failed to delete message');
         return null;
@@ -271,7 +271,7 @@ abstract class MessageViewModelBase extends ChangeNotifier {
       final index = _messages.indexWhere((e) => e.id == id);
       final message = Story.fromJson(_messages[index].toJson());
       message.starred = message.starred == 0 ? 1 : 0;
-      int affectedCount = await _dbService.updateMessage(message);
+      int affectedCount = await _dbService.updateStory(message);
       if (affectedCount != 1) {
         developer.log('Fail:', error: 'Failed to star message');
         return null;
