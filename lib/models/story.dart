@@ -1,14 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mono_story/constants.dart';
 
-part 'message.g.dart';
+part 'story.g.dart';
 
 @JsonSerializable()
-class Message {
+class Story {
   @JsonKey(name: StoriesTableCols.id)
   final int? id;
   @JsonKey(name: StoriesTableCols.story)
-  final String message;
+  final String story;
   @JsonKey(name: StoriesTableCols.fkThreadId)
   final int? threadId;
   @JsonKey(name: StoriesTableCols.createdTime)
@@ -16,16 +16,15 @@ class Message {
   @JsonKey(name: StoriesTableCols.starred)
   int starred;
 
-  Message({
+  Story({
     this.id,
-    required this.message,
+    required this.story,
     required this.threadId,
     required this.createdTime,
     required this.starred,
   });
 
-  factory Message.fromJson(Map<String, dynamic> json) =>
-      _$MessageFromJson(json);
+  factory Story.fromJson(Map<String, dynamic> json) => _$StoryFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MessageToJson(this);
+  Map<String, dynamic> toJson() => _$StoryToJson(this);
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mono_story/ui/views/main/home/message_search_result_listview.dart';
+import 'package:mono_story/ui/views/main/home/story_search_result_listview.dart';
 
-class MessageSearchDelegate extends SearchDelegate<String?> {
-  MessageSearchDelegate() : super(searchFieldLabel: 'Search Story');
+class StorySearchDelegate extends SearchDelegate<String?> {
+  StorySearchDelegate() : super(searchFieldLabel: 'Search Story');
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -53,7 +53,7 @@ class MessageSearchDelegate extends SearchDelegate<String?> {
     if (query.isEmpty) {
       return const _SuggestionWidget();
     }
-    return MessageSearchResultListView(query: query.trim());
+    return StorySearchResultListView(query: query.trim());
   }
 
   @override

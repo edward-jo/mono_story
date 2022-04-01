@@ -12,9 +12,9 @@ import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_switch.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/utils/utils.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/settings_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +28,7 @@ class BackupRestoreScreen extends StatefulWidget {
 }
 
 class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
-  late final MessageViewModel _messageVM;
+  late final StoryViewModel _storyVM;
   late final SettingsViewModel _settingsVM;
 
   late Future<_BackupInfo> _getLastBackupInfoFuture;
@@ -41,7 +41,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   @override
   void initState() {
     super.initState();
-    _messageVM = context.read<MessageViewModel>();
+    _storyVM = context.read<StoryViewModel>();
     _settingsVM = context.read<SettingsViewModel>();
     _getLastBackupInfoFuture = _getLastBackupInfo();
     _useCellularData = _settingsVM.settings.useCellularData ?? false;
@@ -137,7 +137,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   }
 
   Future<_BackupInfo> _getLastBackupInfo() async {
-    final backupList = await _messageVM.listBackupFiles();
+    final backupList = await _storyVM.listBackupFiles();
     if (backupList.isEmpty) return const _BackupInfo();
 
     final availableList = backupList
@@ -179,7 +179,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   Future<void> _deleteBackupFiles(List<String> fileNames) async {
     for (String f in fileNames) {
       developer.log('* Start to delete old backup file( $f )');
-      await _messageVM.deleteBackupFile(f);
+      await _storyVM.deleteBackupFile(f);
     }
   }
 
@@ -200,7 +200,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
     //
     try {
       developer.log('Start backup');
-      await _messageVM.uploadMessages((stream) {
+      await _storyVM.uploadStories((stream) {
         _backupProgressSub = stream.listen(
           (progress) {
             // First progress is 100.0. Looks like it is bug of the package. So
@@ -288,10 +288,10 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
     // Start restore
     //
     try {
-      final restoreFilePath = await _messageVM.getRestoreFilePath();
+      final restoreFilePath = await _storyVM.getRestoreFilePath();
       developer.log('Start downloading $fileName to $restoreFilePath');
 
-      await _messageVM.downloadMessages(fileName, restoreFilePath, (stream) {
+      await _storyVM.downloadStories(fileName, restoreFilePath, (stream) {
         _restoreProgressSub = stream.listen(
           (progress) {
             // First progress is 100.0. Looks like it is bug of the package. So
@@ -319,21 +319,21 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
             //
             // Init Thread / Home / Starred list
             //
-            final messageVM = context.read<MessageViewModel>();
+            final storyVM = context.read<StoryViewModel>();
             final threadVM = context.read<ThreadViewModel>();
-            final starredVM = context.read<StarredMessageViewModel>();
+            final starredVM = context.read<StarredStoryViewModel>();
 
-            await messageVM.applyRestoreMessages();
-            await messageVM.initMessageDatabase();
+            await storyVM.applyRestoreStories();
+            await storyVM.initStoryDatabase();
 
             threadVM.initThreads();
-            messageVM.initMessages();
-            starredVM.initMessages();
+            storyVM.initStories();
+            starredVM.initStories();
             threadVM.setCurrentThreadId(null, notify: true);
 
             await threadVM.readThreadList();
-            await messageVM.readMessagesChunk(threadVM.currentThreadId);
-            await starredVM.readStarredMessagesChunk();
+            await storyVM.readStoriesChunk(threadVM.currentThreadId);
+            await starredVM.readStarredStoriesChunk();
 
             dialog.update(
               content: const Text('Completed'),
@@ -352,7 +352,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       });
     } catch (e) {
       developer.log('_restore', error: e.toString());
-      // In case that downloadMessages throws error, dialog update below does not work.
+      // In case that downloadStories throws error, dialog update below does not work.
       await Future.delayed(const Duration(seconds: 1)); // TODO: refactor
       dialog.update(
         content: Text(e.toString()),

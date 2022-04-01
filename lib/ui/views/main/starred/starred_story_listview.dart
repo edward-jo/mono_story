@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
-import 'package:mono_story/ui/views/main/starred/starred_message_listviewitem.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/ui/views/main/starred/starred_story_listviewitem.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
-class StarredMessageListView extends StatefulWidget {
-  const StarredMessageListView({
+class StarredStoryListView extends StatefulWidget {
+  const StarredStoryListView({
     Key? key,
     required this.scrollController,
   }) : super(key: key);
@@ -19,23 +19,23 @@ class StarredMessageListView extends StatefulWidget {
   final ScrollController scrollController;
 
   @override
-  State<StarredMessageListView> createState() => _StarredMessageListViewState();
+  State<StarredStoryListView> createState() => _StarredStoryListViewState();
 }
 
-class _StarredMessageListViewState extends State<StarredMessageListView> {
-  late final StarredMessageViewModel _starredVM;
-  late final MessageViewModel _messageVM;
-  late Future<int> _starredMessagesFuture;
+class _StarredStoryListViewState extends State<StarredStoryListView> {
+  late final StarredStoryViewModel _starredVM;
+  late final StoryViewModel _storyVM;
+  late Future<int> _starredStoriesFuture;
   late final ScrollController _scrollController;
   late final dynamic _listKey;
 
   @override
   void initState() {
     super.initState();
-    _starredVM = context.read<StarredMessageViewModel>();
-    _messageVM = context.read<MessageViewModel>();
-    _starredVM.initMessages();
-    _starredMessagesFuture = _starredVM.readStarredMessagesChunk();
+    _starredVM = context.read<StarredStoryViewModel>();
+    _storyVM = context.read<StoryViewModel>();
+    _starredVM.initStories();
+    _starredStoriesFuture = _starredVM.readStarredStoriesChunk();
     _starredVM.removedItemBuilder = _buildRemovedStarredItem;
     _listKey = _starredVM.listKey;
     _scrollController = widget.scrollController;
@@ -43,21 +43,21 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   }
 
   @override
-  void didUpdateWidget(covariant StarredMessageListView oldWidget) {
+  void didUpdateWidget(covariant StarredStoryListView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _starredVM.initMessages();
-    _starredMessagesFuture = _starredVM.readStarredMessagesChunk();
+    _starredVM.initStories();
+    _starredStoriesFuture = _starredVM.readStarredStoriesChunk();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<int>(
-      future: _starredMessagesFuture,
-      builder: _starredMessageListViewBuilder,
+      future: _starredStoriesFuture,
+      builder: _starredStoryListViewBuilder,
     );
   }
 
-  Widget _starredMessageListViewBuilder(
+  Widget _starredStoryListViewBuilder(
     BuildContext context,
     AsyncSnapshot<dynamic> snapshot,
   ) {
@@ -75,12 +75,12 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
     if (snapshot.data as int < 0) {
       return const StyledBuilderErrorWidget(
-        message: ErrorMessages.messageReadingFailure,
+        message: ErrorMessages.storyReadingFailure,
       );
     }
 
-    List<Message> starredList;
-    starredList = context.watch<StarredMessageViewModel>().messages;
+    List<Story> starredList;
+    starredList = context.watch<StarredStoryViewModel>().stories;
 
     if (starredList.isEmpty) {
       return Center(
@@ -119,7 +119,7 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   Widget _buildStarredListViewItem(
     int index,
     Animation<double> animation,
-    List<Message> list,
+    List<Story> list,
   ) {
     final item = list[index];
 
@@ -145,23 +145,23 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
               ),
             ),
 
-          StarredMessageListViewItem(
-            message: item,
+          StarredStoryListViewItem(
+            story: item,
             onStar: () async {
-              await _starredVM.starMessage(item.id!, notify: true);
-              if (_messageVM.contains(item.id!)) {
-                await _messageVM.updateMessage(item.id!, notify: true);
+              await _starredVM.starStory(item.id!, notify: true);
+              if (_storyVM.contains(item.id!)) {
+                await _storyVM.updateStory(item.id!, notify: true);
               }
             },
             onDelete: () async {
-              bool? ret = await _showDeleteStarredMessageAlertDialog(item.id!);
+              bool? ret = await _showDeleteStarredStoryAlertDialog(item.id!);
               if (ret != null && ret) {
-                final message = await _starredVM.deleteMessage(
+                final story = await _starredVM.deleteStory(
                   item.id!,
                   notify: true,
                 );
-                if (message != null && _messageVM.contains(item.id!)) {
-                  _messageVM.deleteMessageFromList(item.id!, notify: true);
+                if (story != null && _storyVM.contains(item.id!)) {
+                  _storyVM.deleteStoryFromList(item.id!, notify: true);
                 }
               }
             },
@@ -190,15 +190,15 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
   Widget _buildRemovedStarredItem(
     int index,
-    Message item,
+    Story item,
     Animation<double> animation,
   ) {
     return SizeTransition(
       sizeFactor: animation,
       child: Column(
         children: <Widget>[
-          StarredMessageListViewItem(
-            message: item,
+          StarredStoryListViewItem(
+            story: item,
             onStar: () {},
             onDelete: () {},
           ),
@@ -214,13 +214,13 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
 
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_starredVM.canLoadMessagesChunk()) {
-        await _starredVM.readStarredMessagesChunk();
+      if (_starredVM.canLoadStoriesChunk()) {
+        await _starredVM.readStarredStoriesChunk();
       }
     }
   }
 
-  Future<bool?> _showDeleteStarredMessageAlertDialog(int? id) async {
+  Future<bool?> _showDeleteStarredStoryAlertDialog(int? id) async {
     return await MonoAlertDialog().show<bool>(
       context: context,
       title: const Text('Delete Story'),
@@ -235,8 +235,8 @@ class _StarredMessageListViewState extends State<StarredMessageListView> {
   }
 
   Future<void> _refresh() async {
-    _starredVM.initMessages();
-    _starredMessagesFuture = _starredVM.readStarredMessagesChunk();
+    _starredVM.initStories();
+    _starredStoriesFuture = _starredVM.readStarredStoriesChunk();
     setState(() {});
   }
 }

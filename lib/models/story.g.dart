@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'message.dart';
+part of 'story.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Message _$MessageFromJson(Map<String, dynamic> json) => Message(
+Story _$StoryFromJson(Map<String, dynamic> json) => Story(
       id: json['_id'] as int?,
-      message: json['story'] as String,
+      story: json['story'] as String,
       threadId: json['fk_thread_id'] as int?,
       createdTime: DateTime.parse(json['created_time'] as String),
       starred: json['starred'] as int,
     );
 
-Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
+Map<String, dynamic> _$StoryToJson(Story instance) => <String, dynamic>{
       '_id': instance.id,
-      'story': instance.message,
+      'story': instance.story,
       'fk_thread_id': instance.threadId,
       'created_time': instance.createdTime.toIso8601String(),
       'starred': instance.starred,

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/message.dart';
+import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
-import 'package:mono_story/ui/views/main/home/message_listviewitem.dart';
-import 'package:mono_story/view_models/message_viewmodel.dart';
-import 'package:mono_story/view_models/searched_message_viewmodel.dart';
-import 'package:mono_story/view_models/starred_message_viewmodel.dart';
+import 'package:mono_story/ui/views/main/home/story_listviewitem.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
+import 'package:mono_story/view_models/searched_story_viewmodel.dart';
+import 'package:mono_story/view_models/starred_story_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
-class MessageSearchResultListView extends StatefulWidget {
-  const MessageSearchResultListView({
+class StorySearchResultListView extends StatefulWidget {
+  const StorySearchResultListView({
     Key? key,
     required this.query,
   }) : super(key: key);
@@ -21,37 +21,37 @@ class MessageSearchResultListView extends StatefulWidget {
   final String query;
 
   @override
-  State<MessageSearchResultListView> createState() =>
-      _MessageSearchResultListViewState();
+  State<StorySearchResultListView> createState() =>
+      _StorySearchResultListViewState();
 }
 
-class _MessageSearchResultListViewState
-    extends State<MessageSearchResultListView> {
-  late final SearchedMessageViewModel _searchedVM;
-  late final MessageViewModel _messageVM;
-  late final StarredMessageViewModel _starredVM;
-  late Future<int> _searchMessagesFuture;
+class _StorySearchResultListViewState
+    extends State<StorySearchResultListView> {
+  late final SearchedStoryViewModel _searchedVM;
+  late final StoryViewModel _storyVM;
+  late final StarredStoryViewModel _starredVM;
+  late Future<int> _searchStoriesFuture;
   final _scrollController = ScrollController();
   late final dynamic _listKey;
 
   @override
   void initState() {
     super.initState();
-    _searchedVM = context.read<SearchedMessageViewModel>();
-    _messageVM = context.read<MessageViewModel>();
-    _starredVM = context.read<StarredMessageViewModel>();
-    _searchedVM.initMessages();
-    _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
+    _searchedVM = context.read<SearchedStoryViewModel>();
+    _storyVM = context.read<StoryViewModel>();
+    _starredVM = context.read<StarredStoryViewModel>();
+    _searchedVM.initStories();
+    _searchStoriesFuture = _searchedVM.searchThreadChunk(widget.query);
     _searchedVM.removedItemBuilder = _buildRemovedSearchedItem;
     _listKey = _searchedVM.listKey;
     _scrollController.addListener(_scrollListener);
   }
 
   @override
-  void didUpdateWidget(covariant MessageSearchResultListView oldWidget) {
+  void didUpdateWidget(covariant StorySearchResultListView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _searchedVM.initMessages();
-    _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
+    _searchedVM.initStories();
+    _searchStoriesFuture = _searchedVM.searchThreadChunk(widget.query);
   }
 
   @override
@@ -63,7 +63,7 @@ class _MessageSearchResultListViewState
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<int>(
-      future: _searchMessagesFuture,
+      future: _searchStoriesFuture,
       builder: _searchedListViewBuilder,
     );
   }
@@ -86,12 +86,12 @@ class _MessageSearchResultListViewState
 
     if (snapshot.data as int < 0) {
       return const StyledBuilderErrorWidget(
-        message: ErrorMessages.messageReadingFailure,
+        message: ErrorMessages.storyReadingFailure,
       );
     }
 
-    List<Message> searchResult;
-    searchResult = context.watch<SearchedMessageViewModel>().messages;
+    List<Story> searchResult;
+    searchResult = context.watch<SearchedStoryViewModel>().stories;
 
     if (searchResult.isEmpty) {
       return Center(
@@ -125,7 +125,7 @@ class _MessageSearchResultListViewState
   Widget _buildSearchedListViewItem(
     int index,
     Animation<double> animation,
-    List<Message> list,
+    List<Story> list,
   ) {
     final item = list[index];
 
@@ -134,38 +134,38 @@ class _MessageSearchResultListViewState
       child: Column(
         children: <Widget>[
           if (index != 0) const MonoDivider(),
-          MessageListViewItem(
+          StoryListViewItem(
             emphasis: widget.query,
-            message: item,
+            story: item,
             onStar: () async {
-              Message? message = await _searchedVM.starMessage(item.id!);
+              Story? story = await _searchedVM.starStory(item.id!);
               // When setting off the starred, if this story exists in the
-              // StarredMessage list, then DELETE the story from the list. If
-              // the story exists in Message list, then UPDATE its status.
+              // StarredStory list, then DELETE the story from the list. If
+              // the story exists in Story list, then UPDATE its status.
               // If not exist, that means the story is not loaded yet, so do
               // nothing.
-              if (message?.starred == 0) {
+              if (story?.starred == 0) {
                 if (_starredVM.contains(item.id!)) {
-                  _starredVM.deleteMessageFromList(item.id!, notify: true);
+                  _starredVM.deleteStoryFromList(item.id!, notify: true);
                 }
-                if (_messageVM.contains(item.id!)) {
-                  _messageVM.updateMessage(item.id!, notify: true);
+                if (_storyVM.contains(item.id!)) {
+                  _storyVM.updateStory(item.id!, notify: true);
                 }
               }
             },
             onDelete: () async {
-              bool? ret = await _showDeleteMessageAlertDialog(item.id!);
+              bool? ret = await _showDeleteStoryAlertDialog(item.id!);
               if (ret != null && ret) {
-                final message = await _searchedVM.deleteMessage(item.id!);
-                if (message != null) {
+                final story = await _searchedVM.deleteStory(item.id!);
+                if (story != null) {
                   // Story is already deleted, so just delete the story from
-                  // Message list and StarredMessage list if exists. If not
+                  // Story list and StarredStory list if exists. If not
                   // exists, do nothing.
-                  if (_messageVM.contains(item.id!)) {
-                    _messageVM.deleteMessageFromList(item.id!, notify: true);
+                  if (_storyVM.contains(item.id!)) {
+                    _storyVM.deleteStoryFromList(item.id!, notify: true);
                   }
                   if (_starredVM.contains(item.id!)) {
-                    _starredVM.deleteMessageFromList(item.id!, notify: true);
+                    _starredVM.deleteStoryFromList(item.id!, notify: true);
                   }
                 }
               }
@@ -195,7 +195,7 @@ class _MessageSearchResultListViewState
 
   Widget _buildRemovedSearchedItem(
     int index,
-    Message item,
+    Story item,
     Animation<double> animation,
   ) {
     return SizeTransition(
@@ -203,9 +203,9 @@ class _MessageSearchResultListViewState
       child: Column(
         children: <Widget>[
           if (index != 0) const MonoDivider(),
-          MessageListViewItem(
+          StoryListViewItem(
             emphasis: widget.query,
-            message: item,
+            story: item,
             onStar: () {},
             onDelete: () {},
           ),
@@ -221,13 +221,13 @@ class _MessageSearchResultListViewState
 
     if (_scrollController.offset >=
         _scrollController.position.maxScrollExtent) {
-      if (_searchedVM.canLoadMessagesChunk()) {
+      if (_searchedVM.canLoadStoriesChunk()) {
         await _searchedVM.searchThreadChunk(widget.query);
       }
     }
   }
 
-  Future<bool?> _showDeleteMessageAlertDialog(int? id) async {
+  Future<bool?> _showDeleteStoryAlertDialog(int? id) async {
     return await MonoAlertDialog().show<bool>(
       context: context,
       title: const Text('Delete Story'),
@@ -241,9 +241,9 @@ class _MessageSearchResultListViewState
     );
   }
 
-  Future<void> _refresh(List<Message> list) async {
-    _searchedVM.initMessages();
-    _searchMessagesFuture = _searchedVM.searchThreadChunk(widget.query);
+  Future<void> _refresh(List<Story> list) async {
+    _searchedVM.initStories();
+    _searchStoriesFuture = _searchedVM.searchThreadChunk(widget.query);
     setState(() {});
   }
 }
