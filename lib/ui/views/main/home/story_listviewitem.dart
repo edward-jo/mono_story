@@ -21,12 +21,14 @@ class StoryListViewItem extends StatefulWidget {
     required this.story,
     required this.onDelete,
     required this.onStar,
+    required this.onChangeThread,
     this.emphasis,
   }) : super(key: key);
 
   final Story story;
   final void Function() onStar;
   final void Function() onDelete;
+  final void Function() onChangeThread;
   final String? emphasis;
 
   @override
@@ -147,6 +149,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
         widget.onDelete();
         break;
       case _StoryListViewItemMenu.changeThread:
+        widget.onChangeThread();
         break;
       default:
         throw Exception('Invalid status');
