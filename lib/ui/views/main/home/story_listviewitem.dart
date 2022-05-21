@@ -122,7 +122,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
                       itemBuilder: (context) =>
                           <PopupMenuItem<_StoryListViewItemMenu>>[
                             // -- DELETE --
-                            _StyledPopupMenuItem(
+                            _StyledPopupMenuItem<_StoryListViewItemMenu>(
                               maxWidth: maxMenuItemWidth,
                               menuName: 'Delete',
                               icon: const Icon(
@@ -133,7 +133,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
                             ),
 
                             // -- CHANGE THREAD
-                            _StyledPopupMenuItem(
+                            _StyledPopupMenuItem<_StoryListViewItemMenu>(
                               maxWidth: maxMenuItemWidth,
                               menuName: 'Change Thread',
                               icon: Icon(MonoIcons.thread_icon, size: 20.0),
@@ -241,7 +241,7 @@ class _StyledPopupMenuItem<T> extends PopupMenuItem<T> {
   }) : super(
           key: key,
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          value: null,
+          value: value,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
