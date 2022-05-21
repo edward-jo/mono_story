@@ -26,7 +26,9 @@ abstract class StoryViewModelBase extends ChangeNotifier {
   bool hasNext = true;
 
   AppDatabaseService get dbService => _dbService;
+
   List<Story> get stories => _stories;
+
   bool get isLoading => _isLoading;
 
   void initStories() {
@@ -284,6 +286,27 @@ abstract class StoryViewModelBase extends ChangeNotifier {
         'Error:',
         error: 'Failed to star story with id($id) error( ${e.toString()})',
       );
+      return null;
+    }
+  }
+
+  Future<Story?> changeThread(int id, int? threadId) async {
+    try {
+      final index = _stories.indexWhere((e) => e.id == id);
+      final story = Story.fromJson(_stories[index].toJson());
+      story.threadId = threadId;
+      int affectedCount = await _dbService.updateStory(story);
+      if (affectedCount != 1) {
+        developer.log('Fail:', error: 'Failed to change thread');
+        return null;
+      }
+      _stories[index] = story;
+      notifyListeners();
+      return story;
+    } catch (e) {
+      developer.log('Error:',
+          error:
+              'Failed to change thread of story with id($id) error( ${e.toString()})');
       return null;
     }
   }

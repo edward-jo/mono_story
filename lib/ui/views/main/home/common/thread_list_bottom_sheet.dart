@@ -9,7 +9,10 @@ import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ThreadListBottomSheet extends StatefulWidget {
-  const ThreadListBottomSheet({Key? key}) : super(key: key);
+  const ThreadListBottomSheet({Key? key, this.seeAllOption = false})
+      : super(key: key);
+
+  final bool seeAllOption;
 
   @override
   State<ThreadListBottomSheet> createState() => _ThreadListBottomSheetState();
@@ -67,8 +70,8 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
     return Padding(
       padding: _bottomSheetPadding,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           // -- BOTTOM SHEET HEAD --
           const SizedBox(height: 20),
@@ -80,6 +83,17 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
               fontWeight: FontWeight.bold,
             ),
           ),
+
+          // -- SEE ALL BUTTON --
+          (widget.seeAllOption)
+              ? Container(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    child: const Text('See all'),
+                    onPressed: () => _seeAll(context),
+                  ),
+                )
+              : const SizedBox(height: 15),
 
           // -- THREAD NAME LIST --
           (threadList.isEmpty)
@@ -111,7 +125,8 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
                   ),
                 ),
 
-          const SizedBox(height: 10),
+          // const SizedBox(height: 10),
+          const Expanded(child: SizedBox()),
 
           // -- CREATE NEW THREAD BUTTON --
           MonoElevatedButton(
@@ -119,11 +134,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
             onPressed: () => _newThread(context),
           ),
 
-          // -- SEE ALL BUTTON --
-          TextButton(
-            child: const Text('See all'),
-            onPressed: () => _seeAll(context),
-          ),
+          const SizedBox(height: 30),
         ],
       ),
     );
@@ -177,5 +188,6 @@ enum ThreadListResultType {
 class ThreadListResult {
   late final ThreadListResultType type;
   late final dynamic data;
+
   ThreadListResult({required this.type, this.data});
 }

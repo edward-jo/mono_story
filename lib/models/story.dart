@@ -10,7 +10,7 @@ class Story {
   @JsonKey(name: StoriesTableCols.story)
   final String story;
   @JsonKey(name: StoriesTableCols.fkThreadId)
-  final int? threadId;
+  int? threadId;
   @JsonKey(name: StoriesTableCols.createdTime)
   final DateTime createdTime;
   @JsonKey(name: StoriesTableCols.starred)

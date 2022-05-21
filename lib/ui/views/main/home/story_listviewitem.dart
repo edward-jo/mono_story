@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -21,12 +20,14 @@ class StoryListViewItem extends StatefulWidget {
     required this.story,
     required this.onDelete,
     required this.onStar,
+    required this.onChangeThread,
     this.emphasis,
   }) : super(key: key);
 
   final Story story;
   final void Function() onStar;
   final void Function() onDelete;
+  final void Function() onChangeThread;
   final String? emphasis;
 
   @override
@@ -38,8 +39,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
   Widget build(BuildContext context) {
     final threadVM = context.read<ThreadViewModel>();
     final threadName =
-        threadVM.findThreadData(id: widget.story.threadId)?.name ??
-            'undefined';
+        threadVM.findThreadData(id: widget.story.threadId)?.name ?? 'undefined';
 
     Widget storyWidget;
     TextStyle? textStyle = Theme.of(context).textTheme.bodyText2;
@@ -70,6 +70,8 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
         style: textStyle,
       );
     }
+
+    final maxMenuItemWidth = MediaQuery.of(context).size.width * 0.5;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
@@ -106,8 +108,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
                 children: <Widget>[
                   // -- STARRED --
                   StarIconButton(
-                      starred: widget.story.starred,
-                      onPressed: widget.onStar),
+                      starred: widget.story.starred, onPressed: widget.onStar),
 
                   // -- DELETE BUTTON --
                   IconButton(
@@ -116,16 +117,26 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
                   ),
 
                   // -- POPUP MENU BUTTON --
-                  PopupMenuButton(
+                  PopupMenuButton<_StoryListViewItemMenu>(
                       onSelected: _popupMenuButtonSelected,
                       itemBuilder: (context) =>
                           <PopupMenuItem<_StoryListViewItemMenu>>[
-                            const PopupMenuItem(
-                              child: Text('Delete'),
+                            // -- DELETE --
+                            _StyledPopupMenuItem<_StoryListViewItemMenu>(
+                              maxWidth: maxMenuItemWidth,
+                              menuName: 'Delete',
+                              icon: const Icon(
+                                Icons.delete_outline_rounded,
+                                size: 20.0,
+                              ),
                               value: _StoryListViewItemMenu.delete,
                             ),
-                            const PopupMenuItem(
-                              child: Text('Change Thread'),
+
+                            // -- CHANGE THREAD
+                            _StyledPopupMenuItem<_StoryListViewItemMenu>(
+                              maxWidth: maxMenuItemWidth,
+                              menuName: 'Change Thread',
+                              icon: Icon(MonoIcons.thread_icon, size: 20.0),
                               value: _StoryListViewItemMenu.changeThread,
                             ),
                           ]),
@@ -147,6 +158,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
         widget.onDelete();
         break;
       case _StoryListViewItemMenu.changeThread:
+        widget.onChangeThread();
         break;
       default:
         throw Exception('Invalid status');
@@ -216,4 +228,37 @@ class ThreadInfoWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class _StyledPopupMenuItem<T> extends PopupMenuItem<T> {
+  _StyledPopupMenuItem({
+    Key? key,
+    this.maxWidth = double.infinity,
+    this.maxHeight = double.infinity,
+    required this.menuName,
+    required this.icon,
+    required T value,
+  }) : super(
+          key: key,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          value: value,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: maxWidth,
+                  maxHeight: maxHeight,
+                ),
+                child: Text(menuName, softWrap: true),
+              ),
+              icon,
+            ],
+          ),
+        );
+
+  final String menuName;
+  final Icon icon;
+  final double maxWidth;
+  final double maxHeight;
 }

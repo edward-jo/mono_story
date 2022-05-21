@@ -9,6 +9,8 @@ import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
+import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
+import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/story_listviewitem.dart';
 import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
@@ -178,6 +180,7 @@ class _StoryListViewState extends State<StoryListView> {
                 }
               }
             },
+            onChangeThread: () => _showThreadListBottomSheet(context, item.id!),
           ),
           // -- LOADING INDICATOR --
           if (index == list.length - 1 && _storyVM.hasNext)
@@ -211,7 +214,12 @@ class _StoryListViewState extends State<StoryListView> {
       child: Column(
         children: <Widget>[
           if (index != 0) const MonoDivider(),
-          StoryListViewItem(story: item, onStar: () {}, onDelete: () {}),
+          StoryListViewItem(
+            story: item,
+            onStar: () {},
+            onDelete: () {},
+            onChangeThread: () {},
+          ),
         ],
       ),
     );
@@ -248,5 +256,51 @@ class _StoryListViewState extends State<StoryListView> {
     _storyVM.initStories();
     _readStoriesFuture = _storyVM.readStoriesChunk(widget.threadId);
     setState(() {});
+  }
+
+  void _showThreadListBottomSheet(BuildContext context, int id) async {
+    final ThreadListResult? result;
+    result = await showModalBottomSheet<ThreadListResult>(
+      context: context,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.6,
+      ),
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).canvasColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(bottomSheetRadius),
+        ),
+      ),
+      builder: (_) => const ThreadListBottomSheet(),
+    );
+
+    if (result == null) return;
+
+    switch (result.type) {
+      case ThreadListResultType.thread:
+        final threadId = result.data as int?;
+        await _storyVM.changeThread(id, threadId);
+        break;
+      case ThreadListResultType.newThreadRequest:
+        final threadId = await _showCreateThreadBottomSheet(context);
+        if (threadId == null) break;
+        await _storyVM.changeThread(id, threadId);
+        break;
+    }
+  }
+
+  Future<int?> _showCreateThreadBottomSheet(BuildContext context) async {
+    return await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: Theme.of(context).canvasColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(bottomSheetRadius),
+        ),
+      ),
+      builder: (_) => const NewThreadBottomSheet(),
+    );
   }
 }

@@ -97,7 +97,7 @@ class HomeScreenState extends State<HomeScreen> {
           top: Radius.circular(bottomSheetRadius),
         ),
       ),
-      builder: (_) => const ThreadListBottomSheet(),
+      builder: (_) => const ThreadListBottomSheet(seeAllOption: true),
     );
 
     if (result == null) return;

@@ -170,6 +170,7 @@ class _StorySearchResultListViewState
                 }
               }
             },
+            onChangeThread: () {},
           ),
           // -- LOADING INDICATOR --
           if (index == list.length - 1 && _searchedVM.hasNext)
@@ -208,6 +209,7 @@ class _StorySearchResultListViewState
             story: item,
             onStar: () {},
             onDelete: () {},
+            onChangeThread: () {},
           ),
         ],
       ),
