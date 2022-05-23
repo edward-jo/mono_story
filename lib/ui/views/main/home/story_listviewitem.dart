@@ -106,14 +106,10 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
               ),
               Row(
                 children: <Widget>[
-                  // -- STARRED --
+                  // -- STARRED BUTTON --
                   StarIconButton(
-                      starred: widget.story.starred, onPressed: widget.onStar),
-
-                  // -- DELETE BUTTON --
-                  IconButton(
-                    onPressed: widget.onDelete,
-                    icon: const Icon(Icons.delete_outline_rounded, size: 20.0),
+                    starred: widget.story.starred,
+                    onPressed: widget.onStar,
                   ),
 
                   // -- POPUP MENU BUTTON --
@@ -121,7 +117,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
                       onSelected: _popupMenuButtonSelected,
                       itemBuilder: (context) =>
                           <PopupMenuItem<_StoryListViewItemMenu>>[
-                            // -- DELETE --
+                            // -- DELETE MENU --
                             _StyledPopupMenuItem<_StoryListViewItemMenu>(
                               maxWidth: maxMenuItemWidth,
                               menuName: 'Delete',
@@ -132,7 +128,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
                               value: _StoryListViewItemMenu.delete,
                             ),
 
-                            // -- CHANGE THREAD
+                            // -- CHANGE THREAD MENU --
                             _StyledPopupMenuItem<_StoryListViewItemMenu>(
                               maxWidth: maxMenuItemWidth,
                               menuName: 'Change Thread',
