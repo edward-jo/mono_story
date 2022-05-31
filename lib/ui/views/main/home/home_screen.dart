@@ -1,12 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
-import 'package:mono_story/ui/views/main/home/new_story/new_story_screen.dart';
 import 'package:mono_story/ui/views/main/home/story_listview.dart';
 import 'package:mono_story/ui/views/main/home/story_search_delegate.dart';
+import 'package:mono_story/ui/views/main/home/new_story/new_story_screen.dart';
 import 'package:mono_story/ui/views/main/home/thread_button.dart';
 import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
@@ -45,7 +47,12 @@ class HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         // -- TITLE --
-        title: const Text('Mono Story'),
+        title: Consumer<ThreadViewModel>(
+          builder: (context, model, _) => ThreadButton(
+            name: model.currentThreadData?.name ?? defaultThreadName,
+            onPressed: () => _showThreadListBottomSheet(context),
+          ),
+        ),
 
         // -- ACTIONS --
         actions: <Widget>[
@@ -59,25 +66,12 @@ class HomeScreenState extends State<HomeScreen> {
       ),
 
       // -- BODY --
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Consumer<ThreadViewModel>(
-            builder: (context, model, _) => ThreadButton(
-              name: model.currentThreadData?.name ?? defaultThreadName,
-              onPressed: () => _showThreadListBottomSheet(context),
-            ),
-          ),
-          Expanded(
-            child: Selector<ThreadViewModel, int?>(
-              selector: (_, vm) => vm.currentThreadId,
-              builder: (_, id, __) => StoryListView(
-                threadId: id,
-                scrollController: scrollController,
-              ),
-            ),
-          ),
-        ],
+      body: Selector<ThreadViewModel, int?>(
+        selector: (_, vm) => vm.currentThreadId,
+        builder: (_, id, __) => StoryListView(
+          threadId: id,
+          scrollController: scrollController,
+        ),
       ),
 
       // FLOATING BUTTON
