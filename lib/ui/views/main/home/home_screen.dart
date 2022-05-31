@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/story.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
@@ -7,7 +8,6 @@ import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.da
 import 'package:mono_story/ui/views/main/home/new_story/new_story_screen.dart';
 import 'package:mono_story/ui/views/main/home/story_listview.dart';
 import 'package:mono_story/ui/views/main/home/story_search_delegate.dart';
-import 'package:mono_story/ui/views/main/home/thread_button.dart';
 import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -46,9 +46,14 @@ class HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         // -- TITLE --
         title: Consumer<ThreadViewModel>(
-          builder: (context, model, _) => ThreadButton(
-            name: model.currentThreadData?.name ?? defaultThreadName,
-            onPressed: () => _showThreadListBottomSheet(context),
+          builder: (context, model, _) => Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              model.currentThreadData?.name ?? defaultThreadName,
+              style: GoogleFonts.robotoMono(
+                textStyle: Theme.of(context).textTheme.headline6,
+              ),
+            ),
           ),
         ),
 
