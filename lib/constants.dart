@@ -17,7 +17,7 @@ const String threadsTableNameV2 = 'threads';
 const String storiesTableNameV1 = 'messages';
 const String storiesTableNameV2 = 'stories';
 
-const String defaultThreadName = 'All';
+const String defaultThreadName = 'Mono Story';
 
 class ThreadsTableCols {
   static const String id = '_id';
