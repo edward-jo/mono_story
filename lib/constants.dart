@@ -148,8 +148,7 @@ const int threadNameMaxCharLength = 30;
 const int storyMaxLength = 512;
 
 class MonoIcons {
-  static IconData thread_icon =
-      Platform.isIOS ? CupertinoIcons.tag : Icons.label;
+  static IconData thread_icon = Icons.label_outlined;
   static IconData chevron_forward =
       Platform.isIOS ? CupertinoIcons.chevron_forward : Icons.chevron_right;
   static IconData more =
