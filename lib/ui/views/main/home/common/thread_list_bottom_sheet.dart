@@ -125,8 +125,7 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
                   ),
                 ),
 
-          // const SizedBox(height: 10),
-          const Expanded(child: SizedBox()),
+          const SizedBox(height: 30),
 
           // -- CREATE NEW THREAD BUTTON --
           MonoElevatedButton(
@@ -134,10 +133,18 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
             onPressed: () => _newThread(context),
           ),
 
-          const SizedBox(height: 30),
+          // -- CANCEL BUTTON --
+          TextButton(
+            onPressed: () => _cancel(context),
+            child: const Text('Cancel'),
+          ),
         ],
       ),
     );
+  }
+
+  void _cancel(BuildContext context) {
+    Navigator.of(context).pop();
   }
 
   void _seeAll(BuildContext context) {

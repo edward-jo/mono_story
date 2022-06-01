@@ -14,7 +14,7 @@ class MonoElevatedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 30.0,
+      height: 40.0,
       child: ElevatedButton(
         onPressed: onPressed,
         child: child,

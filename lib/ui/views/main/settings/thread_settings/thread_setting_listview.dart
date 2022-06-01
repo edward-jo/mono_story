@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/rename_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/settings/thread_settings/thread_setting_listviewitem.dart';
-import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -85,11 +84,6 @@ class _ThreadSettingListViewState extends State<ThreadSettingListView> {
   ) async {
     return await showModalBottomSheet<ThreadSettingMenus>(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-        top: Radius.circular(bottomSheetRadius),
-      )),
       builder: (_) => ThreadSettingBottomSheet(threadName: thread.name),
     );
   }

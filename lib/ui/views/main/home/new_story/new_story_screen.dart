@@ -1,11 +1,7 @@
-import 'dart:developer' as developer;
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/story.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
@@ -40,8 +36,8 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      final arguments = ModalRoute.of(context)!.settings.arguments
-          as NewStoryScreenArgument;
+      final arguments =
+          ModalRoute.of(context)!.settings.arguments as NewStoryScreenArgument;
       int? threadId = arguments.threadId;
       if (threadId == null) {
         _threadData = null;
@@ -54,6 +50,7 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
     return Scaffold(
       // -- APP BAR --
       appBar: AppBar(
@@ -82,24 +79,27 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // -- THREAD NAME --
-              Builder(builder: (ctx) {
-                if (_threadData == null) {
-                  return ActionChip(
-                    backgroundColor: undefinedThreadBgColor,
-                    label: const Text('Select thread'),
+              MediaQuery(
+                data: mediaQueryData,
+                child: Builder(builder: (ctx) {
+                  if (_threadData == null) {
+                    return ActionChip(
+                      backgroundColor: undefinedThreadBgColor,
+                      label: const Text('Select thread'),
+                      onPressed: () => _showThreadList(ctx),
+                    );
+                  }
+
+                  return InputChip(
+                    backgroundColor: threadNameBgColor,
+                    label: Text(_threadData!.name),
+                    deleteIcon: const Icon(Icons.cancel),
+                    deleteIconColor: Colors.grey,
+                    onDeleted: () => setState(() => _threadData = null),
                     onPressed: () => _showThreadList(ctx),
                   );
-                }
-
-                return InputChip(
-                  backgroundColor: threadNameBgColor,
-                  label: Text(_threadData!.name),
-                  deleteIcon: const Icon(Icons.cancel),
-                  deleteIconColor: Colors.grey,
-                  onDeleted: () => setState(() => _threadData = null),
-                  onPressed: () => _showThreadList(ctx),
-                );
-              }),
+                }),
+              ),
 
               const Divider(),
 
@@ -165,13 +165,14 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
     final ThreadListResult? result;
     result = await showModalBottomSheet<ThreadListResult>(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
+      isScrollControlled: true,
+      builder: (ctx) => MediaQuery(
+        data: MediaQuery.of(context),
+        child: const SafeArea(
+          minimum: EdgeInsets.symmetric(vertical: 20.0),
+          child: ThreadListBottomSheet(),
         ),
       ),
-      builder: (ctx) => const ThreadListBottomSheet(),
     );
 
     if (result == null) return;
@@ -195,13 +196,7 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
   void _showNewThread(BuildContext context) async {
     final int? newThreadId = await showModalBottomSheet<int>(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
-        ),
-      ),
       builder: (_) => const NewThreadBottomSheet(),
     );
 
@@ -214,6 +209,7 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
 
 class NewStoryScreenArgument {
   final int? threadId;
+
   NewStoryScreenArgument(this.threadId);
 }
 
@@ -221,6 +217,7 @@ class NewStoryScreenResult {
   final int? savedStoryThreadId;
   final bool isSaved;
   final String story;
+
   const NewStoryScreenResult({
     this.savedStoryThreadId,
     required this.isSaved,

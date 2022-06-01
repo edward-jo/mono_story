@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/story.dart';
 import 'package:mono_story/models/thread.dart';
-import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/mono_alertdialog.dart';
+import 'package:mono_story/ui/common/mono_divider.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/story_listviewitem.dart';
-import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -69,6 +69,7 @@ class _StoryListViewState extends State<StoryListView> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
     return FutureBuilder<dynamic>(
       future: Future.wait([
         _readThreadsFuture,
@@ -260,19 +261,17 @@ class _StoryListViewState extends State<StoryListView> {
 
   void _showThreadListBottomSheet(BuildContext context, int id) async {
     final ThreadListResult? result;
+    final mediaQueryData = MediaQuery.of(context);
     result = await showModalBottomSheet<ThreadListResult>(
       context: context,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.6,
-      ),
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).canvasColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
+      builder: (context) => MediaQuery(
+        data: mediaQueryData,
+        child: const SafeArea(
+          minimum: EdgeInsets.symmetric(vertical: 20.0),
+          child: ThreadListBottomSheet(),
         ),
       ),
-      builder: (_) => const ThreadListBottomSheet(),
     );
 
     if (result == null) return;
@@ -293,13 +292,7 @@ class _StoryListViewState extends State<StoryListView> {
   Future<int?> _showCreateThreadBottomSheet(BuildContext context) async {
     return await showModalBottomSheet<int>(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
-        ),
-      ),
       builder: (_) => const NewThreadBottomSheet(),
     );
   }

@@ -40,6 +40,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
     return Scaffold(
       // -- APP BAR --
       appBar: AppBar(
@@ -77,10 +78,15 @@ class HomeScreenState extends State<HomeScreen> {
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
-        builder: (_, id, __) => StoryListView(
-          threadId: id,
-          scrollController: scrollController,
-        ),
+        builder: (_, id, __) {
+          return MediaQuery(
+            data: mediaQueryData,
+            child: StoryListView(
+              threadId: id,
+              scrollController: scrollController,
+            ),
+          );
+        },
       ),
 
       // FLOATING BUTTON
@@ -94,19 +100,17 @@ class HomeScreenState extends State<HomeScreen> {
 
   void _showThreadListBottomSheet(BuildContext context) async {
     final ThreadListResult? result;
+    final mediaQueryData = MediaQuery.of(context);
     result = await showModalBottomSheet<ThreadListResult>(
       context: context,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.6,
-      ),
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).canvasColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
+      builder: (_) => MediaQuery(
+        data: mediaQueryData,
+        child: const SafeArea(
+          minimum: EdgeInsets.symmetric(vertical: 20.0),
+          child: ThreadListBottomSheet(seeAllOption: true),
         ),
       ),
-      builder: (_) => const ThreadListBottomSheet(seeAllOption: true),
     );
 
     if (result == null) return;
@@ -128,13 +132,7 @@ class HomeScreenState extends State<HomeScreen> {
   Future<int?> _showCreateThreadBottomSheet(BuildContext context) async {
     return await showModalBottomSheet<int>(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
-        ),
-      ),
       builder: (_) => const NewThreadBottomSheet(),
     );
   }
