@@ -50,6 +50,7 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
     return Scaffold(
       // -- APP BAR --
       appBar: AppBar(
@@ -78,24 +79,27 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // -- THREAD NAME --
-              Builder(builder: (ctx) {
-                if (_threadData == null) {
-                  return ActionChip(
-                    backgroundColor: undefinedThreadBgColor,
-                    label: const Text('Select thread'),
+              MediaQuery(
+                data: mediaQueryData,
+                child: Builder(builder: (ctx) {
+                  if (_threadData == null) {
+                    return ActionChip(
+                      backgroundColor: undefinedThreadBgColor,
+                      label: const Text('Select thread'),
+                      onPressed: () => _showThreadList(ctx),
+                    );
+                  }
+
+                  return InputChip(
+                    backgroundColor: threadNameBgColor,
+                    label: Text(_threadData!.name),
+                    deleteIcon: const Icon(Icons.cancel),
+                    deleteIconColor: Colors.grey,
+                    onDeleted: () => setState(() => _threadData = null),
                     onPressed: () => _showThreadList(ctx),
                   );
-                }
-
-                return InputChip(
-                  backgroundColor: threadNameBgColor,
-                  label: Text(_threadData!.name),
-                  deleteIcon: const Icon(Icons.cancel),
-                  deleteIconColor: Colors.grey,
-                  onDeleted: () => setState(() => _threadData = null),
-                  onPressed: () => _showThreadList(ctx),
-                );
-              }),
+                }),
+              ),
 
               const Divider(),
 
@@ -161,7 +165,14 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
     final ThreadListResult? result;
     result = await showModalBottomSheet<ThreadListResult>(
       context: context,
-      builder: (ctx) => const ThreadListBottomSheet(),
+      isScrollControlled: true,
+      builder: (ctx) => MediaQuery(
+        data: MediaQuery.of(context),
+        child: const SafeArea(
+          minimum: EdgeInsets.symmetric(vertical: 20.0),
+          child: ThreadListBottomSheet(),
+        ),
+      ),
     );
 
     if (result == null) return;
@@ -198,6 +209,7 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
 
 class NewStoryScreenArgument {
   final int? threadId;
+
   NewStoryScreenArgument(this.threadId);
 }
 
@@ -205,6 +217,7 @@ class NewStoryScreenResult {
   final int? savedStoryThreadId;
   final bool isSaved;
   final String story;
+
   const NewStoryScreenResult({
     this.savedStoryThreadId,
     required this.isSaved,
