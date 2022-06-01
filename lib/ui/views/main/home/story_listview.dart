@@ -268,6 +268,7 @@ class _StoryListViewState extends State<StoryListView> {
       builder: (context) => MediaQuery(
         data: mediaQueryData,
         child: const SafeArea(
+          minimum: EdgeInsets.symmetric(vertical: 20.0),
           child: ThreadListBottomSheet(),
         ),
       ),
