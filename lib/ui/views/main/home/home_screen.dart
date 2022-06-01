@@ -94,19 +94,16 @@ class HomeScreenState extends State<HomeScreen> {
 
   void _showThreadListBottomSheet(BuildContext context) async {
     final ThreadListResult? result;
+    final mediaQueryData = MediaQuery.of(context);
     result = await showModalBottomSheet<ThreadListResult>(
       context: context,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.6,
-      ),
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).canvasColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
+      builder: (_) => MediaQuery(
+        data: mediaQueryData,
+        child: const SafeArea(
+          child: ThreadListBottomSheet(seeAllOption: true),
         ),
       ),
-      builder: (_) => const ThreadListBottomSheet(seeAllOption: true),
     );
 
     if (result == null) return;
