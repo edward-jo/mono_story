@@ -69,6 +69,7 @@ class _StoryListViewState extends State<StoryListView> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
     return FutureBuilder<dynamic>(
       future: Future.wait([
         _readThreadsFuture,
@@ -260,10 +261,16 @@ class _StoryListViewState extends State<StoryListView> {
 
   void _showThreadListBottomSheet(BuildContext context, int id) async {
     final ThreadListResult? result;
+    final mediaQueryData = MediaQuery.of(context);
     result = await showModalBottomSheet<ThreadListResult>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const ThreadListBottomSheet(),
+      builder: (context) => MediaQuery(
+        data: mediaQueryData,
+        child: const SafeArea(
+          child: ThreadListBottomSheet(),
+        ),
+      ),
     );
 
     if (result == null) return;

@@ -40,6 +40,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
     return Scaffold(
       // -- APP BAR --
       appBar: AppBar(
@@ -77,10 +78,15 @@ class HomeScreenState extends State<HomeScreen> {
       // -- BODY --
       body: Selector<ThreadViewModel, int?>(
         selector: (_, vm) => vm.currentThreadId,
-        builder: (_, id, __) => StoryListView(
-          threadId: id,
-          scrollController: scrollController,
-        ),
+        builder: (_, id, __) {
+          return MediaQuery(
+            data: mediaQueryData,
+            child: StoryListView(
+              threadId: id,
+              scrollController: scrollController,
+            ),
+          );
+        },
       ),
 
       // FLOATING BUTTON
