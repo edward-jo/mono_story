@@ -125,13 +125,7 @@ class HomeScreenState extends State<HomeScreen> {
   Future<int?> _showCreateThreadBottomSheet(BuildContext context) async {
     return await showModalBottomSheet<int>(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
-        ),
-      ),
       builder: (_) => const NewThreadBottomSheet(),
     );
   }

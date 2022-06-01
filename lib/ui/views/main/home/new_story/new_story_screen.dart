@@ -1,11 +1,7 @@
-import 'dart:developer' as developer;
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mono_story/constants.dart';
-import 'package:mono_story/models/story.dart';
 import 'package:mono_story/models/thread.dart';
 import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
@@ -40,8 +36,8 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      final arguments = ModalRoute.of(context)!.settings.arguments
-          as NewStoryScreenArgument;
+      final arguments =
+          ModalRoute.of(context)!.settings.arguments as NewStoryScreenArgument;
       int? threadId = arguments.threadId;
       if (threadId == null) {
         _threadData = null;
@@ -165,12 +161,6 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
     final ThreadListResult? result;
     result = await showModalBottomSheet<ThreadListResult>(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
-        ),
-      ),
       builder: (ctx) => const ThreadListBottomSheet(),
     );
 
@@ -195,13 +185,7 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
   void _showNewThread(BuildContext context) async {
     final int? newThreadId = await showModalBottomSheet<int>(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(bottomSheetRadius),
-        ),
-      ),
       builder: (_) => const NewThreadBottomSheet(),
     );
 
