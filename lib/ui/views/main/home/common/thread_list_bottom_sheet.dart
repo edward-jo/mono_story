@@ -134,10 +134,20 @@ class _ThreadListBottomSheetState extends State<ThreadListBottomSheet> {
             onPressed: () => _newThread(context),
           ),
 
+          // -- CANCEL BUTTON --
+          TextButton(
+            onPressed: () => _cancel(context),
+            child: const Text('Cancel'),
+          ),
+
           const SizedBox(height: 30),
         ],
       ),
     );
+  }
+
+  void _cancel(BuildContext context) {
+    Navigator.of(context).pop();
   }
 
   void _seeAll(BuildContext context) {
