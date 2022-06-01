@@ -107,6 +107,7 @@ class HomeScreenState extends State<HomeScreen> {
       builder: (_) => MediaQuery(
         data: mediaQueryData,
         child: const SafeArea(
+          minimum: EdgeInsets.symmetric(vertical: 20.0),
           child: ThreadListBottomSheet(seeAllOption: true),
         ),
       ),
