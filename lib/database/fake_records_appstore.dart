@@ -1,10 +1,6 @@
-import 'dart:developer' as developer;
 import 'dart:math';
-import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:mono_story/constants.dart';
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 void createFakeRecordsForAppStore(Database db) async {
@@ -12,8 +8,9 @@ void createFakeRecordsForAppStore(Database db) async {
 INSERT INTO $threadsTableNameV2 (${ThreadsTableCols.name})
 VALUES ('Books 📕'),
        ('Travel 🏝'),
-       ('Suits 🤵‍♂️'),
-       ('Reflective');
+       ('The Peanuts'),
+       ('Contemplation'),
+       ('Suits 🤵‍♂️');
 ''');
 
   final base20211001 = DateTime.parse('2021-10-01T01:00:00.000Z');
@@ -27,43 +24,46 @@ VALUES ('Books 📕'),
   await db.execute('''
 INSERT INTO $storiesTableNameV2 (${StoriesTableCols.story}, ${StoriesTableCols.fkThreadId}, ${StoriesTableCols.createdTime}, ${StoriesTableCols.starred})
 VALUES
-("You're weird. We'll be friends.", 3, "${base20211001.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
+("You're weird. We'll be friends.", 5, "${base20211001.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
 
 
-("Banff is one of the most beautiful national parks in Canada. It boasts breathtaking mountain scenery, epic hiking trails, and picturesque camping grounds and lodges.", 2, "${base20210601.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("My eyes are getting heavier tonight. I should sleep soon. It’s funny how I always think I have nothing to say but once I play with the start of ideas, it all starts to come down like rain.
+("Since travelling allows you to be open-minded, it is easier to accept all situations naturally, and makes you think not to waste time and enjoy youth since time and youth cannot be bought with money.
 
-I needed this. To know I still have it in me. If I were to ever lose this part of myself… I’m not sure how I’d take that.
-
-For sure, I would feel so sad and so alone. Lost even.
-
-Writing is another love of mine. Writing is a form of looking in the mirror. Like drawing a figure. It is the drawing of one’s soul. Of one’s subconscious.
-
-Perhaps if you write the cusp of one’s soul and draw it out like a thread from the tangle of nothingness. And perhaps soon – it can become poetry.", 4, "${base20210401.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
-("In Vancouver, it’s best to stay in the heart of it all. All the prime spots are downtown, and staying there will keep you in the center of everything. The Yaletown, Gastown, and Robson areas are the best of the best downtown.", 2, "${base20210215.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
+Travelling not only makes your world bigger but also makes you generous helping you to be more objective rather than emotional which ultimately makes you not to be fluctuated easily between hopes and fear.", 2, "${base20210601.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
 
 
-("How do you live? - Genzaburo Yoshino -
+("What makes a good writer? and a good article? It is a very difficult question. Words are always mystery itself. Article that has a huge argument or thoughts that is beyond imagination. There are even super-natural stories that transcends time and space. Stories that make you feel unusual emotions, and reach your imagination's boundary.
 
-This one’s a beautiful coming of age story that’s full of charm. It centres around friendship, science, and humanity. We get a glimpse of the wholesome relationship between a boy and his wise uncle, who writes him invaluable advice about life through letters. Oh, and world-renowned director Hayao Miyazaki has also announced that he will be adapting this novel into a film!!! I cannot wait to see what Miyazaki has in store for us. The books is truly delightful, and so wholesome. I highly recommend it if you feel lost and need a gentle, yet impactful pick-me-up (and perhaps a sprinkle of uncle’s magic and wits)! ❤", 1, "${base20210215.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-
-
-("Let them hate, just make sure they spell your name right.", 3, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("I don’t have dreams, I have goals.", 3, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("I'm a boy scout. I like to be prepared.", 3, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("Anyone can do my job, but no one can be me.", 3, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+We are definitely touched endlessly by those stories.", 4, "${base20210401.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
 
 
-("While there are some first-class restaurants in Vancouver, the tasty grub from the local food trucks is some of the best food in town. Juice Truck, Aussie Pie Guy, Community Pizzeria, Mom’s Grilled Cheese Truck.", 2, "${base20200601.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("Kitsilano Beach
-
-This place is hopping during the summer, and even during the colder months, it’s a great stop for gorgeous photo ops.", 2, "${base20200601.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("Lynn Canyon Park
-
-Another beautiful place to reconnect with nature, Lynn Canyon Park was made for long afternoons out hiking, and of course, you have to make it over to the Lynn Canyon Suspension Bridge.", 2, "${base20200601.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+("I already miss Switzerland although I am in Switzerland.", 2, "${base20210215.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
 
 
-("Born A Crime by Trevor Noah
-One of my favorite audiobooks ever. Love, love, love every second of it. The narrator is the author himself, and he did such an AMAZING job bringing his own story to life. I love the way he explored apartheid, his childhood, and his pathway to becoming the person that he is today through a tone that is hilarious, witty, impactful, and sad all at the same time. You learn so much, and there is not a dull moment in this book. This is the perfect book for if you’re in a slump (or not.. it’s the perfect book to pick up anytime really!). It’s memorable, brilliant, and entertaining. Love it.", 1, "${base20190201.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1);
+("Let them hate, just make sure they spell your name right.", 5, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+("I don’t have dreams, I have goals.", 5, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+("I'm a boy scout. I like to be prepared.", 5, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+("Anyone can do my job, but no one can be me.", 5, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+
+("Learn from yesterday, live for today, look to tomorrow, rest this afternoon.", 3, "${base20211001.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
+("Every time you find some humour in a difficult situation, you win.", 3, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+("In the book of life, the answers aren't in the back.", 3, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+
+("France reminds us of many things including Art and Romance, but food culture out of all is very advanced. French cuisine including bread, cheese, dessert, escargot has been loved worldwide for centuries, and open mind is needed to enjoy and experience diverse food culture. No Hesitation, but brave new tryouts will lead to world's best cuisines that is yet to be revealed.", 2, "${base20200601.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+("Namaste means 'My god inside me respects the one inside you'. It is a greeting of harmony that implies god is inside everything including you and myself and I respect it.", 2, "${base20200601.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+
+
+("Article that is extremely ordinary, simple without any fancy words where one word will lead to another, article that makes readers comfortable.
+That is the kind of article I want to write.", 4, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+("We are all born with creativity, but we lose its power and talent due to logics and society put into our head.", 4, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+("Sunsets never get old.", 4, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
+
+("The Midnight Library by Matt Haig
+
+Nora took a journey to many different lives and found a life that she truly wanted at the end of her journey. She wanted to live as a rain, and found that what you see is not important, but the perspective. Nora came back from the verge of death. It is easy to feel the lack for the life that you cannot live. What if I have worked harder, what if I have invested thoroughly, what if I was popular...
+
+It is not difficult to see through other's eyes and wish for optimum you that others want, but we need to realize that our lives are in progress and are very beautiful that is worth living.
+
+So we need to cherish our life that we live in and progress forward positively.", 1, "${base20190201.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1);
 ''');
 }
