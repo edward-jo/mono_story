@@ -9,8 +9,7 @@ INSERT INTO $threadsTableNameV2 (${ThreadsTableCols.name})
 VALUES ('Books 📕'),
        ('Travel 🏝'),
        ('The Peanuts'),
-       ('Contemplation'),
-       ('Suits 🤵‍♂️');
+       ('Contemplation');
 ''');
 
   final base20211001 = DateTime.parse('2021-10-01T01:00:00.000Z');
@@ -24,9 +23,6 @@ VALUES ('Books 📕'),
   await db.execute('''
 INSERT INTO $storiesTableNameV2 (${StoriesTableCols.story}, ${StoriesTableCols.fkThreadId}, ${StoriesTableCols.createdTime}, ${StoriesTableCols.starred})
 VALUES
-("You're weird. We'll be friends.", 5, "${base20211001.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
-
-
 ("Since travelling allows you to be open-minded, it is easier to accept all situations naturally, and makes you think not to waste time and enjoy youth since time and youth cannot be bought with money.
 
 Travelling not only makes your world bigger but also makes you generous helping you to be more objective rather than emotional which ultimately makes you not to be fluctuated easily between hopes and fear.", 2, "${base20210601.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
@@ -38,12 +34,6 @@ We are definitely touched endlessly by those stories.", 4, "${base20210401.add(D
 
 
 ("I already miss Switzerland although I am in Switzerland.", 2, "${base20210215.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
-
-
-("Let them hate, just make sure they spell your name right.", 5, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("I don’t have dreams, I have goals.", 5, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("I'm a boy scout. I like to be prepared.", 5, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
-("Anyone can do my job, but no one can be me.", 5, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
 
 ("Learn from yesterday, live for today, look to tomorrow, rest this afternoon.", 3, "${base20211001.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 0),
 ("Every time you find some humour in a difficult situation, you win.", 3, "${base20210101.add(Duration(days: random.nextInt(40), seconds: random.nextInt(24 * 60 * 60))).toIso8601String()}", 1),
