@@ -5,9 +5,15 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/story.dart';
+import 'package:mono_story/ui/common/styled_popup_menu_item.dart';
 import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
+
+enum _StoryListViewItemMenu {
+  delete,
+  changeThread,
+}
 
 class StarredStoryListViewItem extends StatelessWidget {
   const StarredStoryListViewItem({
@@ -15,12 +21,14 @@ class StarredStoryListViewItem extends StatelessWidget {
     required this.story,
     required this.onDelete,
     required this.onStar,
+    required this.onChangeThread,
     this.emphasis,
   }) : super(key: key);
 
   final Story story;
   final void Function() onStar;
   final void Function() onDelete;
+  final void Function() onChangeThread;
   final String? emphasis;
 
   @override
@@ -57,6 +65,8 @@ class StarredStoryListViewItem extends StatelessWidget {
         style: textStyle,
       );
     }
+
+    final maxMenuItemWidth = MediaQuery.of(context).size.width * 0.5;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
@@ -98,11 +108,30 @@ class StarredStoryListViewItem extends StatelessWidget {
                   // -- STARRED --
                   StarIconButton(starred: story.starred, onPressed: onStar),
 
-                  // -- DELETE BUTTON --
-                  IconButton(
-                    onPressed: onDelete,
-                    icon: const Icon(Icons.delete_outline_rounded, size: 20.0),
-                  ),
+                  // -- POPUP MENU BUTTON --
+                  PopupMenuButton<_StoryListViewItemMenu>(
+                      onSelected: _popupMenuButtonSelected,
+                      itemBuilder: (context) =>
+                          <PopupMenuItem<_StoryListViewItemMenu>>[
+                            // -- DELETE MENU --
+                            StyledPopupMenuItem<_StoryListViewItemMenu>(
+                              maxWidth: maxMenuItemWidth,
+                              menuName: 'Delete',
+                              icon: const Icon(
+                                Icons.delete_outline_rounded,
+                                size: 20.0,
+                              ),
+                              value: _StoryListViewItemMenu.delete,
+                            ),
+
+                            // -- CHANGE THREAD MENU --
+                            StyledPopupMenuItem<_StoryListViewItemMenu>(
+                              maxWidth: maxMenuItemWidth,
+                              menuName: 'Change Thread',
+                              icon: Icon(MonoIcons.thread_icon, size: 20.0),
+                              value: _StoryListViewItemMenu.changeThread,
+                            ),
+                          ]),
                 ],
               ),
             ],
@@ -112,6 +141,19 @@ class StarredStoryListViewItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _popupMenuButtonSelected(_StoryListViewItemMenu value) {
+    switch (value) {
+      case _StoryListViewItemMenu.delete:
+        onDelete();
+        break;
+      case _StoryListViewItemMenu.changeThread:
+        onChangeThread();
+        break;
+      default:
+        throw Exception('Invalid status');
+    }
   }
 
   /// createdTime: UTC time
