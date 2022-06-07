@@ -5,9 +5,11 @@ import 'package:mono_story/ui/common/mono_alertdialog.dart';
 import 'package:mono_story/ui/common/platform_indicator.dart';
 import 'package:mono_story/ui/common/platform_refresh_indicator.dart';
 import 'package:mono_story/ui/common/styled_builder_error_widget.dart';
+import 'package:mono_story/ui/views/main/home/common/new_thread_bottom_sheet.dart';
+import 'package:mono_story/ui/views/main/home/common/thread_list_bottom_sheet.dart';
 import 'package:mono_story/ui/views/main/starred/starred_story_listviewitem.dart';
-import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:mono_story/view_models/starred_story_viewmodel.dart';
+import 'package:mono_story/view_models/story_viewmodel.dart';
 import 'package:provider/src/provider.dart';
 
 class StarredStoryListView extends StatefulWidget {
@@ -165,6 +167,7 @@ class _StarredStoryListViewState extends State<StarredStoryListView> {
                 }
               }
             },
+            onChangeThread: () => _showThreadListBottomSheet(context, item.id!),
           ),
           // -- LOADING INDICATOR --
           if (index == list.length - 1 && _starredVM.hasNext)
@@ -201,6 +204,7 @@ class _StarredStoryListViewState extends State<StarredStoryListView> {
             story: item,
             onStar: () {},
             onDelete: () {},
+            onChangeThread: () {},
           ),
         ],
       ),
@@ -238,5 +242,51 @@ class _StarredStoryListViewState extends State<StarredStoryListView> {
     _starredVM.initStories();
     _starredStoriesFuture = _starredVM.readStarredStoriesChunk();
     setState(() {});
+  }
+
+  void _showThreadListBottomSheet(BuildContext context, int id) async {
+    final ThreadListResult? result;
+    final mediaQueryData = MediaQuery.of(context);
+    result = await showModalBottomSheet<ThreadListResult>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => MediaQuery(
+        data: mediaQueryData,
+        child: const SafeArea(
+          minimum: EdgeInsets.symmetric(vertical: 20.0),
+          child: ThreadListBottomSheet(),
+        ),
+      ),
+    );
+
+    if (result == null) return;
+
+    switch (result.type) {
+      case ThreadListResultType.thread:
+        final threadId = result.data as int?;
+        if (await _starredVM.changeThread(id, threadId) != null) {
+          if (_storyVM.contains(id)) {
+            await _storyVM.updateStory(id, notify: true);
+          }
+        }
+        break;
+      case ThreadListResultType.newThreadRequest:
+        final threadId = await _showCreateThreadBottomSheet(context);
+        if (threadId == null) break;
+        if (await _starredVM.changeThread(id, threadId) != null) {
+          if (_storyVM.contains(id)) {
+            await _storyVM.updateStory(id, notify: true);
+          }
+        }
+        break;
+    }
+  }
+
+  Future<int?> _showCreateThreadBottomSheet(BuildContext context) async {
+    return await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const NewThreadBottomSheet(),
+    );
   }
 }
