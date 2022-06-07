@@ -264,12 +264,20 @@ class _StarredStoryListViewState extends State<StarredStoryListView> {
     switch (result.type) {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
-        await _starredVM.changeThread(id, threadId);
+        if (await _starredVM.changeThread(id, threadId) != null) {
+          if (_storyVM.contains(id)) {
+            await _storyVM.updateStory(id, notify: true);
+          }
+        }
         break;
       case ThreadListResultType.newThreadRequest:
         final threadId = await _showCreateThreadBottomSheet(context);
         if (threadId == null) break;
-        await _starredVM.changeThread(id, threadId);
+        if (await _starredVM.changeThread(id, threadId) != null) {
+          if (_storyVM.contains(id)) {
+            await _storyVM.updateStory(id, notify: true);
+          }
+        }
         break;
     }
   }
