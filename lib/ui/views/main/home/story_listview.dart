@@ -69,7 +69,6 @@ class _StoryListViewState extends State<StoryListView> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQueryData = MediaQuery.of(context);
     return FutureBuilder<dynamic>(
       future: Future.wait([
         _readThreadsFuture,
@@ -279,12 +278,20 @@ class _StoryListViewState extends State<StoryListView> {
     switch (result.type) {
       case ThreadListResultType.thread:
         final threadId = result.data as int?;
-        await _storyVM.changeThread(id, threadId);
+        if (await _storyVM.changeThread(id, threadId) != null) {
+          if (_starredVM.contains(id)) {
+            await _starredVM.updateStory(id, notify: true);
+          }
+        }
         break;
       case ThreadListResultType.newThreadRequest:
         final threadId = await _showCreateThreadBottomSheet(context);
         if (threadId == null) break;
-        await _storyVM.changeThread(id, threadId);
+        if (await _storyVM.changeThread(id, threadId) != null) {
+          if (_starredVM.contains(id)) {
+            await _starredVM.updateStory(id, notify: true);
+          }
+        }
         break;
     }
   }
