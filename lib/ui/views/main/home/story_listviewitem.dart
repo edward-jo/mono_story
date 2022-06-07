@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mono_story/constants.dart';
 import 'package:mono_story/models/story.dart';
+import 'package:mono_story/ui/common/styled_popup_menu_item.dart';
 import 'package:mono_story/utils/utils.dart';
 import 'package:mono_story/view_models/thread_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -118,7 +119,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
                       itemBuilder: (context) =>
                           <PopupMenuItem<_StoryListViewItemMenu>>[
                             // -- DELETE MENU --
-                            _StyledPopupMenuItem<_StoryListViewItemMenu>(
+                            StyledPopupMenuItem<_StoryListViewItemMenu>(
                               maxWidth: maxMenuItemWidth,
                               menuName: 'Delete',
                               icon: const Icon(
@@ -129,7 +130,7 @@ class _StoryListViewItemState extends State<StoryListViewItem> {
                             ),
 
                             // -- CHANGE THREAD MENU --
-                            _StyledPopupMenuItem<_StoryListViewItemMenu>(
+                            StyledPopupMenuItem<_StoryListViewItemMenu>(
                               maxWidth: maxMenuItemWidth,
                               menuName: 'Change Thread',
                               icon: Icon(MonoIcons.thread_icon, size: 20.0),
@@ -224,37 +225,4 @@ class ThreadInfoWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-class _StyledPopupMenuItem<T> extends PopupMenuItem<T> {
-  _StyledPopupMenuItem({
-    Key? key,
-    this.maxWidth = double.infinity,
-    this.maxHeight = double.infinity,
-    required this.menuName,
-    required this.icon,
-    required T value,
-  }) : super(
-          key: key,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          value: value,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: maxWidth,
-                  maxHeight: maxHeight,
-                ),
-                child: Text(menuName, softWrap: true),
-              ),
-              icon,
-            ],
-          ),
-        );
-
-  final String menuName;
-  final Icon icon;
-  final double maxWidth;
-  final double maxHeight;
 }
